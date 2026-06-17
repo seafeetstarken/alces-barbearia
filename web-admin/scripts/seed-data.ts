@@ -38,10 +38,19 @@ async function seedData() {
 
     // Login como admin primeiro
     console.log('🔑 Fazendo login como admin...');
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-        email: 'admin@alces.com',
+    let { error: loginError } = await supabase.auth.signInWithPassword({
+        email: 'admin@alces.com.br',
         password: 'Alces@2026',
     });
+
+    if (loginError) {
+        console.log('  ⚠️ admin@alces.com.br com Alces@2026 falhou, tentando admin@alces.com.br com alces123...');
+        const secondTry = await supabase.auth.signInWithPassword({
+            email: 'admin@alces.com.br',
+            password: 'alces123',
+        });
+        loginError = secondTry.error;
+    }
 
     if (loginError) {
         console.error('❌ Erro no login:', loginError.message);
@@ -50,18 +59,24 @@ async function seedData() {
     }
     console.log('  ✅ Logado como admin\n');
 
-    // 1. Verificar ou criar a loja matriz
-    const { data: stores } = await supabase
+    // 1. Verificar ou criar as lojas
+    const { data: existingStores, error: fetchStoresError } = await supabase
         .from('stores')
-        .select('id')
-        .ilike('name', '%Matriz%')
-        .limit(1);
+        .select('id, name');
 
-    let storeId: string;
+    if (fetchStoresError) {
+        console.error('❌ Erro ao buscar lojas:', fetchStoresError.message);
+        process.exit(1);
+    }
 
-    if (!stores || stores.length === 0) {
-        console.log('📍 Criando lojas da Alce\'s...');
+    let storeId: string = ''; // Matriz
+    let escolaAgricolaStoreId: string = ''; // Escola Agrícola
 
+    const matrizStore = existingStores?.find(s => s.name.toLowerCase().includes('matriz'));
+    const eaStore = existingStores?.find(s => s.name.toLowerCase().includes('escola'));
+
+    if (!matrizStore) {
+        console.log('📍 Criando loja Matriz...');
         const { data: newStore, error } = await supabase
             .from('stores')
             .insert({
@@ -75,28 +90,54 @@ async function seedData() {
             .single();
 
         if (error) {
-            console.error('❌ Erro ao criar loja:', error.message);
+            console.error('❌ Erro ao criar loja Matriz:', error.message);
             process.exit(1);
         }
-
         storeId = newStore.id;
-        console.log('  ✅ Matriz criada');
-
-        // Criar outras filiais
-        await supabase.from('stores').insert([
-            { name: "Alce's Barbearia - Escola Agrícola", phone: '5547996155719', address: 'R. Benjamin Constant, 939 – Escola Agrícola, Blumenau – SC' },
-            { name: "Alce's Barbearia - Gaspar", phone: '5547996155719', address: 'Av. Das Comunidades, 995 – Centro, Gaspar – SC' },
-        ]);
-        console.log('  ✅ Filiais criadas');
+        console.log('  ✅ Matriz criada:', storeId);
     } else {
-        storeId = stores[0].id;
-        console.log('📍 Loja encontrada:', storeId);
+        storeId = matrizStore.id;
+        console.log('📍 Loja Matriz encontrada:', storeId);
+    }
+
+    if (!eaStore) {
+        console.log('📍 Criando loja Escola Agrícola...');
+        const { data: newStore, error } = await supabase
+            .from('stores')
+            .insert({
+                name: "Alce's Barbearia - Escola Agrícola",
+                phone: '5547996155719',
+                address: 'R. Benjamin Constant, 939 – Escola Agrícola, Blumenau – SC',
+                open_time: '08:30',
+                close_time: '20:00',
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Erro ao criar loja Escola Agrícola:', error.message);
+            process.exit(1);
+        }
+        escolaAgricolaStoreId = newStore.id;
+        console.log('  ✅ Escola Agrícola criada:', escolaAgricolaStoreId);
+    } else {
+        escolaAgricolaStoreId = eaStore.id;
+        console.log('📍 Loja Escola Agrícola encontrada:', escolaAgricolaStoreId);
+    }
+
+    // Criar filial Gaspar se não existir
+    const gasparStore = existingStores?.find(s => s.name.toLowerCase().includes('gaspar'));
+    if (!gasparStore) {
+        await supabase.from('stores').insert([
+            { name: "Alce's Barbearia - Gaspar", phone: '5547996155719', address: 'Av. Das Comunidades, 995 – Centro, Gaspar – SC' }
+        ]);
+        console.log('  ✅ Gaspar criada');
     }
 
     // Inserir serviços se não existirem
     console.log('\n💇 Criando Serviços...');
+    // Matriz
     const { data: existingServices } = await supabase.from('services').select('id').eq('store_id', storeId).limit(1);
-
     if (!existingServices || existingServices.length === 0) {
         await supabase.from('services').insert([
             { store_id: storeId, name: 'Corte', price: 45.00, duration_minutes: 30, points: 1 },
@@ -104,15 +145,29 @@ async function seedData() {
             { store_id: storeId, name: 'Barba', price: 35.00, duration_minutes: 20, points: 1 },
             { store_id: storeId, name: 'Pigmentação', price: 80.00, duration_minutes: 40, points: 2 },
         ]);
-        console.log('  ✅ Serviços criados');
+        console.log('  ✅ Serviços criados para a Matriz');
     } else {
-        console.log('  ✅ Serviços já existem');
+        console.log('  ✅ Serviços já existem na Matriz');
+    }
+
+    // Escola Agrícola
+    const { data: existingServicesEa } = await supabase.from('services').select('id').eq('store_id', escolaAgricolaStoreId).limit(1);
+    if (!existingServicesEa || existingServicesEa.length === 0) {
+        await supabase.from('services').insert([
+            { store_id: escolaAgricolaStoreId, name: 'Corte', price: 45.00, duration_minutes: 30, points: 1 },
+            { store_id: escolaAgricolaStoreId, name: 'Corte + Barba', price: 65.00, duration_minutes: 45, points: 2 },
+            { store_id: escolaAgricolaStoreId, name: 'Barba', price: 35.00, duration_minutes: 20, points: 1 },
+            { store_id: escolaAgricolaStoreId, name: 'Pigmentação', price: 80.00, duration_minutes: 40, points: 2 },
+        ]);
+        console.log('  ✅ Serviços criados para a Escola Agrícola');
+    } else {
+        console.log('  ✅ Serviços já existem na Escola Agrícola');
     }
 
     // Inserir níveis de carreira se não existirem
     console.log('\n📈 Criando Níveis de Carreira...');
+    // Matriz
     const { data: existingLevels } = await supabase.from('career_levels').select('id').eq('store_id', storeId).limit(1);
-
     if (!existingLevels || existingLevels.length === 0) {
         await supabase.from('career_levels').insert([
             { store_id: storeId, name: 'Júnior', level_order: 1, multiplier: 0.8, min_months: 0, min_services: 0, benefits: 'Treinamento básico' },
@@ -120,26 +175,56 @@ async function seedData() {
             { store_id: storeId, name: 'Sênior', level_order: 3, multiplier: 1.2, min_months: 18, min_services: 2000, benefits: 'Bônus de 20% + benefícios' },
             { store_id: storeId, name: 'Master', level_order: 4, multiplier: 1.5, min_months: 36, min_services: 5000, benefits: 'Bônus de 50% + liderança' },
         ]);
-        console.log('  ✅ Níveis de carreira criados');
+        console.log('  ✅ Níveis de carreira criados para a Matriz');
     } else {
-        console.log('  ✅ Níveis já existem');
+        console.log('  ✅ Níveis já existem na Matriz');
+    }
+
+    // Escola Agrícola
+    const { data: existingLevelsEa } = await supabase.from('career_levels').select('id').eq('store_id', escolaAgricolaStoreId).limit(1);
+    if (!existingLevelsEa || existingLevelsEa.length === 0) {
+        await supabase.from('career_levels').insert([
+            { store_id: escolaAgricolaStoreId, name: 'Júnior', level_order: 1, multiplier: 0.8, min_months: 0, min_services: 0, benefits: 'Treinamento básico' },
+            { store_id: escolaAgricolaStoreId, name: 'Profissional', level_order: 2, multiplier: 1.0, min_months: 6, min_services: 500, benefits: 'Comissão padrão' },
+            { store_id: escolaAgricolaStoreId, name: 'Sênior', level_order: 3, multiplier: 1.2, min_months: 18, min_services: 2000, benefits: 'Bônus de 20% + benefícios' },
+            { store_id: escolaAgricolaStoreId, name: 'Master', level_order: 4, multiplier: 1.5, min_months: 36, min_services: 5000, benefits: 'Bônus de 50% + liderança' },
+        ]);
+        console.log('  ✅ Níveis de carreira criados para a Escola Agrícola');
+    } else {
+        console.log('  ✅ Níveis já existem na Escola Agrícola');
     }
 
     // 2. Inserir Barbers
     console.log('\n👤 Criando Barbers...');
     const barbers = [
-        { store_id: storeId, name: 'Carlos Silva', initials: 'CS', level: 'senior', level_multiplier: 1.2, is_leader: true, phone: '47991234567' },
-        { store_id: storeId, name: 'Pedro Santos', initials: 'PS', level: 'professional', level_multiplier: 1.0, is_leader: false, phone: '47992345678' },
-        { store_id: storeId, name: 'Lucas Oliveira', initials: 'LO', level: 'junior', level_multiplier: 0.8, is_leader: false, phone: '47993456789' },
-        { store_id: storeId, name: 'Rafael Costa', initials: 'RC', level: 'master', level_multiplier: 1.5, is_leader: true, phone: '47994567890' },
+        // Matriz (Itoupava Seca)
+        { store_id: storeId, name: 'Gabriel Becker', initials: 'GB', level: 'master', level_multiplier: 1.5, is_leader: true, phone: '47991234561' },
+        { store_id: storeId, name: 'Jerffeson', initials: 'JF', level: 'senior', level_multiplier: 1.2, is_leader: false, phone: '47991234562' },
+        { store_id: storeId, name: 'Thiago Ferreira', initials: 'TF', level: 'professional', level_multiplier: 1.0, is_leader: false, phone: '47991234563' },
+        { store_id: storeId, name: 'Lucas Pelizer', initials: 'LP', level: 'junior', level_multiplier: 0.8, is_leader: false, phone: '47991234564' },
+        // Escola Agrícola
+        { store_id: escolaAgricolaStoreId, name: 'Jorge Henrique Funke', initials: 'JH', level: 'master', level_multiplier: 1.5, is_leader: true, phone: '47992345671' },
+        { store_id: escolaAgricolaStoreId, name: 'Peterson', initials: 'PT', level: 'senior', level_multiplier: 1.2, is_leader: false, phone: '47992345672' },
+        { store_id: escolaAgricolaStoreId, name: 'Ryan', initials: 'RY', level: 'professional', level_multiplier: 1.0, is_leader: false, phone: '47992345673' },
     ];
 
     for (const barber of barbers) {
-        const { error } = await supabase.from('barbers').insert(barber);
-        if (error && !error.message.includes('duplicate')) {
-            console.log(`  ⚠️ ${barber.name}: ${error.message}`);
+        const { data: existing } = await supabase
+            .from('barbers')
+            .select('id')
+            .eq('store_id', barber.store_id)
+            .eq('name', barber.name)
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            console.log(`  ✅ ${barber.name} (já existe)`);
         } else {
-            console.log(`  ✅ ${barber.name} (${barber.level})`);
+            const { error } = await supabase.from('barbers').insert(barber);
+            if (error) {
+                console.log(`  ⚠️ ${barber.name}: ${error.message}`);
+            } else {
+                console.log(`  ✅ ${barber.name} (${barber.level})`);
+            }
         }
     }
 
@@ -154,11 +239,22 @@ async function seedData() {
     ];
 
     for (const client of clients) {
-        const { error } = await supabase.from('clients').insert(client);
-        if (error && !error.message.includes('duplicate')) {
-            console.log(`  ⚠️ ${client.name}: ${error.message}`);
+        const { data: existing } = await supabase
+            .from('clients')
+            .select('id')
+            .eq('store_id', client.store_id)
+            .eq('name', client.name)
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            console.log(`  ✅ ${client.name} (já existe)`);
         } else {
-            console.log(`  ✅ ${client.name}`);
+            const { error } = await supabase.from('clients').insert(client);
+            if (error) {
+                console.log(`  ⚠️ ${client.name}: ${error.message}`);
+            } else {
+                console.log(`  ✅ ${client.name}`);
+            }
         }
     }
 
@@ -170,20 +266,37 @@ async function seedData() {
         { store_id: storeId, name: 'Shampoo Masculino', price: 35.00, cost: 15.00, stock_quantity: 20, min_stock: 5 },
         { store_id: storeId, name: 'Cera Matte', price: 50.00, cost: 22.00, stock_quantity: 8, min_stock: 3 },
         { store_id: storeId, name: 'Balm para Barba', price: 40.00, cost: 18.00, stock_quantity: 12, min_stock: 4 },
+        // Escola Agrícola
+        { store_id: escolaAgricolaStoreId, name: 'Pomada Modeladora', price: 45.00, cost: 20.00, stock_quantity: 15, min_stock: 5 },
+        { store_id: escolaAgricolaStoreId, name: 'Óleo para Barba', price: 55.00, cost: 25.00, stock_quantity: 10, min_stock: 3 },
+        { store_id: escolaAgricolaStoreId, name: 'Shampoo Masculino', price: 35.00, cost: 15.00, stock_quantity: 20, min_stock: 5 },
+        { store_id: escolaAgricolaStoreId, name: 'Cera Matte', price: 50.00, cost: 22.00, stock_quantity: 8, min_stock: 3 },
+        { store_id: escolaAgricolaStoreId, name: 'Balm para Barba', price: 40.00, cost: 18.00, stock_quantity: 12, min_stock: 4 },
     ];
 
     for (const product of products) {
-        const { error } = await supabase.from('products').insert(product);
-        if (error && !error.message.includes('duplicate')) {
-            console.log(`  ⚠️ ${product.name}: ${error.message}`);
+        const { data: existing } = await supabase
+            .from('products')
+            .select('id')
+            .eq('store_id', product.store_id)
+            .eq('name', product.name)
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            console.log(`  ✅ ${product.name} (já existe)`);
         } else {
-            console.log(`  ✅ ${product.name} - R$${product.price.toFixed(2)} (${product.stock_quantity} un)`);
+            const { error } = await supabase.from('products').insert(product);
+            if (error) {
+                console.log(`  ⚠️ ${product.name}: ${error.message}`);
+            } else {
+                console.log(`  ✅ ${product.name} - R$${product.price.toFixed(2)} (${product.stock_quantity} un)`);
+            }
         }
     }
 
-    // 5. Criar Settings para a loja
+    // 5. Criar Settings para as lojas
     console.log('\n⚙️ Configurando Settings (White Label)...');
-    const settings = {
+    const settingsMatriz = {
         store_id: storeId,
         logo_url: '/assets/Logo_Alces_Barbershop.png',
         primary_color: '#D4A03C',
@@ -194,15 +307,36 @@ async function seedData() {
         theme: 'dark',
         commission_percentage: 43,
     };
+    const settingsEa = {
+        store_id: escolaAgricolaStoreId,
+        logo_url: '/assets/Logo_Alces_Barbershop.png',
+        primary_color: '#D4A03C',
+        secondary_color: '#6B7280',
+        background_color: '#1A1614',
+        card_color: '#26211E',
+        font_family: 'Source Sans Pro',
+        theme: 'dark',
+        commission_percentage: 43,
+    };
 
-    const { error: settingsError } = await supabase
+    const { error: settingsMatrizError } = await supabase
         .from('settings')
-        .upsert(settings, { onConflict: 'store_id' });
+        .upsert(settingsMatriz, { onConflict: 'store_id' });
 
-    if (settingsError) {
-        console.log(`  ⚠️ ${settingsError.message}`);
+    if (settingsMatrizError) {
+        console.log(`  ⚠️ Matriz Settings: ${settingsMatrizError.message}`);
     } else {
-        console.log('  ✅ Configurações salvas');
+        console.log('  ✅ Configurações Matriz salvas');
+    }
+
+    const { error: settingsEaError } = await supabase
+        .from('settings')
+        .upsert(settingsEa, { onConflict: 'store_id' });
+
+    if (settingsEaError) {
+        console.log(`  ⚠️ Escola Agrícola Settings: ${settingsEaError.message}`);
+    } else {
+        console.log('  ✅ Configurações Escola Agrícola salvas');
     }
 
     console.log('\n✅ Seed concluído com sucesso!\n');
@@ -210,8 +344,8 @@ async function seedData() {
     console.log(`   - ${barbers.length} Barbers`);
     console.log(`   - ${clients.length} Clientes`);
     console.log(`   - ${products.length} Produtos`);
-    console.log('   - 4 Serviços');
-    console.log('   - 4 Níveis de carreira');
+    console.log('   - 8 Serviços');
+    console.log('   - 8 Níveis de carreira');
     console.log('   - Configurações White Label');
 }
 
