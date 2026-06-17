@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules/
+.pub-cache/
+.pub/
+
+# Build directories
+dist/
+build/
+.dart_tool/
+.vercel/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor / System files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing / Browser audit profiles & screenshots
+browser-audit-screenshots/
+**/browser-audit-screenshots/
+*.log
+logs/
+
+# Reference prints / temp files
+**/prints app - referencia/
+**/prints\ app\ -\ referencia/

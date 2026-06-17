@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salão Justo - Relatório de Progresso</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+                font-size: 11pt;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            h1 {
+                font-size: 18pt;
+            }
+
+            h2 {
+                font-size: 14pt;
+                page-break-after: avoid;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #D4A03C;
+        }
+
+        header h1 {
+            color: #1a1a1a;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            background: #f5f5f5;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-item strong {
+            display: block;
+            font-size: 24px;
+            color: #D4A03C;
+        }
+
+        h2 {
+            color: #1a1a1a;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eee;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .done {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .partial {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #D4A03C;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .print-btn:hover {
+            background: #c4902c;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir</button>
+
+    <header>
+        <h1>Salão Justo</h1>
+        <p>Relatório de Progresso do Projeto</p>
+        <p><strong>Cliente:</strong> Alce's Barbearia | <strong>Data:</strong> 27/01/2026</p>
+    </header>
+
+    <div class="meta">
+        <div class="meta-item">
+            <strong>17/17</strong>
+            Páginas
+        </div>
+        <div class="meta-item">
+            <strong>12/12</strong>
+            Hooks
+        </div>
+        <div class="meta-item">
+            <strong>14</strong>
+            Tabelas DB
+        </div>
+        <div class="meta-item">
+            <strong>✅</strong>
+            Auth
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Fases do Projeto</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fase</th>
+                    <th>Descrição</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fase 0</td>
+                    <td>Fundamentos (White Label, Papéis)</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 1</td>
+                    <td>MVP (Cadastros básicos, Dashboard)</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 2</td>
+                    <td>Comissão & Split (43%, pontos)</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 3</td>
+                    <td>Caixa & Financeiro</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 4</td>
+                    <td>Produtos & Estoque</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 5</td>
+                    <td>Pessoas & Escala</td>
+                    <td><span class="status partial">⏳ Parcial</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 6</td>
+                    <td>Liderança & Carreira</td>
+                    <td><span class="status partial">⏳ Parcial</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 7</td>
+                    <td>Clientes</td>
+                    <td><span class="status done">✅ Completo</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 8</td>
+                    <td>Multi-loja (deploy separado)</td>
+                    <td><span class="status done">✅ Arquitetura</span></td>
+                </tr>
+                <tr>
+                    <td>Fase 9</td>
+                    <td>Pagamentos (gateway)</td>
+                    <td><span class="status pending">⏳ Pendente</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📱 Páginas Implementadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Página</th>
+                    <th>Rota</th>
+                    <th>DB Conectado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Login</td>
+                    <td>/</td>
+                    <td><span class="status done">✅ Sim</span></td>
+                </tr>
+                <tr>
+                    <td>Esqueci Senha</td>
+                    <td>/forgot-password</td>
+                    <td><span class="status done">✅ Sim</span></td>
+                </tr>
+                <tr>
+                    <td>Redefinir Senha</td>
+                    <td>/reset-password</td>
+                    <td><span class="status done">✅ Sim</span></td>
+                </tr>
+                <tr>
+                    <td>Seleção de Loja</td>
+                    <td>/stores</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Dashboard</td>
+                    <td>/dashboard</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Caixa</td>
+                    <td>/cashier</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Comissões</td>
+                    <td>/commissions</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Barbers</td>
+                    <td>/barbers</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Escala</td>
+                    <td>/schedule</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Clientes</td>
+                    <td>/clients</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Serviços</td>
+                    <td>/services</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Produtos</td>
+                    <td>/products</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Estoque</td>
+                    <td>/inventory</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Despesas</td>
+                    <td>/expenses</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Metas</td>
+                    <td>/goals</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Relatórios</td>
+                    <td>/reports</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Configurações</td>
+                    <td>/settings</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+                <tr>
+                    <td>Plano de Carreira</td>
+                    <td>/career</td>
+                    <td><span class="status pending">⏳ Mock</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>🔐 Autenticação</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Funcionalidade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Login com email/senha</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+                <tr>
+                    <td>Esqueci minha senha</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+                <tr>
+                    <td>Redefinir senha</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+                <tr>
+                    <td>Alterar senha</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+                <tr>
+                    <td>Criar usuários (Admin)</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+                <tr>
+                    <td>Papéis (Owner/Manager/Leader/Barber)</td>
+                    <td><span class="status done">✅ Implementado</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>🗄️ Banco de Dados (Supabase)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tabela</th>
+                    <th>Hook</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>profiles</td>
+                    <td>useAuth</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>stores</td>
+                    <td>useStore</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>settings</td>
+                    <td>useSettings</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>barbers</td>
+                    <td>useBarbers</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>services</td>
+                    <td>useServices</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>products</td>
+                    <td>useProducts</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>clients</td>
+                    <td>useClients</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>cash_registers</td>
+                    <td>useCashier</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>transactions</td>
+                    <td>useCashier</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>points</td>
+                    <td>useCommissions</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>commissions</td>
+                    <td>useCommissions</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>expenses</td>
+                    <td>useExpenses</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>goals</td>
+                    <td>useGoals</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>schedules</td>
+                    <td>useSchedule</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+                <tr>
+                    <td>career_levels</td>
+                    <td>useCareerLevels</td>
+                    <td><span class="status done">✅</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>⏳ Pendências</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Prioridade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Conectar páginas aos hooks (dados reais)</td>
+                    <td><span class="status partial">Alta</span></td>
+                </tr>
+                <tr>
+                    <td>Vale dos profissionais (adiantamento)</td>
+                    <td><span class="status pending">Média</span></td>
+                </tr>
+                <tr>
+                    <td>Bônus de liderança</td>
+                    <td><span class="status pending">Média</span></td>
+                </tr>
+                <tr>
+                    <td>Gateway de pagamento</td>
+                    <td><span class="status pending">Baixa</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Relatório gerado em 27/01/2026 | Alce's Barbearia - Sistema de Gestão</p>
+    </div>
+</body>
+
+</html>

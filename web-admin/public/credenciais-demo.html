@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alce's Barbearia - Credenciais de Demonstração</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .card {
+                break-inside: avoid;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1A1614 0%, #26211E 100%);
+            border-radius: 16px;
+            color: white;
+        }
+
+        header h1 {
+            color: #D4A03C;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #D4A03C;
+            color: #1A1614;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(212, 160, 60, 0.4);
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 30px 0 15px;
+            color: #1A1614;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #D4A03C;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #D4A03C;
+        }
+
+        .card.owner {
+            border-left-color: #D4A03C;
+        }
+
+        .card.manager {
+            border-left-color: #3B82F6;
+        }
+
+        .card.leader {
+            border-left-color: #8B5CF6;
+        }
+
+        .card.barber {
+            border-left-color: #10B981;
+        }
+
+        .card.super_admin {
+            border-left-color: #EF4444;
+        }
+
+        .card.client {
+            border-left-color: #6B7280;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .avatar.owner {
+            background: #D4A03C;
+        }
+
+        .avatar.manager {
+            background: #3B82F6;
+        }
+
+        .avatar.leader {
+            background: #8B5CF6;
+        }
+
+        .avatar.barber {
+            background: #10B981;
+        }
+
+        .avatar.super_admin {
+            background: #EF4444;
+        }
+
+        .avatar.client {
+            background: #6B7280;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .card-role {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #f0f0f0;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .credentials {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+        }
+
+        .credentials p {
+            margin-bottom: 8px;
+        }
+
+        .credentials strong {
+            color: #666;
+            display: inline-block;
+            width: 60px;
+        }
+
+        .permissions {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .permissions ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .permissions li {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .url-section {
+            background: #1A1614;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .url-section h3 {
+            color: #D4A03C;
+            margin-bottom: 12px;
+        }
+
+        .url-section code {
+            background: #26211E;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir</button>
+
+    <header>
+        <h1>🦌 Alce's Barbearia</h1>
+        <p>Credenciais de Demonstração do Sistema</p>
+        <p style="margin-top: 8px; font-size: 12px; opacity: 0.6;">Documento gerado em 27/01/2026</p>
+    </header>
+
+    <h2 class="section-title">👤 Usuários do Sistema</h2>
+
+    <div class="cards-grid">
+        <!-- Owner -->
+        <div class="card owner">
+            <div class="card-header">
+                <div class="avatar owner">AD</div>
+                <div>
+                    <div class="card-title">Administrador Alce's</div>
+                    <span class="card-role">👑 Owner (Dono)</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>Email:</strong> admin@alces.com</p>
+                <p><strong>Senha:</strong> Alces@2026</p>
+            </div>
+            <div class="permissions">
+                <strong>Permissões:</strong>
+                <ul>
+                    <li>Dashboard</li>
+                    <li>Caixa</li>
+                    <li>Comissões</li>
+                    <li>Barbeiros</li>
+                    <li>Clientes</li>
+                    <li>Serviços</li>
+                    <li>Produtos</li>
+                    <li>Relatórios</li>
+                    <li>Configurações</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Manager -->
+        <div class="card manager">
+            <div class="card-header">
+                <div class="avatar manager">MG</div>
+                <div>
+                    <div class="card-title">Maria Gestora</div>
+                    <span class="card-role">📊 Manager (Gestor)</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>Email:</strong> gestor@alces.com</p>
+                <p><strong>Senha:</strong> Gestor@2026</p>
+            </div>
+            <div class="permissions">
+                <strong>Permissões:</strong>
+                <ul>
+                    <li>Dashboard</li>
+                    <li>Caixa</li>
+                    <li>Comissões</li>
+                    <li>Barbeiros</li>
+                    <li>Clientes</li>
+                    <li>Relatórios</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Leader -->
+        <div class="card leader">
+            <div class="card-header">
+                <div class="avatar leader">PL</div>
+                <div>
+                    <div class="card-title">Pedro Líder</div>
+                    <span class="card-role">⭐ Leader (Líder)</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>Email:</strong> lider@alces.com</p>
+                <p><strong>Senha:</strong> Lider@2026</p>
+            </div>
+            <div class="permissions">
+                <strong>Permissões:</strong>
+                <ul>
+                    <li>Dashboard</li>
+                    <li>Caixa</li>
+                    <li>Escala</li>
+                    <li>Metas</li>
+                    <li>Comissões (próprio + equipe)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Barber -->
+        <div class="card barber">
+            <div class="card-header">
+                <div class="avatar barber">CB</div>
+                <div>
+                    <div class="card-title">Carlos Barber</div>
+                    <span class="card-role">✂️ Barber (Profissional)</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>Email:</strong> barber@alces.com</p>
+                <p><strong>Senha:</strong> Barber@2026</p>
+            </div>
+            <div class="permissions">
+                <strong>Permissões:</strong>
+                <ul>
+                    <li>Caixa (próprio)</li>
+                    <li>Comissões (próprio)</li>
+                    <li>Escala (próprio)</li>
+                    <li>Metas (próprio)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">🛡️ Super Admin (White Label)</h2>
+
+    <div class="cards-grid">
+        <div class="card super_admin">
+            <div class="card-header">
+                <div class="avatar super_admin">SA</div>
+                <div>
+                    <div class="card-title">Super Admin</div>
+                    <span class="card-role">🔧 super_admin</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>Email:</strong> superadmin@alces.com</p>
+                <p><strong>Senha:</strong> Alces@2026</p>
+                <p style="margin-top: 10px; font-size: 12px; color: #10B981;">
+                    ✅ Criado via Script de Automação
+                </p>
+            </div>
+            <div class="permissions">
+                <strong>Permissões:</strong>
+                <ul>
+                    <li>Personalização de Cores</li>
+                    <li>Configurar Fontes</li>
+                    <li>Gerenciar Lojas</li>
+                    <li>Domínio Personalizado</li>
+                    <li>% Comissão</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">📱 Área do Cliente (Pública)</h2>
+
+    <div class="cards-grid">
+        <div class="card client">
+            <div class="card-header">
+                <div class="avatar client">CL</div>
+                <div>
+                    <div class="card-title">Cliente</div>
+                    <span class="card-role">👤 Acesso Público</span>
+                </div>
+            </div>
+            <div class="credentials">
+                <p><strong>URL:</strong> /client</p>
+                <p><strong>Login:</strong> Não necessário</p>
+            </div>
+            <div class="permissions">
+                <strong>Funcionalidades:</strong>
+                <ul>
+                    <li>Ver Serviços</li>
+                    <li>Agendar Horário</li>
+                    <li>Comprar Produtos</li>
+                    <li>Carteira Digital</li>
+                    <li>Assinatura</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="url-section">
+        <h3>🌐 URLs do Sistema</h3>
+        <code>https://alces-barber-pro.vercel.app/</code>
+        <p>Login do sistema (Owner, Manager, Leader, Barber)</p>
+
+        <code>https://alces-barber-pro.vercel.app/admin</code>
+        <p>Painel Super Admin (White Label)</p>
+
+        <code>https://alces-barber-pro.vercel.app/client</code>
+        <p>Área pública do cliente</p>
+
+        <code>https://alces-barber-pro.vercel.app/dashboard</code>
+        <p>Dashboard após login</p>
+    </div>
+
+    <!-- Roles and Permissions Section -->
+    <h2 class="section-title">📋 Matriz de Papéis e Permissões</h2>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+        <thead>
+            <tr style="background: #1A1614; color: white;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Funcionalidade</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Super Admin</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Owner</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Manager</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Leader</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Barber</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: #fff3cd;">
+                <td colspan="6" style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">🛡️ Administração da
+                    Plataforma</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Gerenciar Lojas</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Personalizar Branding (Cores, Logo)</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Definir % Comissão Global</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Configurar Domínio Personalizado</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+
+            <tr style="background: #d4edda;">
+                <td colspan="6" style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">🏪 Gestão da Loja</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Dashboard</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Configurações da Loja</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Gerenciar Barbeiros</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Gerenciar Clientes</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Gerenciar Serviços</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Produtos e Estoque</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Despesas</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Relatórios Completos</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+
+            <tr style="background: #cce5ff;">
+                <td colspan="6" style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">💰 Financeiro e Caixa
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Abrir/Fechar Caixa</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Registrar Vendas</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ver Comissões (Próprias)</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ver Comissões (Todos)</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">🔶 Equipe</td>
+                <td style="text-align: center; border: 1px solid #ddd;">❌</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Metas e Bônus</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">👁️ Próprio</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Escala de Trabalho</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">✅</td>
+                <td style="text-align: center; border: 1px solid #ddd;">👁️ Próprio</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="section-title">🔑 Diferenças Entre os Papéis</h2>
+
+    <div
+        style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="color: #EF4444; margin-bottom: 10px;">🛡️ Super Admin vs 👑 Owner</h4>
+        <p style="font-size: 14px; color: #333; line-height: 1.6;">
+            O <strong>Super Admin</strong> é o administrador da <em>plataforma inteira</em>. Ele controla as
+            configurações globais, cores, logos, e gerencia múltiplas lojas.
+            Já o <strong>Owner</strong> é o dono de uma <em>única loja específica</em> e gerencia apenas os recursos
+            dela (barbeiros, clientes, serviços, etc.).
+        </p>
+    </div>
+
+    <div
+        style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="color: #3B82F6; margin-bottom: 10px;">📊 Manager vs 👑 Owner</h4>
+        <p style="font-size: 14px; color: #333; line-height: 1.6;">
+            O <strong>Manager</strong> tem quase todas as permissões do Owner para operar a loja no dia a dia (gestão de
+            equipe, relatórios, caixa), mas <strong>não pode alterar configurações da loja</strong> como nome, horário
+            de funcionamento ou níveis de carreira.
+        </p>
+    </div>
+
+    <div
+        style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="color: #8B5CF6; margin-bottom: 10px;">⭐ Leader vs 📊 Manager</h4>
+        <p style="font-size: 14px; color: #333; line-height: 1.6;">
+            O <strong>Leader</strong> é um barbeiro sênior que lidera uma pequena equipe. Ele pode ver as comissões e
+            metas de sua equipe, mas <strong>não tem acesso a relatórios gerais, despesas ou gestão de
+                clientes/serviços</strong>. Seu foco é o caixa e a liderança operacional.
+        </p>
+    </div>
+
+    <div
+        style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="color: #10B981; margin-bottom: 10px;">✂️ Barber</h4>
+        <p style="font-size: 14px; color: #333; line-height: 1.6;">
+            O <strong>Barber</strong> é o profissional que atende os clientes. Ele tem acesso <strong>apenas aos seus
+                próprios dados</strong>: seu caixa, suas comissões, suas metas e sua escala. É a visão mais restrita do
+            sistema.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>Alce's Barbearia - Sistema de Gestão White Label</p>
+        <p>Documento confidencial para demonstração</p>
+    </div>
+</body>
+
+</html>
