@@ -1,150 +1,569 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../data/app_state.dart';
+import '../data/mock_data.dart';
+import '../models/store.dart';
+import '../theme/app_theme.dart';
+import '../widgets/custom_widgets.dart';
+import 'main_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final AppState _appState = AppState();
+
+  void _showStoreSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.backgroundDark,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Selecione a Unidade',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Escolha qual unidade deseja visualizar hoje:',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 20),
+              ...MockData.stores.map((store) {
+                return ValueListenableBuilder<Store>(
+                  valueListenable: _appState.activeStore,
+                  builder: (context, activeStore, _) {
+                    final isSelected = activeStore.id == store.id;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: CardShell(
+                        onTap: () {
+                          _appState.changeStore(store);
+                          Navigator.pop(context);
+                        },
+                        border: Border.all(
+                          color: isSelected
+                              ? AppTheme.primaryGold
+                              : Colors.white.withOpacity(0.06),
+                          width: 1.5,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppTheme.primaryGold.withOpacity(0.1)
+                                    : Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.store,
+                                color: isSelected
+                                    ? AppTheme.primaryGold
+                                    : AppTheme.textMuted,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    store.name.replaceAll("Alce's Barbearia - ", ""),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: isSelected ? AppTheme.primaryGold : Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    store.address.split(',')[0],
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppTheme.textMuted,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              const Icon(
+                                Icons.check_circle,
+                                color: AppTheme.primaryGold,
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alces Barbearia'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
+      body: SafeArea(
+        child: ValueListenableBuilder<Store>(
+          valueListenable: _appState.activeStore,
+          builder: (context, currentStore, _) {
+            // Get barbers for this store
+            final storeBarbers = MockData.barbers
+                .where((b) => b.storeId == currentStore.id)
+                .toList();
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                    child: Icon(Icons.person, color: Theme.of(context).primaryColor),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // App Bar Header (Brand + Store Selector)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.between,
                     children: [
-                      Text(
-                        'Olá, Cliente!',
-                        style: Theme.of(context).textTheme.titleLarge,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/Logo_Alces_Barbershop.png',
+                                width: 28,
+                                height: 28,
+                                errorBuilder: (c, e, s) => const Icon(
+                                  Icons.offline_bolt_outlined,
+                                  color: AppTheme.primaryGold,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Alce's",
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            'BARBEARIA',
+                            style: TextStyle(
+                              fontSize: 9,
+                              letterSpacing: 4,
+                              color: AppTheme.textMuted,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Bem-vindo de volta',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      // Store Selector Button
+                      InkWell(
+                        onTap: () => _showStoreSelector(context),
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, py: 8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardDark,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.06)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.place,
+                                  color: AppTheme.primaryGold, size: 16),
+                              const SizedBox(width: 6),
+                              Text(
+                                currentStore.name.replaceAll(
+                                    "Alce's Barbearia - ", ""),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.keyboard_arrow_down,
+                                  color: AppTheme.primaryGold, size: 16),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 24),
+
+                  // Welcome Card & Cashback Info
+                  CardShell(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 26,
+                          backgroundColor:
+                              AppTheme.primaryGold.withOpacity(0.12),
+                          child: const Text(
+                            'JS',
+                            style: TextStyle(
+                                color: AppTheme.primaryGold,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Olá, ${_appState.userName}!',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.wallet_giftcard,
+                                      color: AppTheme.primaryGold, size: 14),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Cashback acumulado: R\$ 24,50',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.7),
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Active Membership / Club Banner
+                  ValueListenableBuilder<String?>(
+                    valueListenable: _appState.activePlan,
+                    builder: (context, planName, _) {
+                      final hasActivePlan = planName != null;
+                      return CardShell(
+                        padding: const EdgeInsets.all(20),
+                        border: Border.all(
+                          color: hasActivePlan
+                              ? const Color(0xFF52B788).withOpacity(0.3)
+                              : AppTheme.primaryGold.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.between,
+                              children: [
+                                Text(
+                                  hasActivePlan ? 'CLUBE ATIVO' : 'CLUBE ALCE\'S',
+                                  style: TextStyle(
+                                    color: hasActivePlan
+                                        ? const Color(0xFF52B788)
+                                        : AppTheme.primaryGold,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.5,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                Icon(
+                                  hasActivePlan ? Icons.verified : Icons.star,
+                                  color: hasActivePlan
+                                      ? const Color(0xFF52B788)
+                                      : AppTheme.primaryGold,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              hasActivePlan
+                                  ? 'Assinatura: $planName'
+                                  : 'Corte o cabelo ilimitado no mês',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              hasActivePlan
+                                  ? 'Sua próxima cobrança ocorrerá automaticamente.'
+                                  : 'A partir de R\$ 89,90/mês. Faça parte do nosso clube de assinatura.',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            PrimaryButton(
+                              text: hasActivePlan ? 'Gerenciar Assinatura' : 'Conhecer Planos',
+                              onPressed: () {
+                                // Navigate to tab index 3 (Clube)
+                                final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                                if (mainScreenState != null) {
+                                  // Call tab switcher
+                                  mainScreenState.changeTab(3); // 3 is Club tab
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 28),
+
+                  // Quick Action shortcuts
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CardShell(
+                          onTap: () {
+                            final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                            if (mainScreenState != null) {
+                              mainScreenState.changeTab(1); // 1 is Agenda
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryGold.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.calendar_today,
+                                    color: AppTheme.primaryGold),
+                              ),
+                              const SizedBox(height: 14),
+                              const Text('Agendar',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white)),
+                              const Text('Escolha dia e hora',
+                                  style: TextStyle(
+                                      fontSize: 12, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: CardShell(
+                          onTap: () {
+                            final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                            if (mainScreenState != null) {
+                              mainScreenState.changeTab(2); // 2 is Servicos
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryGold.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.cut,
+                                    color: AppTheme.primaryGold),
+                              ),
+                              const SizedBox(height: 14),
+                              const Text('Serviços',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white)),
+                              const Text('Valores e duração',
+                                  style: TextStyle(
+                                      fontSize: 12, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+
+                  // Barbers Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.between,
+                    children: [
+                      Text(
+                        'Nossa Equipe',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                      ),
+                      const Text(
+                        'Disponíveis hoje',
+                        style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 180,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: storeBarbers.length,
+                      itemBuilder: (context, index) {
+                        final barber = storeBarbers[index];
+                        return Container(
+                          width: 150,
+                          margin: const EdgeInsets.only(right: 16),
+                          child: CardShell(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 28,
+                                  backgroundImage: NetworkImage(barber.avatarUrl),
+                                  backgroundColor: Colors.white10,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  barber.name.split(' ')[0],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  barber.isLeader ? 'Líder' : 'Barbeiro',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: barber.isLeader
+                                        ? AppTheme.primaryGold
+                                        : AppTheme.textMuted,
+                                    fontWeight: barber.isLeader
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+
+                  // Footer / Info info
+                  CardShell(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.access_time,
+                                color: AppTheme.primaryGold, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Horário de Funcionamento',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Segunda a Sábado: ${currentStore.openTime} às ${currentStore.closeTime}',
+                                    style: const TextStyle(
+                                        fontSize: 13, color: AppTheme.textMuted),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.phone,
+                                color: AppTheme.primaryGold, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Contato e Whatsapp',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    currentStore.phone,
+                                    style: const TextStyle(
+                                        fontSize: 13, color: AppTheme.textMuted),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 24),
-              
-              // CTA Banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Agende seu próximo corte',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Os melhores profissionais da cidade estão aqui.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      child: const Text('Agendar Agora', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Services Section
-              Text(
-                'Serviços Populares',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 120,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    _ServiceCard(title: 'Corte Masculino', price: 'R\$ 45,00', duration: '30 min', icon: Icons.cut),
-                    _ServiceCard(title: 'Corte + Barba', price: 'R\$ 70,00', duration: '50 min', icon: Icons.face),
-                    _ServiceCard(title: 'Degradê', price: 'R\$ 55,00', duration: '40 min', icon: Icons.brush),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
-      ),
-    );
-  }
-}
-
-class _ServiceCard extends StatelessWidget {
-  final String title;
-  final String price;
-  final String duration;
-  final IconData icon;
-
-  const _ServiceCard({
-    required this.title,
-    required this.price,
-    required this.duration,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 140,
-      margin: const EdgeInsets.only(right: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: Theme.of(context).primaryColor),
-          const Spacer(),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          const SizedBox(height: 4),
-          Text(price, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 12)),
-          Text(duration, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 10)),
-        ],
       ),
     );
   }
