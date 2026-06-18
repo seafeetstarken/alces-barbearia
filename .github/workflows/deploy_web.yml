@@ -27,6 +27,11 @@ jobs:
           cd mobile
           flutter pub get
 
+      - name: Configure Web Support
+        run: |
+          cd mobile
+          flutter create . --platforms web
+
       - name: Build Web
         run: |
           cd mobile
