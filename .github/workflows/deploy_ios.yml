@@ -98,7 +98,8 @@ jobs:
 
           # 6. Instalar o Provisioning Profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+          UUID=$(security cms -D -i $PP_PATH | grep -A1 UUID | grep string | awk -F'[<>]' '{print $3}')
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
       - name: Get Flutter dependencies
         run: |
