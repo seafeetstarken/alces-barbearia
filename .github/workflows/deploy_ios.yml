@@ -34,6 +34,8 @@ jobs:
         run: |
           cd mobile
           flutter create --platforms=ios --org com.seafeetstarken .
+          # Evitar a pergunta manual de conformidade de criptografia na Apple
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" ios/Runner/Info.plist
 
       - name: Configure Manual Signing in Xcode Project
         run: |
