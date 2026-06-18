@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // App Bar Header (Brand + Store Selector)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(30),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, py: 8),
+                              horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
                             color: AppTheme.cardDark,
                             borderRadius: BorderRadius.circular(30),
@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.between,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   hasActivePlan ? 'CLUBE ATIVO' : 'CLUBE ALCE\'S',
@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // Barbers Section
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Nossa Equipe',

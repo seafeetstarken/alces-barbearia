@@ -199,7 +199,7 @@ class _BookingScreenState extends State<BookingScreen> {
               width: 1.5,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.between,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Column(
@@ -372,7 +372,7 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         const SizedBox(height: 24),
         Row(
-          mainAxisAlignment: MainAxisAlignment.between,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'Horários Disponíveis',
