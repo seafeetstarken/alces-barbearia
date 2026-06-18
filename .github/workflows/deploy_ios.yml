@@ -30,6 +30,34 @@ jobs:
           cd mobile
           flutter create --platforms=ios --org com.seafeetstarken .
 
+      - name: Configure Manual Signing in Xcode Project
+        run: |
+          python3 -c "
+          import os
+          path = 'mobile/ios/Runner.xcodeproj/project.pbxproj'
+          with open(path, 'r') as f:
+              content = f.read()
+
+          # 1. Configurar Manual Signing em vez de Automatic
+          content = content.replace('ProvisioningStyle = Automatic;', 'ProvisioningStyle = Manual;')
+          content = content.replace('CODE_SIGN_STYLE = Automatic;', 'CODE_SIGN_STYLE = Manual;')
+          
+          # 2. Definir Team ID da Apple
+          content = content.replace('DEVELOPMENT_TEAM = \"\";', 'DEVELOPMENT_TEAM = \"6H2443ML7C\";')
+          
+          # 3. Definir Identidade de Assinatura para Distribuição
+          content = content.replace('CODE_SIGN_IDENTITY = \"iPhone Developer\";', 'CODE_SIGN_IDENTITY = \"Apple Distribution\";')
+          content = content.replace('\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"iPhone Developer\";', '\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";')
+          
+          # 4. Configurar o nome do Provisioning Profile nas configurações de Build
+          content = content.replace('PROVISIONING_PROFILE_SPECIFIER = \"\";', 'PROVISIONING_PROFILE_SPECIFIER = \"Alces_Barbearia_AppStore_Profile\";')
+          content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"Alces_Barbearia_AppStore_Profile\";\n\t\t\t\tDEVELOPMENT_TEAM = \"6H2443ML7C\";')
+
+          with open(path, 'w') as f:
+              f.write(content)
+          print('Xcode project modified successfully for Manual Signing!')
+          "
+
       - name: Install Apple Certificate and Provisioning Profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
@@ -97,6 +125,15 @@ jobs:
               <true/>
               <key>uploadBitcode</key>
               <false/>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.seafeetstarken.alcesBarbearia</key>
+                  <string>Alces_Barbearia_AppStore_Profile</string>
+              </dict>
           </dict>
           </plist>
           EOF
