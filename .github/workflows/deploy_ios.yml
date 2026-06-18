@@ -50,8 +50,8 @@ jobs:
           content = content.replace('\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"iPhone Developer\";', '\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";')
           
           # 4. Configurar o nome do Provisioning Profile nas configurações de Build
-          content = content.replace('PROVISIONING_PROFILE_SPECIFIER = \"\";', 'PROVISIONING_PROFILE_SPECIFIER = \"Alces_Barbearia_AppStore_Profile\";')
-          content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"Alces_Barbearia_AppStore_Profile\";\n\t\t\t\tDEVELOPMENT_TEAM = \"6H2443ML7C\";')
+          content = content.replace('PROVISIONING_PROFILE_SPECIFIER = \"\";', 'PROVISIONING_PROFILE_SPECIFIER = \"Alces Barbearia AppStore Profile\";')
+          content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"Alces Barbearia AppStore Profile\";\n\t\t\t\tDEVELOPMENT_TEAM = \"6H2443ML7C\";')
 
           with open(path, 'w') as f:
               f.write(content)
@@ -132,7 +132,7 @@ jobs:
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.seafeetstarken.alcesBarbearia</key>
-                  <string>Alces_Barbearia_AppStore_Profile</string>
+                  <string>Alces Barbearia AppStore Profile</string>
               </dict>
           </dict>
           </plist>
