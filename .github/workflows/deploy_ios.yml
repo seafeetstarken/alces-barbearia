@@ -153,4 +153,4 @@ jobs:
           app-path: 'mobile/build/ios/ipa/alces_barbearia.ipa'
           issuer-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER }}
           api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          api-key-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
