@@ -35,7 +35,7 @@ jobs:
       - name: Build Web
         run: |
           cd mobile
-          flutter build web --base-href "/alces-barbearia/" --release
+          flutter build web --base-href "/" --release
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
