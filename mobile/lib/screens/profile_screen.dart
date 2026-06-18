@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/app_state.dart';
-import '../data/mock_data.dart';
 import '../models/appointment.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_widgets.dart';
@@ -162,9 +161,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 return Column(
                   children: list.map((appt) {
-                    final store = MockData.stores.firstWhere((s) => s.id == appt.storeId);
-                    final service = MockData.services.firstWhere((s) => s.id == appt.serviceId);
-                    final barber = MockData.barbers.firstWhere((b) => b.id == appt.barberId);
+                    final store = _appState.stores.value.where((s) => s.id == appt.storeId).firstOrNull;
+                    final service = _appState.services.value.where((s) => s.id == appt.serviceId).firstOrNull;
+                    final barber = _appState.barbers.value.where((b) => b.id == appt.barberId).firstOrNull;
                     
                     final dateStr = DateFormat('dd/MM/yyyy').format(appt.date);
 
@@ -179,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    service.name,
+                                    service?.name ?? 'Serviço',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -188,11 +187,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Barbeiro: ${barber.name.split(' ')[0]}',
+                                    'Barbeiro: ${barber?.name.split(' ')[0] ?? ''}',
                                     style: const TextStyle(fontSize: 13, color: AppTheme.textMuted),
                                   ),
                                   Text(
-                                    'Loja: ${store.name.replaceAll("Alce\'s Barbearia - ", "")}',
+                                    'Loja: ${store?.name.replaceAll("Alce\'s Barbearia - ", "") ?? ''}',
                                     style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -234,65 +233,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
             ),
             const SizedBox(height: 12),
-            Column(
-              children: MockData.pastAppointments.map((appt) {
-                final store = MockData.stores.firstWhere((s) => s.id == appt.storeId);
-                final service = MockData.services.firstWhere((s) => s.id == appt.serviceId);
-                final barber = MockData.barbers.firstWhere((b) => b.id == appt.barberId);
-                
-                final dateStr = DateFormat('dd/MM/yyyy').format(appt.date);
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: CardShell(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                service.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Barbeiro: ${barber.name.split(' ')[0]}',
-                                style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
-                              ),
-                              Text(
-                                'Unidade: ${store.name.replaceAll("Alce\'s Barbearia - ", "")}',
-                                style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            StatusBadge.info(text: 'Realizado'),
-                            const SizedBox(height: 8),
-                            Text(
-                              dateStr,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppTheme.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'Nenhum histórico de visitas encontrado.',
+                style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+              ),
             ),
           ],
         ),

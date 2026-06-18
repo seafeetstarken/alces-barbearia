@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../core/supabase_client.dart';
 import '../models/store.dart';
+import '../models/barber.dart';
+import '../models/service_item.dart';
 import '../models/appointment.dart';
 import '../models/product.dart';
-import 'mock_data.dart';
 
 class AppState {
   // Singleton instance
@@ -10,8 +12,18 @@ class AppState {
   factory AppState() => _instance;
   AppState._internal();
 
+  // Supabase collections
+  final ValueNotifier<List<Store>> stores = ValueNotifier<List<Store>>([]);
+  final ValueNotifier<List<Barber>> barbers = ValueNotifier<List<Barber>>([]);
+  final ValueNotifier<List<ServiceItem>> services = ValueNotifier<List<ServiceItem>>([]);
+  final ValueNotifier<List<ProductItem>> products = ValueNotifier<List<ProductItem>>([]);
+  
+  final ValueNotifier<bool> isLoading = ValueNotifier<bool>(true);
+
   // Selected active store/unit
-  final ValueNotifier<Store> activeStore = ValueNotifier<Store>(MockData.stores[0]);
+  final ValueNotifier<Store> activeStore = ValueNotifier<Store>(
+    Store(id: '', name: 'Carregando...', phone: '', address: '', openTime: '', closeTime: '')
+  );
 
   // Upcoming appointments booked during this session
   final ValueNotifier<List<Appointment>> upcomingAppointments = ValueNotifier<List<Appointment>>([]);
@@ -26,6 +38,34 @@ class AppState {
   final String userName = 'Juan Starken';
   final String userEmail = 'juan@starken.com.br';
   final String userPhone = '(47) 99615-5719';
+
+  Future<void> loadInitialData() async {
+    try {
+      isLoading.value = true;
+      final storesData = await supabase.from('stores').select();
+      final barbersData = await supabase.from('barbers').select();
+      final servicesData = await supabase.from('services').select();
+      final productsData = await supabase.from('products').select();
+
+      stores.value = storesData.map<Store>((e) => Store.fromJson(e)).toList();
+      barbers.value = barbersData.map<Barber>((e) => Barber.fromJson(e)).toList();
+      services.value = servicesData.map<ServiceItem>((e) => ServiceItem.fromJson(e)).toList();
+      products.value = productsData.map<ProductItem>((e) => ProductItem.fromJson(e)).toList();
+
+      if (stores.value.isNotEmpty) {
+        // Find 'Matriz' to set as default if it exists, otherwise the first one
+        final matriz = stores.value.firstWhere(
+          (s) => s.name.contains('Matriz'), 
+          orElse: () => stores.value.first
+        );
+        activeStore.value = matriz;
+      }
+    } catch (e) {
+      debugPrint('Error loading initial data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void changeStore(Store store) {
     activeStore.value = store;

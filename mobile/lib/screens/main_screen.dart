@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/app_state.dart';
 import 'home_screen.dart';
 import 'booking_screen.dart';
 import 'services_screen.dart';
@@ -14,6 +15,13 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  final AppState _appState = AppState();
+
+  @override
+  void initState() {
+    super.initState();
+    _appState.loadInitialData();
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -31,22 +39,35 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: changeTab,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Agenda'),
-          BottomNavigationBarItem(icon: Icon(Icons.cut), label: 'Serviços'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Clube'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-        ],
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _appState.isLoading,
+      builder: (context, isLoading, _) {
+        if (isLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+            ),
+          );
+        }
+
+        return Scaffold(
+          body: IndexedStack(
+            index: _currentIndex,
+            children: _screens,
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: changeTab,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Agenda'),
+              BottomNavigationBarItem(icon: Icon(Icons.cut), label: 'Serviços'),
+              BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Clube'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+            ],
+          ),
+        );
+      },
     );
   }
 }

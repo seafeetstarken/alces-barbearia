@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/app_state.dart';
-import '../data/mock_data.dart';
 import '../models/store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_widgets.dart';
@@ -44,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 20),
-              ...MockData.stores.map((store) {
+              ..._appState.stores.value.map((store) {
                 return ValueListenableBuilder<Store>(
                   valueListenable: _appState.activeStore,
                   builder: (context, activeStore, _) {
@@ -133,8 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
           valueListenable: _appState.activeStore,
           builder: (context, currentStore, _) {
             // Get barbers for this store
-            final storeBarbers = MockData.barbers
-                .where((b) => b.storeId == currentStore.id)
+            final storeBarbers = _appState.barbers.value
+                .where((b) => b.storeId == currentStore.id && b.isActive)
                 .toList();
 
             return SingleChildScrollView(

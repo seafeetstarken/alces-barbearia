@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../data/app_state.dart';
-import '../data/mock_data.dart';
 import '../models/store.dart';
 import '../models/service_item.dart';
 import '../theme/app_theme.dart';
@@ -28,7 +27,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         valueListenable: _appState.activeStore,
         builder: (context, activeStore, _) {
           // Get services for this store
-          final storeServices = MockData.services
+          final storeServices = _appState.services.value
               .where((s) => s.storeId == activeStore.id)
               .toList();
 

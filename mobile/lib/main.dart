@@ -8,8 +8,8 @@ void main() async {
 
   // Initialize Supabase with the provided URL and Anon Key
   await Supabase.initialize(
-    url: 'https://rmcrqaekocvdjmvojyir.supabase.co',
-    anonKey: 'sb_publishable_emE7lBZ9Sd15j0yhveaBoA_86hvvOP2',
+    url: 'https://baafdmeulyzpcgbqqeut.supabase.co',
+    anonKey: 'sb_publishable_PPRRbIomSQgpSVNJjWvLWA_vFJMz72l',
   );
 
   runApp(const AlcesApp());

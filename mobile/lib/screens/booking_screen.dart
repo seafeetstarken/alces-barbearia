@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/app_state.dart';
-import '../data/mock_data.dart';
 import '../models/store.dart';
 import '../models/barber.dart';
 import '../models/service_item.dart';
@@ -530,8 +529,8 @@ class _BookingScreenState extends State<BookingScreen> {
         valueListenable: _appState.activeStore,
         builder: (context, activeStore, _) {
           // Filter barbers and services for active store
-          final storeBarbers = MockData.barbers.where((b) => b.storeId == activeStore.id).toList();
-          final storeServices = MockData.services.where((s) => s.storeId == activeStore.id).toList();
+          final storeBarbers = _appState.barbers.value.where((b) => b.storeId == activeStore.id && b.isActive).toList();
+          final storeServices = _appState.services.value.where((s) => s.storeId == activeStore.id).toList();
 
           return Column(
             children: [
@@ -540,6 +539,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: _buildStepIndicator(),
               ),
+
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
