@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Alce's Barbearia - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#002113",
+                        "outline": "#9c8f7d",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "surface-container": "#201f21",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#5f4100",
+                        "surface-bright": "#39393b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-primary": "#7d5800",
+                        "background": "#0A0A0C", // Customized to Deep Obsidian as requested
+                        "on-primary-fixed": "#271900",
+                        "on-surface-variant": "#d3c4b0",
+                        "tertiary": "#c8c5ca",
+                        "on-primary-container": "#533900",
+                        "secondary-container": "#008056",
+                        "secondary": "#75daa8",
+                        "surface-container-lowest": "#0e0e10",
+                        "on-primary": "#422c00",
+                        "surface-variant": "#353437",
+                        "on-secondary-fixed-variant": "#005235",
+                        "on-background": "#e5e1e4",
+                        "on-tertiary-container": "#3e3d41",
+                        "on-tertiary": "#303033",
+                        "tertiary-container": "#aaa8ac",
+                        "on-secondary": "#003823",
+                        "surface-dim": "#131315",
+                        "surface-container-highest": "#353437",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffdea9",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "on-secondary-container": "#d1ffe3",
+                        "primary-container": "#d4a03c",
+                        "surface-tint": "#f5bd57",
+                        "surface-container-high": "#2a2a2c",
+                        "tertiary-fixed": "#e4e1e6",
+                        "outline-variant": "#4f4536",
+                        "surface-container-low": "#18181B", // Level 1 Cards
+                        "inverse-surface": "#e5e1e4",
+                        "inverse-on-surface": "#313032",
+                        "surface": "#131315",
+                        "secondary-fixed": "#92f7c3",
+                        "on-surface": "#e5e1e4",
+                        "secondary-fixed-dim": "#75daa8",
+                        "primary": "#D4A03C", // Premium Gold
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#c8c5ca",
+                        "primary-fixed-dim": "#f5bd57"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Space Grotesk", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"],
+                        "headline-sm": ["Space Grotesk", "sans-serif"],
+                        "display-sm": ["Space Grotesk", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-lg-mobile": ["Space Grotesk", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Space Grotesk", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "display-sm": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "44px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom styles for glowing effects and glassmorphism not easily covered by standard utility classes */
+        .glow-effect {
+            position: relative;
+        }
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background: radial-gradient(circle, rgba(212,160,60,0.15) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+        .glass-card {
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(212,160,60,0.4);
+        }
+        
+        /* Hide scrollbar for carousels */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 relative overflow-x-hidden selection:bg-primary/30">
+<!-- Global Background Glow -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-background/80 backdrop-blur-xl border-b border-white/5 shadow-[0_0_15px_rgba(212,160,60,0.1)] flex justify-between items-center px-container-padding py-stack-sm z-50 transition-transform">
+<div class="flex items-center gap-2 text-primary font-display-sm text-headline-sm md:text-display-sm tracking-tighter">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cut</span>
+<span class="font-bold">ALCE'S BARBEARIA</span>
+</div>
+<!-- Location Pill -->
+<button class="flex items-center gap-2 px-4 py-2 rounded-full glass-card hover:border-primary/50 transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-sm">location_on</span>
+<span class="font-label-md text-label-md text-on-surface-variant truncate max-w-[120px] md:max-w-none">Unidade Escola Agrícola</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">expand_more</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 pt-24 px-container-padding md:max-w-6xl md:mx-auto pb-stack-lg">
+<!-- Welcome Section -->
+<section class="mb-stack-lg animate-fade-in-up">
+<div class="glass-card rounded-xl p-stack-md flex items-center justify-between glow-effect">
+<div class="flex items-center gap-stack-md">
+<div class="relative">
+<img class="w-16 h-16 rounded-full object-cover border-2 border-primary/30" data-alt="A cinematic, high-contrast portrait of a stylish young man with a fresh haircut and beard trim, set against a dark, moody background with subtle warm gold rim lighting. The image evokes a premium, exclusive barbershop atmosphere. Highly detailed, 8k resolution, professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtLHLYFbDOuUea13pdhtKfBv_ZYZn93aGEZleGIzBStneo3Q5Je__VJz-gBiVJgdOugTgrM20x0gm25V6xOjBGXKgGGRk6lPqN9ff0R_fyTB_LW94BYL6hSHxEitEB540v1pqHpr3e3cfQrkPgF_9MuEaZESLA0AP9ZrmrQjoSGFoRtZzLIiWIzaRjdAA2dcZ3VmB_urDECz9366Oxm9o6h0xRS0R-7ycNMb-YOcHfXxJIc9poT6w0BLY6VgNtFuMuz8P26arRBEE"/>
+<div class="absolute -bottom-1 -right-1 bg-surface border border-white/10 rounded-full p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[10px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-1">Olá, <span class="font-bold text-white">Juan Minni</span></h2>
+<div class="flex items-center gap-2 text-primary/80 font-label-md text-label-md">
+<span class="bg-primary/10 px-2 py-0.5 rounded text-primary border border-primary/20">Alces Games</span>
+<span>Lvl 1 • 250 XP • 100 Coins</span>
+</div>
+</div>
+</div>
+<button class="hidden md:flex p-2 rounded-full bg-surface border border-white/10 hover:border-primary/50 text-on-surface transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</section>
+<!-- Clube Alce's Banner -->
+<section class="mb-stack-lg">
+<div class="relative overflow-hidden rounded-xl border border-primary/30 bg-surface-container-low p-stack-lg group hover:border-primary/60 transition-colors duration-300">
+<!-- Banner Background Effect -->
+<div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent z-0"></div>
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 blur-[50px] rounded-full z-0 group-hover:bg-primary/30 transition-all duration-500"></div>
+<div class="relative z-10 md:w-2/3">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 border border-primary/30 mb-stack-md">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-md text-label-md text-primary tracking-widest uppercase">Membro Exclusivo</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-stack-sm text-glow">CLUBE ALCE'S</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-lg">Corte o cabelo ilimitado no mês. A partir de R$ 89,90/mês.</p>
+<button class="bg-primary hover:bg-surface-tint text-on-primary-fixed font-label-md text-label-md px-6 py-3 rounded-lg flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_15px_rgba(212,160,60,0.3)] hover:shadow-[0_0_20px_rgba(212,160,60,0.5)]">
+<span>ASSINAR AGORA</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Quick Actions Bento Grid -->
+<section class="mb-stack-lg">
+<div class="grid grid-cols-3 gap-unit md:gap-stack-md">
+<!-- Agendar -->
+<button class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm hover:bg-white/5 hover:border-primary/40 transition-all group active:scale-95">
+<div class="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center group-hover:border-primary/50 group-hover:shadow-[0_0_15px_rgba(212,160,60,0.2)] transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Agendar</span>
+</button>
+<!-- Serviços -->
+<button class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm hover:bg-white/5 hover:border-primary/40 transition-all group active:scale-95">
+<div class="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center group-hover:border-primary/50 group-hover:shadow-[0_0_15px_rgba(212,160,60,0.2)] transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">content_cut</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Serviços</span>
+</button>
+<!-- Produtos -->
+<button class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center gap-stack-sm hover:bg-white/5 hover:border-primary/40 transition-all group active:scale-95">
+<div class="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center group-hover:border-primary/50 group-hover:shadow-[0_0_15px_rgba(212,160,60,0.2)] transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">inventory_2</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Produtos</span>
+</button>
+</div>
+</section>
+<!-- Team Section -->
+<section>
+<div class="flex justify-between items-end mb-stack-md">
+<h3 class="font-headline-md text-headline-md text-white">Profissionais Disponíveis</h3>
+<button class="text-primary font-label-md text-label-md hover:underline">Ver todos</button>
+</div>
+<div class="flex overflow-x-auto gap-stack-md pb-4 no-scrollbar -mx-container-padding px-container-padding md:mx-0 md:px-0">
+<!-- Barber 1 -->
+<div class="min-w-[140px] glass-card rounded-xl p-stack-md flex flex-col items-center gap-3 hover:border-white/20 transition-colors cursor-pointer group">
+<div class="relative">
+<img class="w-20 h-20 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-colors" data-alt="Close up portrait of a professional male barber with a neat beard, wearing a dark apron, standing in a dimly lit, high-end barbershop. The lighting highlights his focused expression and the sharp details of his grooming. Deep blacks and subtle gold accents in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWgQy7YwH84x4j1_zOY_DQHRIJhntLyUiaVmAUbAaCG8q5I7EYo6Nv6hYBpuG7f9yJCdtjn3wooqvq-ku_zVgzwG1l0-GU07T6IqIqeeJy98fRJ4JV33J-qkGFE17DEZGuqrPTq9svcU6ky9Clnhpxx9uOi9dF6ZMAd72LSvyKcSnAfCLWOEczzG-0s1JGGCQBIHnipnfhnc6C0qSfCU-AXBMUMXDS0Jretk934JTIYYNGBoZCHgyiwse4mlIS1dIzcpNjIEhOm64"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+</div>
+<div class="text-center">
+<h4 class="font-body-md text-body-md font-semibold text-white">Jorge</h4>
+<p class="font-body-sm text-body-sm text-outline">Barbeiro</p>
+</div>
+</div>
+<!-- Barber 2 -->
+<div class="min-w-[140px] glass-card rounded-xl p-stack-md flex flex-col items-center gap-3 hover:border-white/20 transition-colors cursor-pointer group">
+<div class="relative">
+<img class="w-20 h-20 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-colors" data-alt="Portrait of a modern male barber with tattoos and a stylish haircut, smiling subtly. He is in a luxury barbershop setting with dark moody lighting and warm golden rim light. The atmosphere is professional and exclusive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPKBIlLbyw3hVaSaG5IK1E3D4YH4rNLaDgiv4TsOePzulTFtLtlhG46GXPiRrAprsCRmeRSQV9liv96DylBPLAAsk3J7TCYbfIc0eDzehqXp1f65xn-vRR3bpy_ERwLINpeT0j0J49s1r2B6CCpAu8QbsaQGeDPhgSaESoCK38ZTkh2GiayhlKB1Sgk-Ajg-MF4Rw1HsfMMOjbyfQ956R38l40ok1trzYc_-4ld81t6lqBQ3jnPjemVnxd1ulpCRDMBK2tphIvW60"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+</div>
+<div class="text-center">
+<h4 class="font-body-md text-body-md font-semibold text-white">Peterson</h4>
+<p class="font-body-sm text-body-sm text-outline">Barbeiro</p>
+</div>
+</div>
+<!-- Barber 3 -->
+<div class="min-w-[140px] glass-card rounded-xl p-stack-md flex flex-col items-center gap-3 hover:border-white/20 transition-colors cursor-pointer group">
+<div class="relative">
+<img class="w-20 h-20 rounded-full object-cover border-2 border-transparent group-hover:border-primary transition-colors" data-alt="Headshot of a young male barber with a sharp fade haircut and a clean-shaven face, looking directly at the camera with confidence. The background is a blurred luxury dark barbershop interior with warm amber accent lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkoZzVh4DNpBHGuqytAUPYYQ6Qwf-Uo4MHkZFxa-qmW9NE9lDkbxjMUechvOXhtpZ_o5Ezt35epDyMJ3519eTyquQfnjTIILdfml5DZggdsGmw0XGZf4vq965o7Kys9kxR8HxeuT676ZtJQVu1dBAIHpx_HQHyOcJFtxnAtSvA7A21WC30rV4VCt_2hnvrrdSqQ1xUvChk8xX1AD-v-2qggnPEIrwMY587Ao9c3SFvOGEv4xUX-6vsn3AlujNWoUN8EUp5XGecVDs"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+</div>
+<div class="text-center">
+<h4 class="font-body-md text-body-md font-semibold text-white">Ryan</h4>
+<p class="font-body-sm text-body-sm text-outline">Barbeiro</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container/90 backdrop-blur-md rounded-t-xl border-t border-white/5 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<button class="flex flex-col items-center justify-center text-primary filter drop-shadow-[0_0_8px_rgba(212,160,60,0.4)] hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1">event_note</span>
+<span class="font-label-md text-label-md">Agenda</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1">content_cut</span>
+<span class="font-label-md text-label-md">Services</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1">military_tech</span>
+<span class="font-label-md text-label-md">Club</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+</nav>
+</body></html>
