@@ -4,6 +4,8 @@ import '../data/app_state.dart';
 import '../models/appointment.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'welcome_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -264,6 +266,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
             ),
+            const SizedBox(height: 32),
+            AlcesButton(
+              text: 'Sair da Conta',
+              isPrimary: false,
+              onPressed: () async {
+                await Supabase.instance.client.auth.signOut();
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                    (route) => false,
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

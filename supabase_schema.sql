@@ -2,6 +2,14 @@
 -- ALCES BARBEARIA - SUPABASE SCHEMA
 -- ==============================================
 
+-- Drop existing tables to ensure a clean slate
+DROP TABLE IF EXISTS public.appointments CASCADE;
+DROP TABLE IF EXISTS public.products CASCADE;
+DROP TABLE IF EXISTS public.services CASCADE;
+DROP TABLE IF EXISTS public.barbers CASCADE;
+DROP TABLE IF EXISTS public.stores CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
 -- 1. Profiles Table (Extends auth.users)
 CREATE TABLE public.profiles (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
@@ -90,6 +98,9 @@ CREATE POLICY "Users can view own appointments" ON public.appointments FOR SELEC
 CREATE POLICY "Users can insert own appointments" ON public.appointments FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Trigger to create profile automatically when user signs up
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS TRIGGER AS $$
 BEGIN

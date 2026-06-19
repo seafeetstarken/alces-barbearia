@@ -35,9 +35,21 @@ class AppState {
   final ValueNotifier<String?> activePlan = ValueNotifier<String?>(null);
 
   // Profile fields
-  final String userName = 'Juan Starken';
-  final String userEmail = 'juan@starken.com.br';
-  final String userPhone = '(47) 99615-5719';
+  // Profile fields
+  String get userName {
+    final user = supabase.auth.currentUser;
+    return user?.userMetadata?['full_name'] ?? 'Usuário';
+  }
+
+  String get userEmail {
+    final user = supabase.auth.currentUser;
+    return user?.email ?? '';
+  }
+
+  String get userPhone {
+    final user = supabase.auth.currentUser;
+    return user?.userMetadata?['phone'] ?? '';
+  }
 
   Future<void> loadInitialData() async {
     try {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -11,19 +12,56 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
-  void _handleRegister() {
-    // TODO: Implement Supabase Auth
-    // For MVP UI, just bypass and go to MainScreen
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
-    );
+  Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+    
+    if (name.isEmpty || phone.isEmpty || password.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    final email = '$phone@alces.com.br';
+    
+    try {
+      await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'full_name': name,
+          'phone': phone,
+        }
+      );
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+          (route) => false,
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao criar conta.'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -66,6 +104,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // Name
+                        TextField(
+                          controller: _nameController,
+                          style: const TextStyle(color: Colors.white),
+                          textCapitalization: TextCapitalization.words,
+                          decoration: const InputDecoration(
+                            labelText: 'Nome Completo',
+                            prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        
                         // Phone
                         TextField(
                           controller: _phoneController,
@@ -110,7 +160,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: AlcesButton(
                     text: 'Avançar',
                     isPrimary: true,
-                    onPressed: _handleRegister,
+                    isLoading: _isLoading,
+                    onPressed: _isLoading ? null : _handleRegister,
                   ),
                 ),
               ],

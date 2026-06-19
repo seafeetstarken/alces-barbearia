@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,14 +16,47 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  void _handleLogin() {
-    // TODO: Implement Supabase Auth
-    // For MVP UI, just bypass and go to MainScreen
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
-    );
+  bool _isLoading = false;
+
+  Future<void> _handleLogin() async {
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+    if (phone.isEmpty || password.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    
+    // Fake email approach for phone auth
+    final email = '$phone@alces.com.br';
+    
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+          (route) => false,
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao logar.'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -122,7 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   AlcesButton(
                     text: 'Logar',
                     isPrimary: true,
-                    onPressed: _handleLogin,
+                    isLoading: _isLoading,
+                    onPressed: _isLoading ? null : _handleLogin,
                   ),
                 ],
               ),
