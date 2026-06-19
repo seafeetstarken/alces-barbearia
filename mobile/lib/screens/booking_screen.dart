@@ -679,7 +679,7 @@ class _BookingScreenState extends State<BookingScreen> {
     if (!hasActivePlan && finalPrice > 0) {
       final plans = _appState.plans.value.isNotEmpty 
           ? _appState.plans.value 
-          : [SubscriptionPlan(id: 'mock', name: 'Plano Premium', price: 99.90, features: [])];
+          : [SubscriptionPlan(id: 'mock', name: 'Plano Premium', description: 'Assinatura Padrão', price: 99.90, features: [])];
       final sortedPlans = List<SubscriptionPlan>.from(plans)..sort((a, b) => a.price.compareTo(b.price));
       try {
         recommendedPlan = sortedPlans.firstWhere((p) => p.price >= finalPrice);
