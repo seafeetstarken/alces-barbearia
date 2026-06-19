@@ -268,6 +268,19 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
+  IconData _getServiceIcon(String name) {
+    final n = name.toLowerCase();
+    if (n.contains('corte')) return Icons.content_cut;
+    if (n.contains('barba')) return Icons.face;
+    if (n.contains('sobrancelha')) return Icons.visibility_outlined;
+    if (n.contains('hidratação') || n.contains('hidratacao')) return Icons.water_drop_outlined;
+    if (n.contains('limpeza')) return Icons.cleaning_services_outlined;
+    if (n.contains('selagem')) return Icons.waves;
+    if (n.contains('pigmentação') || n.contains('pigmentacao')) return Icons.format_paint_outlined;
+    if (n.contains('pezinho')) return Icons.straighten;
+    return Icons.spa_outlined;
+  }
+
   Widget _buildServiceSelection(List<ServiceItem> storeServices) {
     return ValueListenableBuilder<String?>(
       valueListenable: _appState.activePlan,
@@ -328,6 +341,12 @@ class _BookingScreenState extends State<BookingScreen> {
                                 border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
                               ),
                               child: const Text('CLUBE', style: TextStyle(color: Color(0xFF52B788), fontSize: 9, fontWeight: FontWeight.bold)),
+                            )
+                          else
+                            Icon(
+                              _getServiceIcon(service.name),
+                              color: isSelected ? AppTheme.primaryGold : Colors.white54,
+                              size: 20,
                             ),
                         ],
                       ),

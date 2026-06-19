@@ -98,6 +98,25 @@ class AppState {
       stores.value = storesData.map<Store>((e) => Store.fromJson(e)).toList();
       barbers.value = barbersData.map<Barber>((e) => Barber.fromJson(e)).toList();
       services.value = servicesData.map<ServiceItem>((e) => ServiceItem.fromJson(e)).toList();
+
+      // Sort services to put Corte and Barba first
+      services.value.sort((a, b) {
+        final aLower = a.name.toLowerCase();
+        final bLower = b.name.toLowerCase();
+        
+        int getPriority(String name) {
+          if (name.contains('corte')) return 1;
+          if (name.contains('barba')) return 2;
+          return 3;
+        }
+        
+        final aPriority = getPriority(aLower);
+        final bPriority = getPriority(bLower);
+        
+        if (aPriority != bPriority) return aPriority.compareTo(bPriority);
+        return a.name.compareTo(b.name);
+      });
+
       products.value = productsData.map<ProductItem>((e) => ProductItem.fromJson(e)).toList();
       plans.value = plansData.map<SubscriptionPlan>((e) => SubscriptionPlan.fromJson(e)).toList();
 
