@@ -36,7 +36,7 @@ class AppTheme {
         centerTitle: true,
         iconTheme: IconThemeData(color: primaryGold),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: cardDark,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
