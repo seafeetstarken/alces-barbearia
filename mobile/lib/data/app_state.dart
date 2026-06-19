@@ -265,6 +265,20 @@ class AppState {
       };
     }).toList();
 
+    // Call checkout single for products (Avulso)
+    try {
+      final customerId = await getOrCreateAsaasCustomer();
+      final response = await supabase.functions.invoke('checkout-single', body: {
+        'amount': total,
+        'billingType': 'PIX',
+        'customerId': customerId,
+        'description': 'Reserva de Produtos - Alce\'s Barbearia',
+      });
+      // Handle the PIX code response here if needed
+    } catch (e) {
+      debugPrint('Erro ao pagar produtos: $e');
+    }
+
     try {
       await supabase.from('product_reservations').insert({
         'user_id': user.id,
@@ -278,5 +292,58 @@ class AppState {
       debugPrint('Erro ao reservar produtos: $e');
       rethrow;
     }
+  }
+
+  // --- Asaas Gateway Integration ---
+
+  Future<String> getOrCreateAsaasCustomer() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) throw Exception('Usuário não logado');
+
+    final response = await supabase.functions.invoke('create-customer', body: {});
+
+    if (response.status != 200) {
+      throw Exception('Erro ao criar cliente no Asaas: ${response.data}');
+    }
+
+    final data = response.data as Map<String, dynamic>;
+    return data['customerId'] as String;
+  }
+
+  Future<Map<String, dynamic>> checkoutSingle({required double amount, required String billingType, String? appointmentId, String? description}) async {
+    final customerId = await getOrCreateAsaasCustomer();
+    
+    final response = await supabase.functions.invoke('checkout-single', body: {
+      'amount': amount,
+      'billingType': billingType,
+      'customerId': customerId,
+      'appointmentId': appointmentId,
+      'description': description,
+    });
+
+    if (response.status != 200) {
+      throw Exception('Erro ao gerar cobrança: ${response.data}');
+    }
+
+    final data = response.data as Map<String, dynamic>;
+    return data['payment'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> checkoutSubscription({required String planName, required double price, required String billingType}) async {
+    final customerId = await getOrCreateAsaasCustomer();
+    
+    final response = await supabase.functions.invoke('checkout-subscription', body: {
+      'planName': planName,
+      'price': price,
+      'billingType': billingType,
+      'customerId': customerId,
+    });
+
+    if (response.status != 200) {
+      throw Exception('Erro ao gerar assinatura: ${response.data}');
+    }
+
+    final data = response.data as Map<String, dynamic>;
+    return data['subscription'] as Map<String, dynamic>;
   }
 }
