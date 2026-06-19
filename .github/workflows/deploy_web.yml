@@ -35,7 +35,7 @@ jobs:
       - name: Build for GitHub Pages
         run: |
           cd mobile
-          flutter build web --web-renderer html --base-href "/alces-barbearia/" --release
+          flutter build web --base-href "/alces-barbearia/" --release
 
       - name: Deploy to GitHub Pages Branch
         uses: peaceiris/actions-gh-pages@v4
@@ -47,7 +47,7 @@ jobs:
       - name: Build for Vercel
         run: |
           cd mobile
-          flutter build web --web-renderer html --base-href "/" --release
+          flutter build web --base-href "/" --release
 
       - name: Deploy to Vercel Branch
         uses: peaceiris/actions-gh-pages@v4
