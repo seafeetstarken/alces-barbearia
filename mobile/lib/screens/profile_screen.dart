@@ -9,8 +9,7 @@ import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show File;
+import 'dart:typed_data';
 import 'dart:ui';
 import 'welcome_screen.dart';
 
@@ -29,7 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        _appState.userAvatarPath.value = image.path;
+        final bytes = await image.readAsBytes();
+        _appState.userAvatarBytes.value = bytes;
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
@@ -191,16 +191,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(color: AppTheme.primaryGold.withOpacity(0.3), width: 2),
                           ),
-                          child: ValueListenableBuilder<String?>(
-                            valueListenable: _appState.userAvatarPath,
-                            builder: (context, avatarPath, _) {
+                          child: ValueListenableBuilder<Uint8List?>(
+                            valueListenable: _appState.userAvatarBytes,
+                            builder: (context, avatarBytes, _) {
                               return CircleAvatar(
                                 radius: 36,
                                 backgroundColor: AppTheme.primaryGold.withOpacity(0.12),
-                                backgroundImage: avatarPath != null 
-                                  ? (kIsWeb ? NetworkImage(avatarPath) : FileImage(File(avatarPath))) as ImageProvider
+                                backgroundImage: avatarBytes != null 
+                                  ? MemoryImage(avatarBytes) as ImageProvider
                                   : null,
-                                child: avatarPath == null 
+                                child: avatarBytes == null 
                                   ? Text(
                                       _appState.userName.isNotEmpty ? _appState.userName.substring(0, 2).toUpperCase() : 'US',
                                       style: const TextStyle(

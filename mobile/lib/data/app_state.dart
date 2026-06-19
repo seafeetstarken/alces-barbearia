@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import '../core/supabase_client.dart';
 import '../models/store.dart';
 import '../models/barber.dart';
@@ -45,7 +46,7 @@ class AppState {
   final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
   final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
-  final ValueNotifier<String?> userAvatarPath = ValueNotifier<String?>(null);
+  final ValueNotifier<Uint8List?> userAvatarBytes = ValueNotifier<Uint8List?>(null);
   
   // Profile fields
   String get userName {
