@@ -613,6 +613,21 @@ class _BookingScreenState extends State<BookingScreen> {
 
     final serviceNames = _selectedServices.map((s) => s.name).join(' + ');
 
+    final hasActivePlan = _appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty;
+    
+    SubscriptionPlan? recommendedPlan;
+    double priceDiff = 0;
+    
+    if (!hasActivePlan && _appState.plans.value.isNotEmpty && finalPrice > 0) {
+      final sortedPlans = List<SubscriptionPlan>.from(_appState.plans.value)..sort((a, b) => a.price.compareTo(b.price));
+      try {
+        recommendedPlan = sortedPlans.firstWhere((p) => p.price >= finalPrice);
+      } catch (_) {
+        recommendedPlan = sortedPlans.last;
+      }
+      priceDiff = recommendedPlan.price - finalPrice;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -661,6 +676,102 @@ class _BookingScreenState extends State<BookingScreen> {
             ],
           ),
         ),
+
+        // Aggressive Upsell Box
+        if (recommendedPlan != null) ...[
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2C1F11), Color(0xFF1F160C)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryGold.withOpacity(0.15),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                )
+              ]
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: AppTheme.primaryGold, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'O Pulo do Gato! 🤫',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryGold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (priceDiff > 0)
+                  Text.rich(
+                    TextSpan(
+                      text: 'Por apenas mais ',
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      children: [
+                        TextSpan(
+                          text: 'R\$ ${priceDiff.toStringAsFixed(2).replaceAll('.', ',')}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                        ),
+                        const TextSpan(text: ' você assina o '),
+                        TextSpan(
+                          text: recommendedPlan.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const TextSpan(text: ' e tem acesso ilimitado aos serviços durante o mês todo!'),
+                      ]
+                    )
+                  )
+                else
+                  Text.rich(
+                    TextSpan(
+                      text: 'O ',
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      children: [
+                        TextSpan(
+                          text: recommendedPlan.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                        ),
+                        TextSpan(text: ' custa apenas R\$ ${recommendedPlan.price.toStringAsFixed(2).replaceAll('.', ',')}/mês. É mais barato assinar e ter serviços ilimitados do que pagar esse agendamento avulso!'),
+                      ]
+                    )
+                  ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryGold,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onPressed: () {
+                      // Logic for upgrade could open a modal or just toggle the plan
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Em breve: Checkout do Clube via Asaas!')),
+                      );
+                    },
+                    child: const Text('QUERO ASSINAR O CLUBE AGORA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ]
       ],
     );
   }
@@ -782,8 +893,10 @@ class _BookingScreenState extends State<BookingScreen> {
                         ] else if (_currentStep == 3) ...[
                           Expanded(
                             child: AlcesButton(
-                              text: 'Confirmar e Agendar',
-                              isPrimary: true,
+                              text: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
+                                  ? 'Confirmar e Agendar' 
+                                  : 'Agendar Avulso',
+                              isPrimary: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty),
                               onPressed: () => _confirmBooking(activeStore),
                             ),
                           ),
