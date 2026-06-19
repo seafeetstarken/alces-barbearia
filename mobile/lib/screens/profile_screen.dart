@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 import '../data/app_state.dart';
 import '../models/appointment.dart';
+import '../models/store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
