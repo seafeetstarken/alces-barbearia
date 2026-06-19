@@ -312,16 +312,20 @@ class AppState {
     return data['customerId'] as String;
   }
 
-  Future<Map<String, dynamic>> checkoutSingle({required double amount, required String billingType, String? appointmentId, String? description}) async {
+  Future<Map<String, dynamic>> checkoutSingle({required double amount, required String billingType, String? appointmentId, String? description, Map<String, dynamic>? creditCard, Map<String, dynamic>? creditCardHolderInfo}) async {
     final customerId = await getOrCreateAsaasCustomer();
     
-    final response = await supabase.functions.invoke('checkout-single', body: {
+    final body = {
       'amount': amount,
       'billingType': billingType,
       'customerId': customerId,
       'appointmentId': appointmentId,
       'description': description,
-    });
+    };
+    if (creditCard != null) body['creditCard'] = creditCard;
+    if (creditCardHolderInfo != null) body['creditCardHolderInfo'] = creditCardHolderInfo;
+
+    final response = await supabase.functions.invoke('checkout-single', body: body);
 
     if (response.status != 200) {
       throw Exception('Erro ao gerar cobrança: ${response.data}');
@@ -331,15 +335,19 @@ class AppState {
     return data['payment'] as Map<String, dynamic>;
   }
 
-  Future<Map<String, dynamic>> checkoutSubscription({required String planName, required double price, required String billingType}) async {
+  Future<Map<String, dynamic>> checkoutSubscription({required String planName, required double price, required String billingType, Map<String, dynamic>? creditCard, Map<String, dynamic>? creditCardHolderInfo}) async {
     final customerId = await getOrCreateAsaasCustomer();
     
-    final response = await supabase.functions.invoke('checkout-subscription', body: {
+    final body = {
       'planName': planName,
       'price': price,
       'billingType': billingType,
       'customerId': customerId,
-    });
+    };
+    if (creditCard != null) body['creditCard'] = creditCard;
+    if (creditCardHolderInfo != null) body['creditCardHolderInfo'] = creditCardHolderInfo;
+
+    final response = await supabase.functions.invoke('checkout-subscription', body: body);
 
     if (response.status != 200) {
       throw Exception('Erro ao gerar assinatura: ${response.data}');

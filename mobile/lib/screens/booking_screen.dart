@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
 import '../models/barber.dart';
@@ -8,6 +9,8 @@ import '../models/appointment.dart';
 import '../models/plan.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'checkout_pix_screen.dart';
+import 'checkout_card_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -109,7 +112,82 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    // Show loading
+    double totalOriginal = 0;
+    double totalDiscount = 0;
+    for (var service in _selectedServices) {
+      totalOriginal += service.price;
+      totalDiscount += _appState.getDiscountForService(service);
+    }
+    double finalPrice = totalOriginal - totalDiscount;
+
+    if (finalPrice > 0) {
+      // Need payment
+      _showPaymentBottomSheet(store, finalPrice);
+    } else {
+      // 100% discount, just book it
+      await _processBookingInsertion(store, null);
+    }
+  }
+
+  void _showPaymentBottomSheet(Store store, double finalPrice) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.cardDark,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Escolha a Forma de Pagamento', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              ListTile(
+                leading: const Icon(Icons.pix, color: AppTheme.primaryGold),
+                title: const Text('PIX', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final success = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CheckoutPixScreen(
+                        amount: finalPrice,
+                        description: 'Agendamento Alce\'s Barbearia',
+                      ),
+                    ),
+                  );
+                  if (success == true && mounted) {
+                    await _processBookingInsertion(store, 'PIX');
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.credit_card, color: AppTheme.primaryGold),
+                title: const Text('Cartão de Crédito', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final success = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CheckoutCardScreen(
+                        amount: finalPrice,
+                        description: 'Agendamento Alce\'s Barbearia',
+                      ),
+                    ),
+                  );
+                  if (success == true && mounted) {
+                    await _processBookingInsertion(store, 'CREDIT_CARD');
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _processBookingInsertion(Store store, String? paymentMethod) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -120,13 +198,9 @@ class _BookingScreenState extends State<BookingScreen> {
       int startIndex = _timeSlots.indexOf(_selectedTime!);
       if (startIndex == -1) throw Exception("Horário inválido");
 
-      // We insert consecutive appointments for each needed 30-minute slot
       int needed = _slotsNeeded;
       for (int i = 0; i < needed; i++) {
         String currentSlotTime = _timeSlots[startIndex + i];
-        
-        // Distribute services if possible, otherwise map to the list
-        // Let's associate service index, or if more slots than services, just use the first/last service
         final service = i < _selectedServices.length ? _selectedServices[i] : _selectedServices.last;
 
         final newAppt = Appointment(
@@ -137,12 +211,11 @@ class _BookingScreenState extends State<BookingScreen> {
           clientName: _appState.userName,
           date: _selectedDate!,
           time: currentSlotTime,
-          status: 'Agendado',
+          status: paymentMethod != null ? 'Aguardando Pagamento' : 'Agendado',
         );
         await _appState.addAppointment(newAppt);
       }
 
-      // Add gamification rewards
       try {
         final user = Supabase.instance.client.auth.currentUser;
         if (user != null) {

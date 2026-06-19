@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../data/app_state.dart';
 import '../models/plan.dart';
 import '../theme/app_theme.dart';
-import '../widgets/alces_ui.dart';
+import '../widgets/alces_button.dart';
+import '../widgets/alces_card.dart';
+import 'checkout_pix_screen.dart';
+import 'checkout_card_screen.dart';
 
 class ClubScreen extends StatefulWidget {
   const ClubScreen({super.key});
@@ -158,12 +162,40 @@ class _ClubScreenState extends State<ClubScreen> {
                   ),
                   const SizedBox(height: 24),
                   AlcesButton(
-                    text: 'Assinar Agora',
+                    text: 'Continuar para Pagamento',
                     isPrimary: true,
-                    onPressed: () {
-                      _appState.selectPlan(plan.name);
-                      Navigator.pop(context);
-                      _showSuccessDialog(context, plan);
+                    onPressed: () async {
+                      Navigator.pop(context); // close bottom sheet
+                      
+                      bool? success;
+                      if (_selectedPaymentMethod == 'pix') {
+                        success = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CheckoutPixScreen(
+                              amount: plan.price,
+                              isSubscription: true,
+                              planName: plan.name,
+                            ),
+                          ),
+                        );
+                      } else {
+                        success = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CheckoutCardScreen(
+                              amount: plan.price,
+                              isSubscription: true,
+                              planName: plan.name,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (success == true && context.mounted) {
+                        _appState.selectPlan(plan.name);
+                        _showSuccessDialog(context, plan);
+                      }
                     },
                   ),
                 ],
