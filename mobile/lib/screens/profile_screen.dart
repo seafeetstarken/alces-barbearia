@@ -127,9 +127,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                       if (hasActivePlan)
-                        StatusBadge.success(text: 'Ativo')
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF52B788).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
+                          ),
+                          child: const Text('Ativo', style: TextStyle(color: Color(0xFF52B788), fontSize: 10, fontWeight: FontWeight.bold)),
+                        )
                       else
-                        StatusBadge.info(text: 'Inativo'),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.textMuted.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.textMuted.withOpacity(0.3)),
+                          ),
+                          child: const Text('Inativo', style: TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+                        ),
                     ],
                   ),
                 );
@@ -202,7 +218,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                StatusBadge.warning(text: 'Agendado'),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFD4A03C).withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: const Color(0xFFD4A03C).withOpacity(0.3)),
+                                  ),
+                                  child: const Text('Agendado', style: TextStyle(color: Color(0xFFD4A03C), fontSize: 10, fontWeight: FontWeight.bold)),
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
                                   '$dateStr às ${appt.time}',

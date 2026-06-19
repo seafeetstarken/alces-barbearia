@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
-import '../models/product_item.dart';
+import '../models/product.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 
@@ -26,9 +26,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         valueListenable: _appState.activeStore,
         builder: (context, activeStore, _) {
           // Get products for this store
-          final storeProducts = _appState.products.value
-              .where((p) => p.storeId == activeStore.id)
-              .toList();
+          final storeProducts = _appState.products.value.toList();
 
           // Group products by category
           final Map<String, List<ProductItem>> categorized = {};
