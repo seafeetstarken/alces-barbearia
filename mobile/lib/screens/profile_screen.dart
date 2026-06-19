@@ -8,9 +8,6 @@ import '../models/store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
-import 'dart:ui';
 import 'welcome_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -22,19 +19,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AppState _appState = AppState();
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        final bytes = await image.readAsBytes();
-        _appState.userAvatarBytes.value = bytes;
-      }
-    } catch (e) {
-      debugPrint('Error picking image: $e');
-    }
-  }
 
   Future<void> _showCompleteProfileDialog() async {
     final emailController = TextEditingController(text: _appState.userSavedEmail.value ?? '');
@@ -182,52 +166,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             AlcesCard(
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppTheme.primaryGold.withOpacity(0.3), width: 2),
-                          ),
-                          child: ValueListenableBuilder<Uint8List?>(
-                            valueListenable: _appState.userAvatarBytes,
-                            builder: (context, avatarBytes, _) {
-                              return CircleAvatar(
-                                radius: 36,
-                                backgroundColor: AppTheme.primaryGold.withOpacity(0.12),
-                                backgroundImage: avatarBytes != null 
-                                  ? MemoryImage(avatarBytes) as ImageProvider
-                                  : null,
-                                child: avatarBytes == null 
-                                  ? Text(
-                                      _appState.userName.isNotEmpty ? _appState.userName.substring(0, 2).toUpperCase() : 'US',
-                                      style: const TextStyle(
-                                        color: AppTheme.primaryGold,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24,
-                                      ),
-                                    )
-                                  : null,
-                              );
-                            },
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryGold,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.cardDark, width: 2),
-                            ),
-                            child: const Icon(Icons.camera_alt, color: Colors.black, size: 12),
-                          ),
-                        ),
-                      ],
+                  CircleAvatar(
+                    radius: 36,
+                    backgroundColor: AppTheme.primaryGold.withOpacity(0.12),
+                    child: Text(
+                      _appState.userName.isNotEmpty ? _appState.userName.substring(0, 2).toUpperCase() : 'US',
+                      style: const TextStyle(
+                        color: AppTheme.primaryGold,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -335,41 +283,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Status Atual', style: TextStyle(color: AppTheme.textMuted, fontSize: 12, letterSpacing: 1.5, fontWeight: FontWeight.bold)),
-                                  Text('$xp / ${level * 500} XP', style: const TextStyle(color: AppTheme.textLight, fontSize: 16, fontWeight: FontWeight.bold)),
+                                  const Text('Progresso do Nível', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                                  Text('$xp / ${level * 500} XP', style: const TextStyle(color: AppTheme.primaryGold, fontSize: 12, fontWeight: FontWeight.bold)),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Container(
-                                height: 8,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.cardDarkElevated,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width * progress * 0.8, // Approximation
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primaryGold,
-                                        borderRadius: BorderRadius.circular(4),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppTheme.primaryGold.withOpacity(0.6),
-                                            blurRadius: 10,
-                                            spreadRadius: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'Faltam ${(level * 500) - xp} XP para o Level ${level + 1}. Agende um serviço para ganhar mais.',
-                                style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                              LinearProgressIndicator(
+                                value: progress,
+                                backgroundColor: Colors.white10,
+                                valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryGold),
+                                minHeight: 8,
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ],
                           ),
@@ -443,176 +367,178 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            Row(
-              children: [
-                // Bento Item 1: Assinatura
-                Expanded(
-                  child: ValueListenableBuilder<String?>(
-                    valueListenable: _appState.activePlan,
-                    builder: (context, planName, _) {
-                      final hasActivePlan = planName != null && planName.isNotEmpty;
-                      return AlcesCard(
-                        padding: const EdgeInsets.all(16),
-                        border: Border.all(
-                          color: hasActivePlan
-                              ? const Color(0xFF52B788).withOpacity(0.3)
-                              : Colors.white.withOpacity(0.06),
-                          width: 1.5,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(
-                                  hasActivePlan ? Icons.verified : Icons.star_border,
-                                  color: hasActivePlan
-                                      ? const Color(0xFF52B788)
-                                      : AppTheme.textMuted,
-                                ),
-                                if (hasActivePlan)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF52B788).withOpacity(0.15),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
-                                    ),
-                                    child: const Text('Ativo', style: TextStyle(color: Color(0xFF52B788), fontSize: 10, fontWeight: FontWeight.bold)),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Clube Alce\'s',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              hasActivePlan ? planName : 'Sem assinatura',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppTheme.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+            ValueListenableBuilder<String?>(
+              valueListenable: _appState.activePlan,
+              builder: (context, planName, _) {
+                final hasActivePlan = planName != null && planName.isNotEmpty;
+                return AlcesCard(
+                  border: Border.all(
+                    color: hasActivePlan
+                        ? const Color(0xFF52B788).withOpacity(0.3)
+                        : Colors.white.withOpacity(0.06),
+                    width: 1.5,
                   ),
-                ),
-                const SizedBox(width: 16),
-                
-                // Bento Item 2: Unidade de Preferência
-                Expanded(
-                  child: ValueListenableBuilder<Store>(
-                    valueListenable: _appState.activeStore,
-                    builder: (context, activeStore, _) {
-                      return AlcesCard(
-                        padding: const EdgeInsets.all(16),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: AppTheme.backgroundDark,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                            ),
-                            builder: (context) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Selecionar Unidade',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            hasActivePlan ? Icons.verified : Icons.star_border,
+                            color: hasActivePlan
+                                ? const Color(0xFF52B788)
+                                : AppTheme.textMuted,
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Clube Alce\'s',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                hasActivePlan ? planName : 'Nenhuma assinatura ativa',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      if (hasActivePlan)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF52B788).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
+                          ),
+                          child: const Text('Ativo', style: TextStyle(color: Color(0xFF52B788), fontSize: 10, fontWeight: FontWeight.bold)),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.textMuted.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.textMuted.withOpacity(0.3)),
+                          ),
+                          child: const Text('Inativo', style: TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Preferência de Unidade
+            ValueListenableBuilder<Store>(
+              valueListenable: _appState.activeStore,
+              builder: (context, activeStore, _) {
+                return AlcesCard(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: AppTheme.backgroundDark,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (context) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Selecionar Unidade Preferida',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Selecione qual barbearia ficará salva como sua unidade padrão:',
+                                style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+                              ),
+                              const SizedBox(height: 20),
+                              ..._appState.stores.value.map((store) {
+                                final isSelected = activeStore.id == store.id;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: AlcesCard(
+                                    onTap: () {
+                                      _appState.changeStore(store);
+                                      Navigator.pop(context);
+                                    },
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppTheme.primaryGold
+                                          : Colors.white.withOpacity(0.06),
+                                      width: 1.5,
                                     ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Selecione qual barbearia ficará salva como padrão:',
-                                      style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    ..._appState.stores.value.map((store) {
-                                      final isSelected = activeStore.id == store.id;
-                                      return Padding(
-                                        padding: const EdgeInsets.only(bottom: 12),
-                                        child: AlcesCard(
-                                          onTap: () {
-                                            _appState.changeStore(store);
-                                            Navigator.pop(context);
-                                          },
-                                          border: Border.all(
-                                            color: isSelected
-                                                ? AppTheme.primaryGold
-                                                : Colors.white.withOpacity(0.06),
-                                            width: 1.5,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.store, color: AppTheme.primaryGold),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Text(
-                                                  store.name.replaceAll("Alce's Barbearia - ", ""),
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isSelected ? AppTheme.primaryGold : Colors.white,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ),
-                                              if (isSelected)
-                                                const Icon(Icons.check_circle, color: AppTheme.primaryGold),
-                                            ],
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.store, color: AppTheme.primaryGold),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Text(
+                                            store.name.replaceAll("Alce's Barbearia - ", ""),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: isSelected ? AppTheme.primaryGold : Colors.white,
+                                              fontSize: 16,
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                                        if (isSelected)
+                                          const Icon(Icons.check_circle, color: AppTheme.primaryGold),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.place, color: AppTheme.primaryGold),
+                      const SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Icon(Icons.place, color: AppTheme.primaryGold),
-                                Icon(Icons.edit, color: AppTheme.textMuted.withOpacity(0.5), size: 16),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
                             const Text(
-                              'Sua Unidade',
+                              'Unidade de Preferência',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Text(
                               activeStore.name.replaceAll("Alce's Barbearia - ", ""),
                               style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
-                      );
-                    },
+                      ),
+                      const Icon(Icons.chevron_right, color: AppTheme.primaryGold),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 28),
 

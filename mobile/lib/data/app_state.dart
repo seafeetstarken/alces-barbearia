@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
 import '../core/supabase_client.dart';
 import '../models/store.dart';
 import '../models/barber.dart';
@@ -46,7 +45,6 @@ class AppState {
   final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
   final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
-  final ValueNotifier<Uint8List?> userAvatarBytes = ValueNotifier<Uint8List?>(null);
   
   // Profile fields
   String get userName {
@@ -100,25 +98,6 @@ class AppState {
       stores.value = storesData.map<Store>((e) => Store.fromJson(e)).toList();
       barbers.value = barbersData.map<Barber>((e) => Barber.fromJson(e)).toList();
       services.value = servicesData.map<ServiceItem>((e) => ServiceItem.fromJson(e)).toList();
-      
-      // Sort services to put Corte and Barba first
-      services.value.sort((a, b) {
-        final aLower = a.name.toLowerCase();
-        final bLower = b.name.toLowerCase();
-        
-        int getPriority(String name) {
-          if (name.contains('corte')) return 1;
-          if (name.contains('barba')) return 2;
-          return 3;
-        }
-        
-        final aPriority = getPriority(aLower);
-        final bPriority = getPriority(bLower);
-        
-        if (aPriority != bPriority) return aPriority.compareTo(bPriority);
-        return a.name.compareTo(b.name);
-      });
-
       products.value = productsData.map<ProductItem>((e) => ProductItem.fromJson(e)).toList();
       plans.value = plansData.map<SubscriptionPlan>((e) => SubscriptionPlan.fromJson(e)).toList();
 
