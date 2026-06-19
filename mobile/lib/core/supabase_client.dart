@@ -5,4 +5,4 @@ class SupabaseConfig {
   static const String anonKey = 'sb_publishable_PPRRbIomSQgpSVNJjWvLWA_vFJMz72l';
 }
 
-final supabase = Supabase.instance.client;
+SupabaseClient get supabase => Supabase.instance.client;
