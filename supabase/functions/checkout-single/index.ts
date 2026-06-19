@@ -22,7 +22,7 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
-    const { amount, billingType, customerId, appointmentId, description } = await req.json()
+    const { amount, billingType, customerId, appointmentId, description, creditCard, creditCardHolderInfo } = await req.json()
 
     if (!customerId) throw new Error('Customer ID is required')
 
@@ -37,7 +37,8 @@ serve(async (req) => {
       value: amount,
       dueDate: dueDate.toISOString().split('T')[0],
       description: description || `Agendamento Avulso Alce's Barbearia`,
-      externalReference: appointmentId
+      externalReference: appointmentId,
+      ...(billingType === 'CREDIT_CARD' && creditCard ? { creditCard, creditCardHolderInfo } : {})
     }
 
     const asaasPayment = await createPayment(paymentData)

@@ -41,10 +41,10 @@ export const createCustomer = async (customerData: { name: string; cpfCnpj?: str
   return await asaasRequest('/customers', 'POST', customerData);
 };
 
-export const createSubscription = async (subData: { customer: string; billingType: string; value: number; nextDueDate: string; description: string; cycle: string }) => {
+export const createSubscription = async (subData: { customer: string; billingType: string; value: number; nextDueDate: string; description: string; cycle: string; creditCard?: any; creditCardHolderInfo?: any }) => {
   return await asaasRequest('/subscriptions', 'POST', subData);
 };
 
-export const createPayment = async (payData: { customer: string; billingType: string; value: number; dueDate: string; description: string }) => {
+export const createPayment = async (payData: { customer: string; billingType: string; value: number; dueDate: string; description: string; creditCard?: any; creditCardHolderInfo?: any }) => {
   return await asaasRequest('/payments', 'POST', payData);
 };

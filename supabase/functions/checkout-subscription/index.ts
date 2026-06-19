@@ -22,7 +22,7 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
-    const { planName, price, billingType, customerId } = await req.json()
+    const { planName, price, billingType, customerId, creditCard, creditCardHolderInfo } = await req.json()
 
     if (!customerId) throw new Error('Customer ID is required')
 
@@ -38,7 +38,8 @@ serve(async (req) => {
       value: price,
       nextDueDate: today.toISOString().split('T')[0],
       description: `Assinatura Clube Alce's: ${planName}`,
-      cycle: 'MONTHLY'
+      cycle: 'MONTHLY',
+      ...(billingType === 'CREDIT_CARD' && creditCard ? { creditCard, creditCardHolderInfo } : {})
     }
 
     const asaasSub = await createSubscription(subscriptionData)
