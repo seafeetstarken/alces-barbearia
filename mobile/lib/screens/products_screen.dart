@@ -16,7 +16,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final AppState _appState = AppState();
   bool _isReserving = false;
 
-  Future<void> _handleReservation() async {
+  void _handleReservation() async {
     setState(() => _isReserving = true);
     try {
       await _appState.reserveProducts();
@@ -121,7 +121,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           color: Colors.white.withOpacity(0.05),
                                           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                                         ),
-                                        child: const Center(child: Icon(Icons.image_not_supported, color: AppTheme.textMuted, size: 40)),
+                                        child: const Center(child: Icon(Icons.image_not_supported, color: AppTheme.textMuted, size: 40.0)),
                                       ),
                                     ),
                                     Expanded(
@@ -134,15 +134,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           children: [
                                             Text(
                                               product.name,
-                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
+                                              style: const TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold, color: Colors.white),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             Text(
                                               'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                                              style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
                                             ),
-                                            const SizedBox(height: 4),
+                                            const SizedBox(height: 4.0),
                                             if (qty == 0)
                                               SizedBox(
                                                 width: double.infinity,
@@ -171,14 +171,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     IconButton(
-                                                      icon: const Icon(Icons.remove, size: 16, color: AppTheme.primaryGold),
+                                                      icon: const Icon(Icons.remove, size: 16.0, color: AppTheme.primaryGold),
                                                       padding: EdgeInsets.zero,
                                                       constraints: const BoxConstraints(),
                                                       onPressed: () => _appState.removeFromCart(product),
                                                     ),
                                                     Text('$qty', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                                                     IconButton(
-                                                      icon: const Icon(Icons.add, size: 16, color: AppTheme.primaryGold),
+                                                      icon: const Icon(Icons.add, size: 16.0, color: AppTheme.primaryGold),
                                                       padding: EdgeInsets.zero,
                                                       constraints: const BoxConstraints(),
                                                       onPressed: () => _appState.addToCart(product),
@@ -219,15 +219,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text('Total da Reserva', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                                  const Text('Total da Reserva', style: TextStyle(color: AppTheme.textMuted, fontSize: 12.0)),
                                   Text(
                                     'R\$ ${_appState.cartTotal.toStringAsFixed(2).replaceAll('.', ',')}',
-                                    style: const TextStyle(color: AppTheme.primaryGold, fontSize: 20, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(color: AppTheme.primaryGold, fontSize: 20.0, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                               ElevatedButton(
-                                onPressed: _isReserving ? null : _handleReservation,
+                                onPressed: _isReserving ? null : () => _handleReservation(),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppTheme.primaryGold,
                                   foregroundColor: Colors.black,
