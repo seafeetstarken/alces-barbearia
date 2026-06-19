@@ -47,7 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                   const Spacer(),
                   
                   // Logo Area
-                  const AlcesLogo(height: 140),
+                  const AlcesLogo(height: 200),
                   
                   const Spacer(),
                   
