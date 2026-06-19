@@ -137,7 +137,7 @@ class _BookingScreenState extends State<BookingScreen> {
           clientName: _appState.userName,
           date: _selectedDate!,
           time: currentSlotTime,
-          status: 'confirmed',
+          status: 'Agendado',
         );
         await _appState.addAppointment(newAppt);
       }
