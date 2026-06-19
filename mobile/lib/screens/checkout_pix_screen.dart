@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import '../data/app_state.dart';
 import '../theme/app_theme.dart';
-import '../widgets/alces_card.dart';
-import 'package:provider/provider.dart';
+import '../widgets/alces_ui.dart';
 
 class CheckoutPixScreen extends StatefulWidget {
   final double amount;
@@ -39,7 +38,7 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
 
   Future<void> _generatePixCharge() async {
     try {
-      final appState = context.read<AppState>();
+      final appState = AppState();
       
       Map<String, dynamic> data;
       if (widget.isSubscription) {

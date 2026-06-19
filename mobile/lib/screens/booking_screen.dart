@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
 import '../models/barber.dart';

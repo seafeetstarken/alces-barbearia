@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/app_state.dart';
 import '../theme/app_theme.dart';
-import '../widgets/alces_card.dart';
-import 'package:provider/provider.dart';
+import '../widgets/alces_ui.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CheckoutCardScreen extends StatefulWidget {
@@ -45,7 +44,7 @@ class _CheckoutCardScreenState extends State<CheckoutCardScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final appState = context.read<AppState>();
+      final appState = AppState();
 
       final parts = _expiryController.text.split('/');
       final expiryMonth = parts[0];
