@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import '../data/app_state.dart';
 import '../models/plan.dart';
 import '../theme/app_theme.dart';
-import '../widgets/alces_button.dart';
-import '../widgets/alces_card.dart';
+import '../widgets/alces_ui.dart';
 import 'checkout_pix_screen.dart';
 import 'checkout_card_screen.dart';
 
