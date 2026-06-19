@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
@@ -147,22 +148,41 @@ class AlcesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final card = Card(
-      shape: RoundedRectangleBorder(
+    final card = Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardDark.withOpacity(0.6), // Glassmorphism translucent base
         borderRadius: BorderRadius.circular(16),
-        side: border?.top ?? BorderSide.none,
+        border: border ?? Border.all(color: Colors.white.withOpacity(0.04), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: padding,
-        child: child,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // The blur effect
+          child: Padding(
+            padding: padding,
+            child: child,
+          ),
+        ),
       ),
     );
 
     if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: card,
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          splashColor: AppTheme.primaryGold.withOpacity(0.1),
+          highlightColor: Colors.transparent,
+          child: card,
+        ),
       );
     }
     

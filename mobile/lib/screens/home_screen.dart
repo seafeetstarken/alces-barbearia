@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
@@ -147,20 +149,42 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ValueListenableBuilder<Store>(
-          valueListenable: _appState.activeStore,
-          builder: (context, currentStore, _) {
-            // Get barbers for this store
-            final storeBarbers = _appState.barbers.value
-                .where((b) => b.storeId == currentStore.id && b.isActive)
-                .toList();
+      body: Stack(
+        children: [
+          // Ambient Glow Background
+          Positioned(
+            top: -150,
+            right: -100,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.primaryGold.withOpacity(0.08),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          
+          SafeArea(
+            child: ValueListenableBuilder<Store>(
+              valueListenable: _appState.activeStore,
+              builder: (context, currentStore, _) {
+                // Get barbers for this store
+                final storeBarbers = _appState.barbers.value
+                    .where((b) => b.storeId == currentStore.id && b.isActive)
+                    .toList();
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                   // App Bar Header (Brand + Store Selector)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,9 +260,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ],
+                    ].animate(interval: 100.ms).fade(duration: 500.ms).slideY(begin: -0.2),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Welcome Card & Cashback Info
                   AlcesCard(
@@ -290,10 +314,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                  ).animate().fade(duration: 600.ms).scale(begin: const Offset(0.95, 0.95)),
+                  const SizedBox(height: 20),
 
-                  // Active Membership / Club Banner
+                  // Club Banner Promo
                   ValueListenableBuilder<String?>(
                     valueListenable: _appState.activePlan,
                     builder: (context, planName, _) {
@@ -368,10 +392,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                      );
+                      ).animate(onPlay: (controller) => controller.repeat()).shimmer(duration: 3.seconds, color: Colors.white10);
                     },
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
 
                   // Quick Action shortcuts
                   Row(
@@ -469,9 +493,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ],
+                    ].animate(interval: 100.ms).fade().slideY(begin: 0.2),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
 
                   // Barbers Section
                   Row(
@@ -490,43 +514,43 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   SizedBox(
-                    height: 180,
+                    height: 130, // Reduced height
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: storeBarbers.length,
                       itemBuilder: (context, index) {
                         final barber = storeBarbers[index];
                         return Container(
-                          width: 150,
-                          margin: const EdgeInsets.only(right: 16),
+                          width: 105, // Reduced width to fit 3 exactly
+                          margin: const EdgeInsets.only(right: 12), // Reduced margin
                           child: AlcesCard(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircleAvatar(
-                                  radius: 28,
+                                  radius: 24, // Smaller avatar
                                   backgroundImage: NetworkImage(barber.avatarUrl),
                                   backgroundColor: Colors.white10,
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 8),
                                 Text(
                                   barber.name.split(' ')[0],
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                    fontSize: 13,
                                     color: Colors.white,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 2),
                                 Text(
                                   barber.isLeader ? 'Líder' : 'Barbeiro',
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 10,
                                     color: barber.isLeader
                                         ? AppTheme.primaryGold
                                         : AppTheme.textMuted,
@@ -540,11 +564,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                        );
+                        ).animate().fade(delay: (300 + (100 * index)).ms).slideX(begin: 0.2);
                       },
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
 
                   // Footer / Info info
                   AlcesCard(
@@ -604,13 +628,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                  ),
+                  ).animate().fade(delay: 800.ms).slideY(begin: 0.2),
                 ],
               ),
             );
           },
         ),
       ),
-    );
+    ]);
   }
 }

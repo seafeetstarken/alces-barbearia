@@ -9,7 +9,7 @@ DELETE FROM public.stores WHERE name = 'Alce''s Barbearia - Matriz';
 -- (Nota: A Unidade Escola Agrícola e Itoupava Seca continuam intactas)
 
 -- 2. CORS (Imagens): Limpar as URLs quebradas do i.pravatar.cc
-UPDATE public.barbers SET image_url = '';
+UPDATE public.barbers SET avatar_url = '';
 
 -- 3. Planos: Atualizar os planos existentes ou recriá-los
 -- Limpamos os antigos primeiro
