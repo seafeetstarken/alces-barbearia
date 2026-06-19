@@ -103,6 +103,24 @@ class AppState {
     upcomingAppointments.value = list;
   }
 
+  // Lógica de Desconto de Clube
+  double getDiscountForService(ServiceItem service) {
+    final plan = activePlan.value;
+    if (plan == null || plan.isEmpty) return 0.0;
+
+    final lowerName = service.name.toLowerCase();
+
+    if (plan.contains('Essencial')) {
+      if (lowerName.contains('corte')) return service.price; // 100% off (limit to be managed physically)
+    } else if (plan.contains('Premium')) {
+      if (lowerName.contains('corte') || lowerName.contains('barba')) return service.price; 
+    } else if (plan.contains('VIP')) {
+      if (lowerName.contains('corte') || lowerName.contains('barba') || lowerName.contains('relaxamento') || lowerName.contains('massagem')) return service.price; 
+    }
+
+    return 0.0; // No discount
+  }
+
   void addToCart(ProductItem product) {
     final current = Map<ProductItem, int>.from(cart.value);
     if (current.containsKey(product)) {

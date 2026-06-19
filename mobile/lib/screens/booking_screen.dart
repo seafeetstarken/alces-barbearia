@@ -198,16 +198,23 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildServiceSelection(List<ServiceItem> storeServices) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: storeServices.length,
-      itemBuilder: (context, index) {
-        final service = storeServices[index];
-        final isSelected = _selectedService?.id == service.id;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: AlcesCard(
+    return ValueListenableBuilder<String?>(
+      valueListenable: _appState.activePlan,
+      builder: (context, activePlan, _) {
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: storeServices.length,
+          itemBuilder: (context, index) {
+            final service = storeServices[index];
+            final isSelected = _selectedService?.id == service.id;
+            final discount = _appState.getDiscountForService(service);
+            final finalPrice = service.price - discount;
+            final isFreeByClub = discount == service.price && service.price > 0;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: AlcesCard(
             onTap: () {
               setState(() {
                 _selectedService = service;
@@ -225,13 +232,35 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        service.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? AppTheme.primaryGold : Colors.white,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            service.name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? AppTheme.primaryGold : Colors.white,
+                            ),
+                          ),
+                          if (isFreeByClub) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryGold.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: AppTheme.primaryGold.withOpacity(0.3)),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.star, color: AppTheme.primaryGold, size: 10),
+                                  SizedBox(width: 4),
+                                  Text('Incluso', style: TextStyle(color: AppTheme.primaryGold, fontSize: 9, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                          ]
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -252,9 +281,28 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Text(
-                  'R\$ ${service.price.toStringAsFixed(2).replaceAll('.', ',')}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (isFreeByClub)
+                      Text(
+                        'R\$ ${service.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.4),
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    Text(
+                      'R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: isFreeByClub ? 16 : 15, 
+                        color: isFreeByClub ? const Color(0xFF52B788) : Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -262,6 +310,7 @@ class _BookingScreenState extends State<BookingScreen> {
         );
       },
     );
+    });
   }
 
   Widget _buildBarberSelection(List<Barber> storeBarbers) {
@@ -469,6 +518,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildSummarySection(Store store) {
     final dateStr = _selectedDate != null ? DateFormat('dd/MM/yyyy').format(_selectedDate!) : '';
+    final discount = _selectedService != null ? _appState.getDiscountForService(_selectedService!) : 0.0;
+    final originalPrice = _selectedService?.price ?? 0.0;
+    final finalPrice = originalPrice - discount;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -487,11 +540,30 @@ class _BookingScreenState extends State<BookingScreen> {
               _buildSummaryRow(Icons.person, 'Barbeiro', _selectedBarber?.name ?? ''),
               const Divider(color: Colors.white12, height: 24),
               _buildSummaryRow(Icons.calendar_today, 'Data & Hora', '$dateStr às $_selectedTime'),
+              
               const Divider(color: Colors.white12, height: 24),
+              
+              if (discount > 0) ...[
+                _buildSummaryRow(
+                  Icons.receipt,
+                  'Valor Original',
+                  'R\$ ${originalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                ),
+                const SizedBox(height: 12),
+                _buildSummaryRow(
+                  Icons.star,
+                  'Benefício Clube Alce\'s',
+                  '- R\$ ${discount.toStringAsFixed(2).replaceAll('.', ',')}',
+                  valueColor: const Color(0xFF52B788),
+                  isBoldValue: true,
+                ),
+                const Divider(color: Colors.white12, height: 24),
+              ],
+
               _buildSummaryRow(
                 Icons.wallet,
                 'Valor a ser pago na loja',
-                'R\$ ${_selectedService?.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                'R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
                 valueColor: AppTheme.primaryGold,
                 isBoldValue: true,
               ),
