@@ -218,8 +218,8 @@ class _BookingScreenState extends State<BookingScreen> {
       try {
         final user = Supabase.instance.client.auth.currentUser;
         if (user != null) {
-          final newXp = _appState.userXp.value + 50;
-          final newCoins = _appState.userCoins.value + 10;
+          final newXp = _appState.userXp.value + (50 * needed);
+          final newCoins = _appState.userCoins.value + (10 * needed);
           await Supabase.instance.client.from('profiles').update({
             'xp': newXp,
             'alce_coins': newCoins,

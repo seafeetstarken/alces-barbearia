@@ -88,7 +88,7 @@ class AppState {
 
       if (user != null) {
         try {
-          final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id);
+          final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id).neq('status', 'cancelled');
           upcomingAppointments.value = appointmentsData.map<Appointment>((e) => Appointment.fromJson(e)).toList();
         } catch (e) {
           debugPrint('Error loading appointments: $e');
@@ -256,6 +256,12 @@ class AppState {
       activePlan.value = null;
     } else {
       activePlan.value = planName;
+    }
+    
+    // Save to Supabase for TestFlight persistence
+    final user = supabase.auth.currentUser;
+    if (user != null) {
+      supabase.from('profiles').update({'active_plan': activePlan.value}).eq('id', user.id);
     }
   }
 

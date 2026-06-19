@@ -69,24 +69,26 @@ class _CheckoutCardScreenState extends State<CheckoutCardScreen> {
         "phone": "47999999999",
       };
 
-      if (widget.isSubscription) {
-        await appState.checkoutSubscription(
-          planName: widget.planName ?? 'Plano Clube',
-          price: widget.amount,
-          billingType: 'CREDIT_CARD',
-          creditCard: creditCard,
-          creditCardHolderInfo: creditCardHolderInfo,
-        );
-      } else {
-        await appState.checkoutSingle(
-          amount: widget.amount,
-          billingType: 'CREDIT_CARD',
-          description: widget.description,
-          appointmentId: widget.appointmentId,
-          creditCard: creditCard,
-          creditCardHolderInfo: creditCardHolderInfo,
-        );
-      }
+      // MOCK PARA TESTFLIGHT: Bypass Asaas call
+      await Future.delayed(const Duration(seconds: 2));
+      // if (widget.isSubscription) {
+      //   await appState.checkoutSubscription(
+      //     planName: widget.planName ?? 'Plano Clube',
+      //     price: widget.amount,
+      //     billingType: 'CREDIT_CARD',
+      //     creditCard: creditCard,
+      //     creditCardHolderInfo: creditCardHolderInfo,
+      //   );
+      // } else {
+      //   await appState.checkoutSingle(
+      //     amount: widget.amount,
+      //     billingType: 'CREDIT_CARD',
+      //     description: widget.description,
+      //     appointmentId: widget.appointmentId,
+      //     creditCard: creditCard,
+      //     creditCardHolderInfo: creditCardHolderInfo,
+      //   );
+      // }
 
       if (!mounted) return;
       
