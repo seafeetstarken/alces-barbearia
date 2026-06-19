@@ -35,7 +35,7 @@ jobs:
       - name: Build Web
         run: |
           cd mobile
-          flutter build web --web-renderer html --base-href "/" --release
+          flutter build web --base-href "/" --release
 
       - name: Deploy to Vercel Branch
         uses: peaceiris/actions-gh-pages@v4
