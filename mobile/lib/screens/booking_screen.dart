@@ -5,8 +5,10 @@ import '../models/store.dart';
 import '../models/barber.dart';
 import '../models/service_item.dart';
 import '../models/appointment.dart';
+import '../models/plan.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -140,6 +142,23 @@ class _BookingScreenState extends State<BookingScreen> {
         await _appState.addAppointment(newAppt);
       }
 
+      // Add gamification rewards
+      try {
+        final user = Supabase.instance.client.auth.currentUser;
+        if (user != null) {
+          final newXp = _appState.userXp.value + 50;
+          final newCoins = _appState.userCoins.value + 10;
+          await Supabase.instance.client.from('profiles').update({
+            'xp': newXp,
+            'alce_coins': newCoins,
+          }).eq('id', user.id);
+          _appState.userXp.value = newXp;
+          _appState.userCoins.value = newCoins;
+        }
+      } catch (e) {
+        debugPrint('Erro gamification ao agendar: $e');
+      }
+
       if (mounted) {
         Navigator.pop(context); // close loading
         _showSuccessDialog(store);
@@ -183,7 +202,7 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Seu horário com ${_selectedBarber!.name.split(' ')[0]} foi marcado para o dia $dateStr às $_selectedTime na unidade ${store.name.replaceAll("Alce\'s Barbearia - ", "")}.',
+                'Seu horário com ${_selectedBarber!.name.split(' ')[0]} foi marcado para o dia $dateStr às $_selectedTime na unidade ${store.name.replaceAll("Alce\'s Barbearia - ", "")}.\n\n🎉 Você ganhou +50 XP e 10 AlceCoins!',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
@@ -731,7 +750,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           text: recommendedPlan.name,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const TextSpan(text: ' e tem acesso ilimitado aos serviços durante o mês todo!'),
+                        const TextSpan(text: ' e já garante os benefícios exclusivos do plano no mês todo!'),
                       ]
                     )
                   )
@@ -745,7 +764,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           text: recommendedPlan.name,
                           style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
                         ),
-                        TextSpan(text: ' custa apenas R\$ ${recommendedPlan.price.toStringAsFixed(2).replaceAll('.', ',')}/mês. É mais barato assinar e ter serviços ilimitados do que pagar esse agendamento avulso!'),
+                        TextSpan(text: ' custa apenas R\$ ${recommendedPlan.price.toStringAsFixed(2).replaceAll('.', ',')}/mês. É mais barato assinar e garantir os benefícios do que pagar esse agendamento avulso!'),
                       ]
                     )
                   ),
