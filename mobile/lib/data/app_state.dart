@@ -45,6 +45,7 @@ class AppState {
   final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
   final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
+  final ValueNotifier<String?> userAvatarPath = ValueNotifier<String?>(null);
   
   // Profile fields
   String get userName {
