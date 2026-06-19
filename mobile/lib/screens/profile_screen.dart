@@ -350,9 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     onTap: _showCompleteProfileDialog,
                   ),
-                );
-              }
-                  ValueListenableBuilder<String?>(
+                return ValueListenableBuilder<String?>(
               valueListenable: _appState.activePlan,
               builder: (context, planName, _) {
                 final hasActivePlan = planName != null && planName.isNotEmpty;
