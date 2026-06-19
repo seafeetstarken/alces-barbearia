@@ -81,8 +81,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 24),
+            
+            // Gamification CTA Banner
+            AlcesCard(
+              border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5), width: 1.5),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.primaryGold.withOpacity(0.15), Colors.transparent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryGold.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.star, color: AppTheme.primaryGold),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Complete seu cadastro!',
+                            style: TextStyle(
+                              color: AppTheme.primaryGold,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Ganhe 100 AlceCoins agora mesmo e desbloqueie sua primeira conquista no bando.',
+                            style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.chevron_right, color: AppTheme.primaryGold),
+                  ],
+                ),
+              ),
+              onTap: () {
+                // Future Implementation: Edit Profile Dialog
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Edição de perfil será implementada em breve!')),
+                );
+              },
+            ),
 
-            // Active Club Status Block
+            const SizedBox(height: 16),
             ValueListenableBuilder<String?>(
               valueListenable: _appState.activePlan,
               builder: (context, planName, _) {

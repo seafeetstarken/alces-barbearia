@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
 import '../theme/app_theme.dart';
@@ -94,14 +95,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    store.address.split(',')[0],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppTheme.textMuted,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          store.address.split(',')[0],
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: AppTheme.textMuted,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.map_outlined, size: 16, color: AppTheme.primaryGold),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        tooltip: 'Ver no Mapa',
+                                        onPressed: () async {
+                                          final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(store.address)}');
+                                          if (await canLaunchUrl(url)) {
+                                            await launchUrl(url);
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -152,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             children: [
                               Image.asset(
-                                'assets/Logo_Alces_Barbershop.png',
+                                'assets/images/logo.png',
                                 width: 28,
                                 height: 28,
                                 errorBuilder: (c, e, s) => const Icon(

@@ -33,8 +33,8 @@ CREATE POLICY "Users can view own subscriptions" ON public.user_subscriptions FO
 CREATE POLICY "Users can insert own subscriptions" ON public.user_subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Insert Real Plans
-INSERT INTO public.plans (name, description, price, features) VALUES 
-('Plano Essencial', 'O básico bem feito', 99.90, '["2 Cortes de Cabelo por mês", "Desconto de 5% em produtos", "Agendamento prioritário"]'::jsonb),
-('Plano Premium', 'Cabelo e Barba impecáveis', 149.90, '["2 Cortes de Cabelo por mês", "2 Barbas por mês", "Desconto de 10% em produtos", "Agendamento VIP"]'::jsonb),
-('Plano VIP Alce', 'A experiência completa e ilimitada', 299.90, '["Cortes Ilimitados", "Barbas Ilimitadas", "Desconto de 20% em produtos", "Bebida por conta da casa", "Agendamento VIP"]'::jsonb)
+INSERT INTO public.plans (name, price, billing_cycle, features, is_active) VALUES 
+('Corte Ilimitado', 119.90, 'mensal', '["Corte ilimitado", "Descontos em empresas parceiras", "Desconto em serviços adicionais", "Até 30% de descontos em produtos"]'::jsonb, TRUE),
+('Barba Ilimitado', 119.90, 'mensal', '["Barba ilimitado", "Descontos em empresas parceiras", "Desconto em serviços adicionais", "Até 30% de descontos em produtos"]'::jsonb, TRUE),
+('Cabelo e Barba Ilimitado', 169.90, 'mensal', '["Corte ilimitado", "Barba ilimitado", "Descontos em empresas parceiras", "Desconto em serviços adicionais", "Até 30% de descontos em produtos"]'::jsonb, TRUE)
 ON CONFLICT DO NOTHING;

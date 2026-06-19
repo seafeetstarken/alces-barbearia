@@ -79,12 +79,14 @@ class AppState {
       plans.value = plansData.map<SubscriptionPlan>((e) => SubscriptionPlan.fromJson(e)).toList();
 
       if (stores.value.isNotEmpty) {
-        // Find 'Matriz' to set as default if it exists, otherwise the first one
-        final matriz = stores.value.firstWhere(
-          (s) => s.name.contains('Matriz'), 
-          orElse: () => stores.value.first
-        );
-        activeStore.value = matriz;
+        // Sort stores so 'Escola Agrícola' appears first in the list
+        stores.value.sort((a, b) {
+          if (a.name.contains('Escola Agrícola')) return -1;
+          if (b.name.contains('Escola Agrícola')) return 1;
+          return a.name.compareTo(b.name);
+        });
+        
+        activeStore.value = stores.value.first;
       }
     } catch (e) {
       debugPrint('Error loading initial data: $e');
