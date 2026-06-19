@@ -547,8 +547,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 24, // Smaller avatar
-                                  backgroundImage: NetworkImage(barber.avatarUrl),
+                                  backgroundImage: barber.avatarUrl.isNotEmpty
+                                      ? (barber.avatarUrl.startsWith('http')
+                                          ? NetworkImage(barber.avatarUrl)
+                                          : AssetImage(barber.avatarUrl) as ImageProvider)
+                                      : null,
                                   backgroundColor: Colors.white10,
+                                  child: barber.avatarUrl.isEmpty
+                                      ? Text(barber.initials, style: const TextStyle(color: Colors.white))
+                                      : null,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
