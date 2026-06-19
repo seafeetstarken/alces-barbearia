@@ -125,14 +125,7 @@ async function seedData() {
         console.log('📍 Loja Escola Agrícola encontrada:', escolaAgricolaStoreId);
     }
 
-    // Criar filial Gaspar se não existir
-    const gasparStore = existingStores?.find(s => s.name.toLowerCase().includes('gaspar'));
-    if (!gasparStore) {
-        await supabase.from('stores').insert([
-            { name: "Alce's Barbearia - Gaspar", phone: '5547996155719', address: 'Av. Das Comunidades, 995 – Centro, Gaspar – SC' }
-        ]);
-        console.log('  ✅ Gaspar criada');
-    }
+    // Gaspar removal: kept to 2 units (Matriz, Escola Agrícola)
 
     // Inserir serviços se não existirem
     console.log('\n💇 Criando Serviços...');
