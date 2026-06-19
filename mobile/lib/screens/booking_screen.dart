@@ -508,6 +508,7 @@ class _BookingScreenState extends State<BookingScreen> {
         final isSelected = _selectedBarber?.id == barber.id;
 
         return AlcesCard(
+          padding: EdgeInsets.zero,
           onTap: () {
             setState(() {
               _selectedBarber = barber;
@@ -518,38 +519,80 @@ class _BookingScreenState extends State<BookingScreen> {
           },
           border: Border.all(
             color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
-            width: 1.5,
+            width: isSelected ? 2.0 : 1.5,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              CircleAvatar(
-                radius: 32,
-                backgroundImage: barber.avatarUrl.isNotEmpty
-                    ? (barber.avatarUrl.startsWith('http')
-                        ? NetworkImage(barber.avatarUrl)
-                        : AssetImage(barber.avatarUrl) as ImageProvider)
-                    : null,
-                backgroundColor: Colors.white10,
-                child: barber.avatarUrl.isEmpty
-                    ? Text(barber.initials, style: const TextStyle(color: Colors.white))
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                barber.name.split(' ')[0],
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: isSelected ? AppTheme.primaryGold : Colors.white,
+              // Background Image
+              if (barber.avatarUrl.isNotEmpty)
+                Image(
+                  image: barber.avatarUrl.startsWith('http')
+                      ? NetworkImage(barber.avatarUrl)
+                      : AssetImage(barber.avatarUrl) as ImageProvider,
+                  fit: BoxFit.cover,
+                )
+              else
+                Container(
+                  color: Colors.white10,
+                  child: Center(
+                    child: Text(barber.initials, style: const TextStyle(color: Colors.white, fontSize: 32)),
+                  ),
+                ),
+              
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.8),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                barber.isLeader ? 'Profissional Líder' : 'Barbeiro',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+              
+              // Texts
+              Positioned(
+                bottom: 12,
+                left: 12,
+                right: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      barber.name.split(' ')[0],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: isSelected ? AppTheme.primaryGold : Colors.white,
+                      ),
+                    ),
+                    Text(
+                      barber.isLeader ? 'Profissional Líder' : 'Barbeiro',
+                      style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                    ),
+                  ],
+                ),
               ),
+
+              // Selection Checkmark
+              if (isSelected)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppTheme.primaryGold,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, color: Colors.black, size: 16),
+                  ),
+                ),
             ],
           ),
         );
