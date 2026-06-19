@@ -79,7 +79,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               return Stack(
                 children: [
                   ListView.builder(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: cart.isNotEmpty ? 100 : 16),
+                    padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: cart.isNotEmpty ? 100.0 : 16.0),
                     itemCount: categorized.length,
                     itemBuilder: (context, catIndex) {
                       final category = categorized.keys.elementAt(catIndex);
@@ -100,8 +100,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16.0,
+                              crossAxisSpacing: 16.0,
                               childAspectRatio: 0.65,
                             ),
                             itemCount: items.length,
@@ -152,19 +152,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: AppTheme.primaryGold.withOpacity(0.15),
                                                     foregroundColor: AppTheme.primaryGold,
-                                                    elevation: 0,
+                                                    elevation: 0.0,
                                                     padding: EdgeInsets.zero,
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                                                   ),
-                                                  child: const Text('Adicionar', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                                  child: const Text('Adicionar', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
                                                 ),
                                               )
                                             else
                                               Container(
-                                                height: 32,
+                                                height: 32.0,
                                                 decoration: BoxDecoration(
                                                   color: AppTheme.cardDark,
-                                                  borderRadius: BorderRadius.circular(8),
+                                                  borderRadius: BorderRadius.circular(8.0),
                                                   border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5)),
                                                 ),
                                                 child: Row(
@@ -205,10 +205,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       left: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
                           color: const Color(0xFF1A1A1A),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, -5))],
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10.0, offset: const Offset(0.0, -5.0))],
                           border: Border(top: Border.all(color: Colors.white.withOpacity(0.1))),
                         ),
                         child: SafeArea(
@@ -231,11 +231,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppTheme.primaryGold,
                                   foregroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                 ),
                                 child: _isReserving
-                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                                    ? const SizedBox(width: 20.0, height: 20.0, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2.0))
                                     : const Text('Reservar', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                             ],
