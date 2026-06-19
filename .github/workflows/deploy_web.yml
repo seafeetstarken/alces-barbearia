@@ -37,8 +37,9 @@ jobs:
           cd mobile
           flutter build web --base-href "/" --release
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to Vercel Branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./mobile/build/web
+          publish_branch: web-preview
