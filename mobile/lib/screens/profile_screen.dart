@@ -9,7 +9,8 @@ import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show File;
 import 'dart:ui';
 import 'welcome_screen.dart';
 
@@ -197,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 radius: 36,
                                 backgroundColor: AppTheme.primaryGold.withOpacity(0.12),
                                 backgroundImage: avatarPath != null 
-                                  ? FileImage(File(avatarPath)) as ImageProvider
+                                  ? (kIsWeb ? NetworkImage(avatarPath) : FileImage(File(avatarPath))) as ImageProvider
                                   : null,
                                 child: avatarPath == null 
                                   ? Text(
