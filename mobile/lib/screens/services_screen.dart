@@ -26,9 +26,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
       body: ValueListenableBuilder<Store>(
         valueListenable: _appState.activeStore,
         builder: (context, activeStore, _) {
-          // Get services for this store
+          // Get services for this store or global
           final storeServices = _appState.services.value
-              .where((s) => s.storeId == activeStore.id)
+              .where((s) => s.storeId == activeStore.id || s.storeId == 'global')
               .toList();
 
           // Group services by category

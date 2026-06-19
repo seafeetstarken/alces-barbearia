@@ -20,10 +20,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
 
   Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
     
-    if (phone.isEmpty || password.isEmpty) return;
+    if (name.isEmpty || phone.isEmpty || password.isEmpty) return;
 
     setState(() => _isLoading = true);
     final email = '$phone@alces.com.br';
@@ -33,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: email,
         password: password,
         data: {
-          'full_name': 'Cliente', // Default name
+          'full_name': name,
           'phone': phone,
         }
       );
@@ -97,13 +98,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // Name
+                        TextField(
+                          controller: _nameController,
+                          style: const TextStyle(color: Colors.white),
+                          textCapitalization: TextCapitalization.words,
+                          decoration: const InputDecoration(
+                            labelText: 'Nome e sobrenome',
+                            prefixIcon: Icon(Icons.person, color: AppTheme.primaryGold),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
                         // Phone
                         TextField(
                           controller: _phoneController,
                           style: const TextStyle(color: Colors.white),
                           keyboardType: TextInputType.phone,
                           decoration: const InputDecoration(
-                            labelText: 'Celular (DDD+Nr)',
+                            labelText: 'Whatsapp (DDD+Nr)',
                             prefixIcon: Icon(Icons.phone_android, color: AppTheme.primaryGold),
                           ),
                         ),

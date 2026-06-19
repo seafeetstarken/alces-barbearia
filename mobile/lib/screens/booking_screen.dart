@@ -651,7 +651,7 @@ class _BookingScreenState extends State<BookingScreen> {
         builder: (context, activeStore, _) {
           // Filter barbers and services for active store
           final storeBarbers = _appState.barbers.value.where((b) => b.storeId == activeStore.id && b.isActive).toList();
-          final storeServices = _appState.services.value.where((s) => s.storeId == activeStore.id).toList();
+          final storeServices = _appState.services.value.where((s) => s.storeId == activeStore.id || s.storeId == 'global').toList();
 
           return Column(
             children: [

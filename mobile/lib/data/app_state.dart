@@ -36,7 +36,12 @@ class AppState {
   // Active membership plan (null if none, otherwise plan name)
   final ValueNotifier<String?> activePlan = ValueNotifier<String?>(null);
 
-  // Profile fields
+  // Profile Gamification Stats
+  final ValueNotifier<int> userXp = ValueNotifier<int>(0);
+  final ValueNotifier<int> userCoins = ValueNotifier<int>(0);
+  final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
+  final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
+  
   // Profile fields
   String get userName {
     final user = supabase.auth.currentUser;
@@ -61,6 +66,20 @@ class AppState {
       final servicesData = await supabase.from('services').select();
       final productsData = await supabase.from('products').select();
       final plansData = await supabase.from('plans').select();
+      
+      // Load user gamification profile if logged in
+      final user = supabase.auth.currentUser;
+      if (user != null) {
+        try {
+          final profileData = await supabase.from('profiles').select().eq('id', user.id).maybeSingle();
+          if (profileData != null) {
+            userXp.value = profileData['xp'] ?? 0;
+            userCoins.value = profileData['alce_coins'] ?? 0;
+            userLevel.value = profileData['level'] ?? 1;
+            userBirthDate.value = profileData['birth_date'];
+          }
+        } catch (_) {}
+      }
 
       final user = supabase.auth.currentUser;
       if (user != null) {

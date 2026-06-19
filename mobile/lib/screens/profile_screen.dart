@@ -17,6 +17,133 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AppState _appState = AppState();
 
+  Future<void> _showCompleteProfileDialog() async {
+    final emailController = TextEditingController(text: _appState.userEmail);
+    final addressController = TextEditingController();
+    DateTime? selectedDate;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppTheme.backgroundDark,
+              title: const Text('Completar Cadastro', style: TextStyle(color: AppTheme.primaryGold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: emailController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'E-mail',
+                        prefixIcon: Icon(Icons.email, color: AppTheme.primaryGold),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      readOnly: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Data de Nascimento',
+                        prefixIcon: const Icon(Icons.calendar_today, color: AppTheme.primaryGold),
+                        hintText: selectedDate == null ? 'DD/MM/AAAA' : DateFormat('dd/MM/yyyy').format(selectedDate!),
+                      ),
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now().subtract(const Duration(days: 365 * 20)),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: ThemeData.dark().copyWith(
+                                colorScheme: const ColorScheme.dark(
+                                  primary: AppTheme.primaryGold,
+                                  onPrimary: Colors.black,
+                                  surface: AppTheme.backgroundDark,
+                                  onSurface: Colors.white,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (date != null) {
+                          setDialogState(() => selectedDate = date);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: addressController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'Endereço (Opcional)',
+                        prefixIcon: Icon(Icons.location_on, color: AppTheme.primaryGold),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Complete para ganhar +100 XP e 100 AlceCoins!', 
+                      style: TextStyle(color: Color(0xFF52B788), fontSize: 12, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar', style: TextStyle(color: AppTheme.textMuted)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGold),
+                  onPressed: () async {
+                    if (emailController.text.isEmpty || selectedDate == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('E-mail e Data de Nascimento são obrigatórios!')),
+                      );
+                      return;
+                    }
+
+                    final user = Supabase.instance.client.auth.currentUser;
+                    if (user != null) {
+                      await Supabase.instance.client.from('profiles').update({
+                        'email': emailController.text,
+                        'birth_date': selectedDate!.toIso8601String(),
+                        'address': addressController.text,
+                        'xp': _appState.userXp.value + 100,
+                        'alce_coins': _appState.userCoins.value + 100,
+                      }).eq('id', user.id);
+                      
+                      // Refresh app state
+                      _appState.userXp.value += 100;
+                      _appState.userCoins.value += 100;
+                      _appState.userBirthDate.value = selectedDate!.toIso8601String();
+                      
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sucesso! +100 XP e 100 AlceCoins recebidos! 🦌🪙'),
+                            backgroundColor: Color(0xFF52B788),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text('Salvar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +163,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 36,
                     backgroundColor: AppTheme.primaryGold.withOpacity(0.12),
-                    child: const Text(
-                      'JS',
-                      style: TextStyle(
+                    child: Text(
+                      _appState.userName.isNotEmpty ? _appState.userName.substring(0, 2).toUpperCase() : 'US',
+                      style: const TextStyle(
                         color: AppTheme.primaryGold,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -60,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _appState.userEmail,
+                          _appState.userEmail.isNotEmpty ? _appState.userEmail : 'Sem e-mail cadastrado',
                           style: const TextStyle(
                             fontSize: 13,
                             color: AppTheme.textMuted,
@@ -82,62 +209,151 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
             
-            // Gamification CTA Banner
-            AlcesCard(
-              border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5), width: 1.5),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppTheme.primaryGold.withOpacity(0.15), Colors.transparent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
+            // Gamification Dashboard
+            ValueListenableBuilder<int>(
+              valueListenable: _appState.userLevel,
+              builder: (context, level, _) {
+                return ValueListenableBuilder<int>(
+                  valueListenable: _appState.userXp,
+                  builder: (context, xp, _) {
+                    return ValueListenableBuilder<int>(
+                      valueListenable: _appState.userCoins,
+                      builder: (context, coins, _) {
+                        double progress = xp / (level * 500); // 500 xp per level rule
+                        if (progress > 1.0) progress = 1.0;
+                        
+                        return AlcesCard(
+                          border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5), width: 1.5),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.workspace_premium, color: AppTheme.primaryGold, size: 28),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Level $level',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryGold.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(color: AppTheme.primaryGold.withOpacity(0.3)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.monetization_on, color: AppTheme.primaryGold, size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '$coins Coins',
+                                          style: const TextStyle(color: AppTheme.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text('Progresso do Nível', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                                  Text('$xp / ${level * 500} XP', style: const TextStyle(color: AppTheme.primaryGold, fontSize: 12, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: progress,
+                                backgroundColor: Colors.white10,
+                                valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryGold),
+                                minHeight: 8,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            ),
+            const SizedBox(height: 16),
+            
+            // Gamification CTA Banner (Only show if not complete)
+            ValueListenableBuilder<String?>(
+              valueListenable: _appState.userBirthDate,
+              builder: (context, birthDate, _) {
+                if (birthDate != null && birthDate.isNotEmpty) {
+                  return const SizedBox.shrink(); // Already completed
+                }
+                
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: AlcesCard(
+                    border: Border.all(color: const Color(0xFF52B788).withOpacity(0.5), width: 1.5),
+                    child: Container(
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryGold.withOpacity(0.2),
-                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [const Color(0xFF52B788).withOpacity(0.15), Colors.transparent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
-                      child: const Icon(Icons.star, color: AppTheme.primaryGold),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Text(
-                            'Complete seu cadastro!',
-                            style: TextStyle(
-                              color: AppTheme.primaryGold,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF52B788).withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.star, color: Color(0xFF52B788)),
+                          ),
+                          const SizedBox(width: 16),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Complete seu cadastro!',
+                                  style: TextStyle(
+                                    color: Color(0xFF52B788),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Ganhe 100 AlceCoins agora mesmo e desbloqueie conquistas.',
+                                  style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Ganhe 100 AlceCoins agora mesmo e desbloqueie sua primeira conquista no bando.',
-                            style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
-                          ),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.chevron_right, color: Color(0xFF52B788)),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.chevron_right, color: AppTheme.primaryGold),
-                  ],
-                ),
-              ),
-              onTap: () {
-                // Future Implementation: Edit Profile Dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edição de perfil será implementada em breve!')),
+                    onTap: _showCompleteProfileDialog,
+                  ),
                 );
-              },
+              }
             ),
 
-            const SizedBox(height: 16),
             ValueListenableBuilder<String?>(
               valueListenable: _appState.activePlan,
               builder: (context, planName, _) {
