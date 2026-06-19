@@ -223,47 +223,67 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildStepIndicator() {
+    final stepNames = ['Serviço', 'Barbeiro', 'Data/Hora', 'Resumo'];
     return Row(
-      children: List.generate(4, (index) {
-        final isActive = index <= _currentStep;
-        final isCurrent = index == _currentStep;
-        return Expanded(
-          child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(7, (index) {
+        if (index.isOdd) {
+          final stepIndex = index ~/ 2;
+          final isActive = stepIndex < _currentStep;
+          return Expanded(
+            child: Container(
+              height: 2,
+              margin: const EdgeInsets.only(top: 14, left: 4, right: 4),
+              color: isActive ? AppTheme.primaryGold.withOpacity(0.5) : Colors.white.withOpacity(0.05),
+            ),
+          );
+        } else {
+          final stepIndex = index ~/ 2;
+          final isActive = stepIndex <= _currentStep;
+          final isCurrent = stepIndex == _currentStep;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 24,
-                height: 24,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   color: isCurrent
                       ? AppTheme.primaryGold
                       : isActive
-                          ? AppTheme.primaryGold.withOpacity(0.4)
-                          : Colors.white.withOpacity(0.06),
+                          ? AppTheme.primaryGold.withOpacity(0.2)
+                          : AppTheme.cardDark,
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isActive ? AppTheme.primaryGold : Colors.white10,
+                    width: 1.5,
+                  ),
                 ),
                 child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: isCurrent ? Colors.black : Colors.white70,
-                    ),
-                  ),
+                  child: isActive && !isCurrent
+                      ? const Icon(Icons.check, size: 16, color: AppTheme.primaryGold)
+                      : Text(
+                          '${stepIndex + 1}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: isCurrent ? Colors.black : Colors.white54,
+                          ),
+                        ),
                 ),
               ),
-              if (index < 3)
-                Expanded(
-                  child: Container(
-                    height: 2,
-                    color: isActive
-                        ? AppTheme.primaryGold.withOpacity(0.4)
-                        : Colors.white.withOpacity(0.06),
-                  ),
+              const SizedBox(height: 6),
+              Text(
+                stepNames[stepIndex],
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                  color: isCurrent ? Colors.white : (isActive ? Colors.white70 : AppTheme.textMuted),
                 ),
+              ),
             ],
-          ),
-        );
+          );
+        }
       }),
     );
   }
@@ -656,8 +676,11 @@ class _BookingScreenState extends State<BookingScreen> {
     SubscriptionPlan? recommendedPlan;
     double priceDiff = 0;
     
-    if (!hasActivePlan && _appState.plans.value.isNotEmpty && finalPrice > 0) {
-      final sortedPlans = List<SubscriptionPlan>.from(_appState.plans.value)..sort((a, b) => a.price.compareTo(b.price));
+    if (!hasActivePlan && finalPrice > 0) {
+      final plans = _appState.plans.value.isNotEmpty 
+          ? _appState.plans.value 
+          : [SubscriptionPlan(id: 'mock', name: 'Plano Premium', price: 99.90, features: [])];
+      final sortedPlans = List<SubscriptionPlan>.from(plans)..sort((a, b) => a.price.compareTo(b.price));
       try {
         recommendedPlan = sortedPlans.firstWhere((p) => p.price >= finalPrice);
       } catch (_) {
@@ -932,9 +955,9 @@ class _BookingScreenState extends State<BookingScreen> {
                           Expanded(
                             child: AlcesButton(
                               text: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
-                                  ? 'Confirmar e Agendar' 
-                                  : 'Agendar Avulso',
-                              isPrimary: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty),
+                                  ? 'Confirmar Agendamento' 
+                                  : 'Confirmar e Agendar Avulso',
+                              isPrimary: false,
                               onPressed: () => _confirmBooking(activeStore),
                             ),
                           ),
