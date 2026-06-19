@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../data/app_state.dart';
 import '../models/appointment.dart';
 import '../models/store.dart';
@@ -20,9 +21,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AppState _appState = AppState();
 
   Future<void> _showCompleteProfileDialog() async {
-    final emailController = TextEditingController(text: _appState.userEmail);
+    final emailController = TextEditingController(text: _appState.userSavedEmail.value ?? '');
     final addressController = TextEditingController();
-    DateTime? selectedDate;
+    final dateController = TextEditingController();
+    
+    final dateFormatter = MaskTextInputFormatter(
+      mask: '##/##/####', 
+      filter: { "#": RegExp(r'[0-9]') },
+      type: MaskAutoCompletionType.lazy
+    );
+
+    // If birth date is already saved, prefill it
+    if (_appState.userBirthDate.value != null) {
+      try {
+        final date = DateTime.parse(_appState.userBirthDate.value!);
+        dateController.text = DateFormat('dd/MM/yyyy').format(date);
+      } catch (_) {}
+    }
 
     await showDialog(
       context: context,
@@ -46,37 +61,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      readOnly: true,
+                      controller: dateController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [dateFormatter],
                       style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Data de Nascimento',
-                        prefixIcon: const Icon(Icons.calendar_today, color: AppTheme.primaryGold),
-                        hintText: selectedDate == null ? 'DD/MM/AAAA' : DateFormat('dd/MM/yyyy').format(selectedDate!),
+                        prefixIcon: Icon(Icons.calendar_today, color: AppTheme.primaryGold),
+                        hintText: 'DD/MM/AAAA',
                       ),
-                      onTap: () async {
-                        final date = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now().subtract(const Duration(days: 365 * 20)),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                          builder: (context, child) {
-                            return Theme(
-                              data: ThemeData.dark().copyWith(
-                                colorScheme: const ColorScheme.dark(
-                                  primary: AppTheme.primaryGold,
-                                  onPrimary: Colors.black,
-                                  surface: AppTheme.backgroundDark,
-                                  onSurface: Colors.white,
-                                ),
-                              ),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (date != null) {
-                          setDialogState(() => selectedDate = date);
-                        }
-                      },
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -85,7 +78,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Endereço (Opcional)',
                         prefixIcon: Icon(Icons.location_on, color: AppTheme.primaryGold),
+                        hintText: 'Digite o nome da rua',
                       ),
+                      // TODO: Integrar Google Places API aqui
                     ),
                     const SizedBox(height: 16),
                     const Text('Complete para ganhar +100 XP e 100 AlceCoins!', 
@@ -103,18 +98,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGold),
                   onPressed: () async {
-                    if (emailController.text.isEmpty || selectedDate == null) {
+                    if (emailController.text.isEmpty || dateController.text.length < 10) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('E-mail e Data de Nascimento são obrigatórios!')),
+                        const SnackBar(content: Text('E-mail e Data de Nascimento válidos são obrigatórios!')),
                       );
                       return;
                     }
+
+                    // Parse the date DD/MM/YYYY to DateTime
+                    final parts = dateController.text.split('/');
+                    final parsedDate = DateTime(
+                      int.parse(parts[2]),
+                      int.parse(parts[1]),
+                      int.parse(parts[0]),
+                    );
 
                     final user = Supabase.instance.client.auth.currentUser;
                     if (user != null) {
                       await Supabase.instance.client.from('profiles').update({
                         'email': emailController.text,
-                        'birth_date': selectedDate!.toIso8601String(),
+                        'birth_date': parsedDate.toIso8601String(),
                         'address': addressController.text,
                         'xp': _appState.userXp.value + 100,
                         'alce_coins': _appState.userCoins.value + 100,
@@ -123,7 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Refresh app state
                       _appState.userXp.value += 100;
                       _appState.userCoins.value += 100;
-                      _appState.userBirthDate.value = selectedDate!.toIso8601String();
+                      _appState.userBirthDate.value = parsedDate.toIso8601String();
+                      _appState.userSavedEmail.value = emailController.text;
                       
                       if (context.mounted) {
                         Navigator.pop(context);
@@ -188,12 +192,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          _appState.userEmail.isNotEmpty ? _appState.userEmail : 'Sem e-mail cadastrado',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppTheme.textMuted,
-                          ),
+                        ValueListenableBuilder<String?>(
+                          valueListenable: _appState.userSavedEmail,
+                          builder: (context, savedEmail, _) {
+                            final displayEmail = (savedEmail != null && savedEmail.isNotEmpty) 
+                                ? savedEmail 
+                                : 'Sem e-mail cadastrado';
+                            return Text(
+                              displayEmail,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppTheme.textMuted,
+                              ),
+                            );
+                          }
                         ),
                         const SizedBox(height: 2),
                         Text(

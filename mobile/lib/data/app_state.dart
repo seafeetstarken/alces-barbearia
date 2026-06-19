@@ -44,6 +44,7 @@ class AppState {
   final ValueNotifier<int> userCoins = ValueNotifier<int>(0);
   final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
+  final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
   
   // Profile fields
   String get userName {
@@ -80,6 +81,7 @@ class AppState {
             userCoins.value = profileData['alce_coins'] ?? 0;
             userLevel.value = profileData['level'] ?? 1;
             userBirthDate.value = profileData['birth_date'];
+            userSavedEmail.value = profileData['email'];
           }
         } catch (_) {}
       }

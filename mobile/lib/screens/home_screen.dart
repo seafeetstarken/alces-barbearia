@@ -295,19 +295,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(Icons.wallet_giftcard,
-                                      color: AppTheme.primaryGold, size: 14),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Cashback acumulado: R\$ 24,50',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.7),
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
+                              ValueListenableBuilder<int>(
+                                valueListenable: _appState.userLevel,
+                                builder: (context, level, _) {
+                                  return ValueListenableBuilder<int>(
+                                    valueListenable: _appState.userXp,
+                                    builder: (context, xp, _) {
+                                      return ValueListenableBuilder<int>(
+                                        valueListenable: _appState.userCoins,
+                                        builder: (context, coins, _) {
+                                          return Row(
+                                            children: [
+                                              const Icon(Icons.workspace_premium, color: Color(0xFF52B788), size: 14),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Alces Games • Lvl $level • $xp XP • $coins Coins',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF52B788),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      );
+                                    }
+                                  );
+                                }
                               ),
                             ],
                           ),
