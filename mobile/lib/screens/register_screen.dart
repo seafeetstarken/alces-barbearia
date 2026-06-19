@@ -20,11 +20,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
 
   Future<void> _handleRegister() async {
-    final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
     
-    if (name.isEmpty || phone.isEmpty || password.isEmpty) return;
+    if (phone.isEmpty || password.isEmpty) return;
 
     setState(() => _isLoading = true);
     final email = '$phone@alces.com.br';
@@ -34,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: email,
         password: password,
         data: {
-          'full_name': name,
+          'full_name': 'Cliente', // Default name
           'phone': phone,
         }
       );
@@ -73,12 +72,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         elevation: 0,
         title: const Text('Criar cadastro', style: TextStyle(color: AppTheme.primaryGold)),
         iconTheme: const IconThemeData(color: AppTheme.primaryGold),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Stack(
         children: [
@@ -104,18 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Name
-                        TextField(
-                          controller: _nameController,
-                          style: const TextStyle(color: Colors.white),
-                          textCapitalization: TextCapitalization.words,
-                          decoration: const InputDecoration(
-                            labelText: 'Nome Completo',
-                            prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
                         // Phone
                         TextField(
                           controller: _phoneController,
