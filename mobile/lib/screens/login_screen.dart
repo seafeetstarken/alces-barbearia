@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
@@ -67,14 +67,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 40),
                   
-                  // Email Field
+                  // Phone Field
                   TextField(
-                    controller: _emailController,
+                    controller: _phoneController,
                     style: const TextStyle(color: Colors.white),
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
-                      labelText: 'E-mail ou Usuário',
-                      prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
+                      labelText: 'Celular (DDD+Nr)',
+                      prefixIcon: Icon(Icons.phone_android, color: AppTheme.primaryGold),
                     ),
                   ),
                   const SizedBox(height: 24),

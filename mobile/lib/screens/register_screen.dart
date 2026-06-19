@@ -11,10 +11,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _cpfController = TextEditingController();
   final _passwordController = TextEditingController();
   
   bool _obscurePassword = true;
@@ -69,17 +66,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Name
-                        TextField(
-                          controller: _nameController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            labelText: 'Seu nome completo',
-                            prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
                         // Phone
                         TextField(
                           controller: _phoneController,
@@ -88,30 +74,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Celular (DDD+Nr)',
                             prefixIcon: Icon(Icons.phone_android, color: AppTheme.primaryGold),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
-                        // Email
-                        TextField(
-                          controller: _emailController,
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'E-mail (obrigatório)',
-                            prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryGold),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
-                        // CPF (Optional)
-                        TextField(
-                          controller: _cpfController,
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'CPF (opcional)',
-                            prefixIcon: Icon(Icons.credit_card, color: AppTheme.primaryGold),
                           ),
                         ),
                         const SizedBox(height: 20),

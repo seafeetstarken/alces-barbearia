@@ -17,12 +17,23 @@ class WelcomeScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/bg_welcome.jpg'),
+                image: AssetImage('assets/images/Alces-89.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
             child: Container(
-              color: AppTheme.backgroundDark.withOpacity(0.85),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppTheme.backgroundDark.withOpacity(0.4),
+                    AppTheme.backgroundDark.withOpacity(0.8),
+                    AppTheme.backgroundDark,
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
             ),
           ),
           
