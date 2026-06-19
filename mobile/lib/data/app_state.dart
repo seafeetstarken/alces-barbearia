@@ -194,12 +194,14 @@ class AppState {
 
     final lowerName = service.name.toLowerCase();
 
-    if (plan.contains('Essencial')) {
-      if (lowerName.contains('corte')) return service.price; // 100% off (limit to be managed physically)
-    } else if (plan.contains('Premium')) {
-      if (lowerName.contains('corte') || lowerName.contains('barba')) return service.price; 
-    } else if (plan.contains('VIP')) {
-      if (lowerName.contains('corte') || lowerName.contains('barba') || lowerName.contains('relaxamento') || lowerName.contains('massagem')) return service.price; 
+    final lowerPlan = plan.toLowerCase();
+
+    if (lowerPlan.contains('cabelo e barba ilimitado')) {
+      if (lowerName.contains('corte') || lowerName.contains('barba')) return service.price;
+    } else if (lowerPlan.contains('corte ilimitado')) {
+      if (lowerName.contains('corte')) return service.price;
+    } else if (lowerPlan.contains('barba ilimitado')) {
+      if (lowerName.contains('barba')) return service.price;
     }
 
     return 0.0; // No discount
