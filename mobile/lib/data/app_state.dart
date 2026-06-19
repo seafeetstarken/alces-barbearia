@@ -103,6 +103,24 @@ class AppState {
     upcomingAppointments.value = list;
   }
 
+  // Buscar horários ocupados de um barbeiro específico num dia
+  Future<List<String>> fetchBookedSlots(String barberId, DateTime date) async {
+    try {
+      final dateStr = date.toIso8601String().split('T')[0];
+      final response = await supabase
+          .from('appointments')
+          .select('appointment_time')
+          .eq('barber_id', barberId)
+          .eq('appointment_date', dateStr)
+          .neq('status', 'cancelled');
+      
+      return response.map<String>((e) => e['appointment_time'] as String).toList();
+    } catch (e) {
+      print('Erro ao buscar horários: $e');
+      return [];
+    }
+  }
+
   // Lógica de Desconto de Clube
   double getDiscountForService(ServiceItem service) {
     final plan = activePlan.value;

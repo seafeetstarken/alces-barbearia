@@ -31,8 +31,8 @@ class _BookingScreenState extends State<BookingScreen> {
     '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'
   ];
 
-  // Helper list to simulate unavailable slots for demo visual error states
-  final List<String> _unavailableSlots = ['10:00', '14:30', '16:00'];
+  List<String> _unavailableSlots = [];
+  bool _isLoadingSlots = false;
 
   @override
   void initState() {
@@ -60,7 +60,23 @@ class _BookingScreenState extends State<BookingScreen> {
       _selectedBarber = null;
       _selectedDate = DateTime.now();
       _selectedTime = null;
+      _unavailableSlots = [];
     });
+  }
+
+  Future<void> _loadUnavailableSlots() async {
+    if (_selectedBarber == null || _selectedDate == null) return;
+    setState(() => _isLoadingSlots = true);
+    final slots = await _appState.fetchBookedSlots(_selectedBarber!.id, _selectedDate!);
+    if (mounted) {
+      setState(() {
+        _unavailableSlots = slots;
+        _isLoadingSlots = false;
+        if (_selectedTime != null && _unavailableSlots.contains(_selectedTime)) {
+          _selectedTime = null;
+        }
+      });
+    }
   }
 
   Future<void> _confirmBooking(Store store) async {
@@ -332,6 +348,7 @@ class _BookingScreenState extends State<BookingScreen> {
             setState(() {
               _selectedBarber = barber;
             });
+            _loadUnavailableSlots();
             _nextStep();
           },
           border: Border.all(
@@ -398,10 +415,13 @@ class _BookingScreenState extends State<BookingScreen> {
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: GestureDetector(
-                  onTap: () => setState(() {
-                    _selectedDate = date;
-                    _selectedTime = null; // Clear selected time on date change
-                  }),
+                  onTap: () {
+                    setState(() {
+                      _selectedDate = date;
+                      _selectedTime = null; // Clear selected time on date change
+                    });
+                    _loadUnavailableSlots();
+                  },
                   child: Container(
                     width: 60,
                     decoration: BoxDecoration(
@@ -458,20 +478,29 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         const SizedBox(height: 12),
         // Grid of times slots
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 2.0,
-          ),
-          itemCount: _timeSlots.length,
-          itemBuilder: (context, index) {
-            final time = _timeSlots[index];
-            final isUnavailable = _unavailableSlots.contains(time);
-            final isSelected = _selectedTime == time;
+        if (_isLoadingSlots)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(color: AppTheme.primaryGold),
+            ),
+          )
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 2.0,
+            ),
+            itemCount: _timeSlots.length,
+            itemBuilder: (context, index) {
+              final time = _timeSlots[index];
+              // Our db stores time as '09:00:00', but timeSlots is '09:00'. We need to check both.
+              final isUnavailable = _unavailableSlots.contains(time) || _unavailableSlots.contains('$time:00');
+              final isSelected = _selectedTime == time;
 
             return GestureDetector(
               onTap: isUnavailable
