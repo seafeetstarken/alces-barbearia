@@ -231,8 +231,12 @@ class AppState {
     cart.value = {};
   }
 
-  void selectPlan(String planName) {
-    activePlan.value = planName;
+  void selectPlan(String? planName) {
+    if (planName == null || planName.isEmpty) {
+      activePlan.value = null;
+    } else {
+      activePlan.value = planName;
+    }
   }
 
   double get cartTotal {

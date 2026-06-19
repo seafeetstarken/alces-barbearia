@@ -358,7 +358,7 @@ class _ClubScreenState extends State<ClubScreen> {
                             AlcesButton(
                               text: 'Assinar ${plan.name}',
                               isPrimary: true,
-                              onPressed: activePlan != null
+                              onPressed: (activePlan != null && activePlan.isNotEmpty)
                                   ? null // Disable if they already have another plan (can only have one)
                                   : () => _showCheckoutSheet(context, plan),
                             )
