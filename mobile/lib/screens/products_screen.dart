@@ -209,7 +209,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFF1A1A1A),
                           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10.0, offset: const Offset(0.0, -5.0))],
-                          border: Border(top: Border.all(color: Colors.white.withOpacity(0.1))),
+                          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
                         ),
                         child: SafeArea(
                           child: Row(
