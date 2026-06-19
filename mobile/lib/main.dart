@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'theme/app_theme.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/main_screen.dart';
@@ -8,13 +7,10 @@ import 'screens/main_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
-
-  // Initialize Supabase
+  // Initialize Supabase (Public Anon Key and URL are safe to expose in client)
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: 'https://baafdmeulyzpcgbqqeut.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhYWZkbWV1bHl6cGNnYnFxZXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDMyNzgsImV4cCI6MjA5NzMxOTI3OH0.cycNHV-8ckDsaM6IC4TeFnTqN9-fnCUFcOsKVN86cME',
   );
 
   runApp(const AlcesApp());
