@@ -541,47 +541,75 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 105, // Reduced width to fit 3 exactly
                           margin: const EdgeInsets.only(right: 12), // Reduced margin
                           child: AlcesCard(
-                            padding: const EdgeInsets.all(8),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            padding: EdgeInsets.zero,
+                            child: Stack(
+                              fit: StackFit.expand,
                               children: [
-                                CircleAvatar(
-                                  radius: 24, // Smaller avatar
-                                  backgroundImage: barber.avatarUrl.isNotEmpty
-                                      ? (barber.avatarUrl.startsWith('http')
-                                          ? NetworkImage(barber.avatarUrl)
-                                          : AssetImage(barber.avatarUrl) as ImageProvider)
-                                      : null,
-                                  backgroundColor: Colors.white10,
-                                  child: barber.avatarUrl.isEmpty
-                                      ? Text(barber.initials, style: const TextStyle(color: Colors.white))
-                                      : null,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  barber.name.split(' ')[0],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: Colors.white,
+                                // Background Image
+                                if (barber.avatarUrl.isNotEmpty)
+                                  Image(
+                                    image: barber.avatarUrl.startsWith('http')
+                                        ? NetworkImage(barber.avatarUrl)
+                                        : AssetImage(barber.avatarUrl) as ImageProvider,
+                                    fit: BoxFit.cover,
+                                  )
+                                else
+                                  Container(
+                                    color: Colors.white10,
+                                    child: Center(
+                                      child: Text(barber.initials, style: const TextStyle(color: Colors.white, fontSize: 24)),
+                                    ),
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  barber.isLeader ? 'Líder' : 'Barbeiro',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: barber.isLeader
-                                        ? AppTheme.primaryGold
-                                        : AppTheme.textMuted,
-                                    fontWeight: barber.isLeader
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                
+                                // Gradient Overlay
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black.withOpacity(0.8),
+                                      ],
+                                    ),
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                
+                                // Texts
+                                Positioned(
+                                  bottom: 8,
+                                  left: 8,
+                                  right: 8,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        barber.name.split(' ')[0],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: Colors.white,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        barber.isLeader ? 'Líder' : 'Barbeiro',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: barber.isLeader
+                                              ? AppTheme.primaryGold
+                                              : AppTheme.textMuted,
+                                          fontWeight: barber.isLeader
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

@@ -7,6 +7,7 @@ import '../models/appointment.dart';
 import '../models/store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
+import 'gamification_info_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'welcome_screen.dart';
 
@@ -239,6 +240,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         return AlcesCard(
                           border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5), width: 1.5),
                           padding: const EdgeInsets.all(16),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const GamificationInfoScreen()),
+                            );
+                          },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
