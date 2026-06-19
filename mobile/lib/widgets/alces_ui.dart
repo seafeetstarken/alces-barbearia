@@ -31,7 +31,8 @@ class AlcesButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isPrimary ? AppTheme.primaryGold : Colors.transparent,
           foregroundColor: isPrimary ? Colors.black : AppTheme.primaryGold,
-          elevation: isPrimary ? 2 : 0,
+          elevation: isPrimary ? 8 : 0,
+          shadowColor: isPrimary ? AppTheme.primaryGold.withOpacity(0.5) : Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: isPrimary 

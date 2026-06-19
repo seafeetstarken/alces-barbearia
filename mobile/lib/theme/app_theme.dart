@@ -8,9 +8,10 @@ class AppTheme {
   static const Color primaryGold = Color(0xFFD4A03C);
   static const Color primaryGoldDark = Color(0xFFB8860B);
   
-  static const Color backgroundDark = Color(0xFF1A1614);
-  static const Color cardDark = Color(0xFF26211E);
-  static const Color cardDarkElevated = Color(0xFF322C28);
+  // Acessor Digital DNA: Deep Obsidian & Graphite Panel
+  static const Color backgroundDark = Color(0xFF0A0A0C);
+  static const Color cardDark = Color(0xFF18181B);
+  static const Color cardDarkElevated = Color(0xFF27272A);
   
   static const Color textLight = Color(0xFFF3F4F6);
   static const Color textMuted = Color(0xFF9CA3AF);
@@ -22,14 +23,18 @@ class AppTheme {
   // 2. DESIGN TOKENS: Typography
   // --------------------------------------------------------
   static TextTheme get _textTheme {
-    return GoogleFonts.sourceSans3TextTheme(ThemeData.dark().textTheme).copyWith(
-      displayLarge: GoogleFonts.sourceSans3(color: textLight, fontWeight: FontWeight.bold, fontSize: 32),
-      displayMedium: GoogleFonts.sourceSans3(color: textLight, fontWeight: FontWeight.bold, fontSize: 28),
-      titleLarge: GoogleFonts.sourceSans3(color: textLight, fontWeight: FontWeight.w600, fontSize: 22),
-      titleMedium: GoogleFonts.sourceSans3(color: textLight, fontWeight: FontWeight.w600, fontSize: 18),
-      bodyLarge: GoogleFonts.sourceSans3(color: textLight, fontSize: 16),
-      bodyMedium: GoogleFonts.sourceSans3(color: textMuted, fontSize: 14),
-      labelLarge: GoogleFonts.sourceSans3(color: textLight, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.2),
+    // Acessor Digital DNA: Space Grotesk for Display, Inter for Body
+    final displayFont = GoogleFonts.spaceGroteskTextTheme(ThemeData.dark().textTheme);
+    final bodyFont = GoogleFonts.interTextTheme(ThemeData.dark().textTheme);
+    
+    return bodyFont.copyWith(
+      displayLarge: displayFont.displayLarge?.copyWith(color: textLight, fontWeight: FontWeight.bold, fontSize: 32, letterSpacing: -0.5),
+      displayMedium: displayFont.displayMedium?.copyWith(color: textLight, fontWeight: FontWeight.bold, fontSize: 28, letterSpacing: -0.5),
+      titleLarge: displayFont.titleLarge?.copyWith(color: textLight, fontWeight: FontWeight.bold, fontSize: 22),
+      titleMedium: displayFont.titleMedium?.copyWith(color: textLight, fontWeight: FontWeight.bold, fontSize: 18),
+      bodyLarge: bodyFont.bodyLarge?.copyWith(color: textLight, fontSize: 16),
+      bodyMedium: bodyFont.bodyMedium?.copyWith(color: textMuted, fontSize: 14),
+      labelLarge: displayFont.labelLarge?.copyWith(color: textLight, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.2),
     );
   }
 
