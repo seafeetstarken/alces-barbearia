@@ -253,19 +253,38 @@ async function seedData() {
 
     // 4. Inserir Produtos
     console.log('\n📦 Criando Produtos...');
-    const products = [
-        { store_id: storeId, name: 'Pomada Modeladora', price: 45.00, cost: 20.00, stock_quantity: 15, min_stock: 5 },
-        { store_id: storeId, name: 'Óleo para Barba', price: 55.00, cost: 25.00, stock_quantity: 10, min_stock: 3 },
-        { store_id: storeId, name: 'Shampoo Masculino', price: 35.00, cost: 15.00, stock_quantity: 20, min_stock: 5 },
-        { store_id: storeId, name: 'Cera Matte', price: 50.00, cost: 22.00, stock_quantity: 8, min_stock: 3 },
-        { store_id: storeId, name: 'Balm para Barba', price: 40.00, cost: 18.00, stock_quantity: 12, min_stock: 4 },
-        // Escola Agrícola
-        { store_id: escolaAgricolaStoreId, name: 'Pomada Modeladora', price: 45.00, cost: 20.00, stock_quantity: 15, min_stock: 5 },
-        { store_id: escolaAgricolaStoreId, name: 'Óleo para Barba', price: 55.00, cost: 25.00, stock_quantity: 10, min_stock: 3 },
-        { store_id: escolaAgricolaStoreId, name: 'Shampoo Masculino', price: 35.00, cost: 15.00, stock_quantity: 20, min_stock: 5 },
-        { store_id: escolaAgricolaStoreId, name: 'Cera Matte', price: 50.00, cost: 22.00, stock_quantity: 8, min_stock: 3 },
-        { store_id: escolaAgricolaStoreId, name: 'Balm para Barba', price: 40.00, cost: 18.00, stock_quantity: 12, min_stock: 4 },
-    ];
+        { store_id: storeId, name: 'Água Sem Gás 500ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Água Com Gás 500ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'BALM PÓS BARBA 120G', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Corona Extra', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Energético Heign 473ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Bom Bom', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Biz Xtra Oreo', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Blend Capilar', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Cerveja Eisenbahn 355ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Bolacha Oreo', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Coca-Cola Zero 350ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Cerveja Sol 330ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Creme Ativador De Cachos', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Energético Monster 473ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Gel Garden', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Hair Spray', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Halls', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Messy Hair', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'OLÉO ARGAN FOR MEN GARDEN', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'POMADA MATTE FOR MEN GARDEN', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'POMADA TEIA FOR MEN GARDEN', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pomada Alces Teia 70g', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pomada Alces Mate', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pomada Alces Brilho', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pomada Alces Caramelo', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pomada em Pó Alces', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Óleo Alces LV', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Balm Alces CA', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Pós Barba Alces', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Shampoo Limpeza Profunda Alces', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+        { store_id: storeId, name: 'Energético Red Bull 355ml', price: 0.0, cost: 0.0, stock_quantity: 10, min_stock: 2 },
+
 
     for (const product of products) {
         const { data: existing } = await supabase

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 
@@ -17,7 +17,7 @@ class WelcomeScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop'),
+                image: AssetImage('assets/images/bg_welcome.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -36,37 +36,14 @@ class WelcomeScreen extends StatelessWidget {
                   const Spacer(),
                   
                   // Logo Area
-                  Column(
-                    children: [
-                      const Icon(Icons.content_cut, size: 64, color: AppTheme.primaryGold),
-                      const SizedBox(height: 16),
-                      Text(
-                        'ALCE\'S',
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          fontSize: 48,
-                          letterSpacing: 8,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'B A R B E R S H O P',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          letterSpacing: 6,
-                          color: AppTheme.primaryGold,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                  const AlcesLogo(height: 140),
                   
                   const Spacer(),
                   
                   // Action Buttons
-                  PrimaryButton(
+                  AlcesButton(
                     text: 'Fazer Login',
+                    isPrimary: true,
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -75,8 +52,9 @@ class WelcomeScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  SecondaryButton(
+                  AlcesButton(
                     text: 'Criar Cadastro',
+                    isPrimary: false,
                     onPressed: () {
                       Navigator.push(
                         context,

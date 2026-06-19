@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=2070&auto=format&fit=crop'),
+                image: AssetImage('assets/images/bg_login.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -106,29 +106,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      TextButton(
+                      AlcesTextButton(
+                        text: 'ESQUECI O USUÁRIO',
                         onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: AppTheme.primaryGold.withOpacity(0.1),
-                          foregroundColor: AppTheme.primaryGold,
-                        ),
-                        child: const Text('ESQUECI O USUÁRIO'),
                       ),
-                      TextButton(
+                      AlcesTextButton(
+                        text: 'ESQUECI A SENHA',
                         onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: AppTheme.primaryGold.withOpacity(0.1),
-                          foregroundColor: AppTheme.primaryGold,
-                        ),
-                        child: const Text('ESQUECI A SENHA'),
                       ),
                     ],
                   ),
                   
                   const Spacer(),
                   
-                  PrimaryButton(
+                  AlcesButton(
                     text: 'Logar',
+                    isPrimary: true,
                     onPressed: _handleLogin,
                   ),
                 ],

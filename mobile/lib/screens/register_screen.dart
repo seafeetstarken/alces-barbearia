@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -51,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2070&auto=format&fit=crop'),
+                image: AssetImage('assets/images/bg_register.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -145,8 +145,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Bottom Button
                 Container(
                   padding: const EdgeInsets.all(24.0),
-                  child: PrimaryButton(
+                  child: AlcesButton(
                     text: 'Avançar',
+                    isPrimary: true,
                     onPressed: _handleRegister,
                   ),
                 ),
