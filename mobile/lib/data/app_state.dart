@@ -62,6 +62,16 @@ class AppState {
       final productsData = await supabase.from('products').select();
       final plansData = await supabase.from('plans').select();
 
+      final user = supabase.auth.currentUser;
+      if (user != null) {
+        try {
+          final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id);
+          upcomingAppointments.value = appointmentsData.map<Appointment>((e) => Appointment.fromJson(e)).toList();
+        } catch (e) {
+          debugPrint('Error loading appointments: $e');
+        }
+      }
+
       stores.value = storesData.map<Store>((e) => Store.fromJson(e)).toList();
       barbers.value = barbersData.map<Barber>((e) => Barber.fromJson(e)).toList();
       services.value = servicesData.map<ServiceItem>((e) => ServiceItem.fromJson(e)).toList();
@@ -101,6 +111,18 @@ class AppState {
     final list = List<Appointment>.from(upcomingAppointments.value);
     list.add(appt);
     upcomingAppointments.value = list;
+  }
+
+  Future<void> cancelAppointment(String appointmentId) async {
+    try {
+      await supabase.from('appointments').update({'status': 'cancelled'}).eq('id', appointmentId);
+      final list = List<Appointment>.from(upcomingAppointments.value);
+      list.removeWhere((a) => a.id == appointmentId);
+      upcomingAppointments.value = list;
+    } catch (e) {
+      debugPrint('Erro ao cancelar agendamento: $e');
+      rethrow;
+    }
   }
 
   // Buscar horários ocupados de um barbeiro específico num dia

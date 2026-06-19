@@ -167,7 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ValueListenableBuilder<List<Appointment>>(
               valueListenable: _appState.upcomingAppointments,
               builder: (context, list, _) {
-                if (list.isEmpty) {
+                final now = DateTime.now();
+                final futureAppointments = list.where((a) => a.date.isAfter(now) || (a.date.day == now.day && a.date.month == now.month && a.date.year == now.year)).toList();
+                
+                if (futureAppointments.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Text(
@@ -178,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
 
                 return Column(
-                  children: list.map((appt) {
+                  children: futureAppointments.map((appt) {
                     final store = _appState.stores.value.where((s) => s.id == appt.storeId).firstOrNull;
                     final service = _appState.services.value.where((s) => s.id == appt.serviceId).firstOrNull;
                     final barber = _appState.barbers.value.where((b) => b.id == appt.barberId).firstOrNull;
@@ -188,57 +191,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: AlcesCard(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    service?.name ?? 'Serviço',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Barbeiro: ${barber?.name.split(' ')[0] ?? ''}',
-                                    style: const TextStyle(fontSize: 13, color: AppTheme.textMuted),
-                                  ),
-                                  Text(
-                                    'Loja: ${store?.name.replaceAll("Alce\'s Barbearia - ", "") ?? ''}',
-                                    style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFD4A03C).withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: const Color(0xFFD4A03C).withOpacity(0.3)),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        service?.name ?? 'Serviço',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Barbeiro: ${barber?.name.split(' ')[0] ?? ''}',
+                                        style: const TextStyle(fontSize: 13, color: AppTheme.textMuted),
+                                      ),
+                                      Text(
+                                        'Loja: ${store?.name.replaceAll("Alce\'s Barbearia - ", "") ?? ''}',
+                                        style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                  child: const Text('Agendado', style: TextStyle(color: Color(0xFFD4A03C), fontSize: 10, fontWeight: FontWeight.bold)),
                                 ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '$dateStr às ${appt.time}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: AppTheme.primaryGold,
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD4A03C).withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: const Color(0xFFD4A03C).withOpacity(0.3)),
+                                      ),
+                                      child: const Text('Agendado', style: TextStyle(color: Color(0xFFD4A03C), fontSize: 10, fontWeight: FontWeight.bold)),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '$dateStr às ${appt.time}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: AppTheme.primaryGold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+                            const Divider(color: Colors.white12, height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: TextButton.icon(
+                                onPressed: () => _appState.cancelAppointment(appt.id),
+                                icon: const Icon(Icons.cancel_outlined, size: 16, color: Colors.redAccent),
+                                label: const Text('Cancelar Agendamento', style: TextStyle(color: Colors.redAccent, fontSize: 12)),
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.redAccent.withOpacity(0.1),
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -259,12 +280,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
             ),
             const SizedBox(height: 12),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'Nenhum histórico de visitas encontrado.',
-                style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
-              ),
+            ValueListenableBuilder<List<Appointment>>(
+              valueListenable: _appState.upcomingAppointments,
+              builder: (context, list, _) {
+                final now = DateTime.now();
+                final pastAppointments = list.where((a) => a.date.isBefore(DateTime(now.year, now.month, now.day))).toList();
+
+                if (pastAppointments.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      'Nenhum histórico de visitas encontrado.',
+                      style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: pastAppointments.map((appt) {
+                    final store = _appState.stores.value.where((s) => s.id == appt.storeId).firstOrNull;
+                    final service = _appState.services.value.where((s) => s.id == appt.serviceId).firstOrNull;
+                    final barber = _appState.barbers.value.where((b) => b.id == appt.barberId).firstOrNull;
+                    final dateStr = DateFormat('dd/MM/yyyy').format(appt.date);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: AlcesCard(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    service?.name ?? 'Serviço',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('Barbeiro: ${barber?.name.split(' ')[0] ?? ''}', style: const TextStyle(fontSize: 13, color: AppTheme.textMuted)),
+                                  Text('Loja: ${store?.name.replaceAll("Alce\'s Barbearia - ", "") ?? ''}', style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Icon(Icons.check_circle, color: Color(0xFF52B788), size: 16),
+                                const SizedBox(height: 8),
+                                Text(dateStr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
             ),
             const SizedBox(height: 32),
             AlcesButton(
