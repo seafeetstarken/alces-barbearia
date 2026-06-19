@@ -150,10 +150,13 @@ jobs:
           # Build a release IPA
           flutter build ipa --release --export-options-plist=exportOptions.plist
 
+      - name: List IPA contents
+        run: ls -la mobile/build/ios/ipa/
+
       - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v4
         with:
-          app-path: 'mobile/build/ios/ipa/alces_barbearia.ipa'
+          app-path: 'mobile/build/ios/ipa/*.ipa'
           issuer-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER }}
           api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
