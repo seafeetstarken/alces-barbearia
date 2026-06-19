@@ -156,7 +156,7 @@ jobs:
       - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v4
         with:
-          app-path: 'mobile/build/ios/ipa/*.ipa'
+          app-path: 'mobile/build/ios/ipa/mobile.ipa'
           issuer-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER }}
           api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
