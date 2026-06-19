@@ -135,17 +135,23 @@ class AlcesCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
+  final Border? border;
 
   const AlcesCard({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.onTap,
+    this.border,
   });
 
   @override
   Widget build(BuildContext context) {
     final card = Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: border?.top ?? BorderSide.none,
+      ),
       child: Padding(
         padding: padding,
         child: child,
