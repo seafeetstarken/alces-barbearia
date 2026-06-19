@@ -377,7 +377,10 @@ class _ClubScreenState extends State<ClubScreen> {
                               },
                             ),
                         ],
-                  }).toList(),
+                      ),
+                    ),
+                  );
+                }).toList(),
                 );
               },
             ),
