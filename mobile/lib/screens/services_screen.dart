@@ -134,7 +134,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                 ),
                                 SizedBox(
                                   height: 36,
-                                  width: 100,
+                                  width: 120, // Increased to avoid text wrapping
                                   child: AlcesButton(
                                     text: 'Agendar',
                                     isPrimary: true,

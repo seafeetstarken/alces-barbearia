@@ -20,7 +20,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   int _currentStep = 0; // 0: Service, 1: Barber, 2: Date & Time, 3: Summary
 
-  ServiceItem? _selectedService;
+  List<ServiceItem> _selectedServices = [];
   Barber? _selectedBarber;
   DateTime? _selectedDate;
   String? _selectedTime;
@@ -56,7 +56,7 @@ class _BookingScreenState extends State<BookingScreen> {
   void _resetBooking() {
     setState(() {
       _currentStep = 0;
-      _selectedService = null;
+      _selectedServices.clear();
       _selectedBarber = null;
       _selectedDate = DateTime.now();
       _selectedTime = null;
@@ -80,20 +80,9 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Future<void> _confirmBooking(Store store) async {
-    if (_selectedService == null || _selectedBarber == null || _selectedDate == null || _selectedTime == null) {
+    if (_selectedServices.isEmpty || _selectedBarber == null || _selectedDate == null || _selectedTime == null) {
       return;
     }
-
-    final newAppt = Appointment(
-      id: 'appt-${DateTime.now().millisecondsSinceEpoch}',
-      storeId: store.id,
-      barberId: _selectedBarber!.id,
-      serviceId: _selectedService!.id,
-      clientName: _appState.userName,
-      date: _selectedDate!,
-      time: _selectedTime!,
-      status: 'confirmed',
-    );
 
     // Show loading
     showDialog(
@@ -103,7 +92,20 @@ class _BookingScreenState extends State<BookingScreen> {
     );
 
     try {
-      await _appState.addAppointment(newAppt);
+      for (var service in _selectedServices) {
+        final newAppt = Appointment(
+          id: 'appt-${DateTime.now().millisecondsSinceEpoch}-${service.id.substring(0, 4)}',
+          storeId: store.id,
+          barberId: _selectedBarber!.id,
+          serviceId: service.id,
+          clientName: _appState.userName,
+          date: _selectedDate!,
+          time: _selectedTime!,
+          status: 'confirmed',
+        );
+        await _appState.addAppointment(newAppt);
+      }
+
       if (mounted) {
         Navigator.pop(context); // close loading
         _showSuccessDialog(store);
@@ -217,75 +219,82 @@ class _BookingScreenState extends State<BookingScreen> {
     return ValueListenableBuilder<String?>(
       valueListenable: _appState.activePlan,
       builder: (context, activePlan, _) {
-        return ListView.builder(
+        return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.85,
+          ),
           itemCount: storeServices.length,
           itemBuilder: (context, index) {
             final service = storeServices[index];
-            final isSelected = _selectedService?.id == service.id;
+            final isSelected = _selectedServices.any((s) => s.id == service.id);
             final discount = _appState.getDiscountForService(service);
             final finalPrice = service.price - discount;
             final isFreeByClub = discount == service.price && service.price > 0;
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: AlcesCard(
-            onTap: () {
-              setState(() {
-                _selectedService = service;
-              });
-              _nextStep();
-            },
-            border: Border.all(
-              color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
-              width: 1.5,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
+            return AlcesCard(
+              padding: const EdgeInsets.all(12),
+              onTap: () {
+                setState(() {
+                  if (isSelected) {
+                    _selectedServices.removeWhere((s) => s.id == service.id);
+                  } else {
+                    _selectedServices.add(service);
+                  }
+                });
+              },
+              border: Border.all(
+                color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
+                width: 1.5,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            service.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? AppTheme.primaryGold : Colors.white,
-                            ),
+                          Icon(
+                            isSelected ? Icons.check_circle : Icons.circle_outlined,
+                            color: isSelected ? AppTheme.primaryGold : Colors.white30,
+                            size: 20,
                           ),
-                          if (isFreeByClub) ...[
-                            const SizedBox(width: 8),
+                          if (isFreeByClub)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryGold.withOpacity(0.15),
+                                color: const Color(0xFF52B788).withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: AppTheme.primaryGold.withOpacity(0.3)),
+                                border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
                               ),
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.star, color: AppTheme.primaryGold, size: 10),
-                                  SizedBox(width: 4),
-                                  Text('Incluso', style: TextStyle(color: AppTheme.primaryGold, fontSize: 9, fontWeight: FontWeight.bold)),
-                                ],
-                              ),
+                              child: const Text('CLUBE', style: TextStyle(color: Color(0xFF52B788), fontSize: 9, fontWeight: FontWeight.bold)),
                             ),
-                          ]
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 12),
                       Text(
-                        service.description,
-                        style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                        service.name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
                           const Icon(Icons.access_time, size: 12, color: AppTheme.textMuted),
@@ -293,60 +302,52 @@ class _BookingScreenState extends State<BookingScreen> {
                           Text('${service.duration} min', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      if (isFreeByClub)
+                        const Text('GRÁTIS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF52B788)))
+                      else
+                        Text('R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                        ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (isFreeByClub)
-                      Text(
-                        'R\$ ${service.price.toStringAsFixed(2).replaceAll('.', ',')}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withOpacity(0.4),
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    Text(
-                      'R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold, 
-                        fontSize: isFreeByClub ? 16 : 15, 
-                        color: isFreeByClub ? const Color(0xFF52B788) : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
-    });
   }
 
   Widget _buildBarberSelection(List<Barber> storeBarbers) {
+    if (storeBarbers.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text('Nenhum profissional disponível.', style: TextStyle(color: AppTheme.textMuted)),
+        ),
+      );
+    }
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.85,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.0,
       ),
       itemCount: storeBarbers.length,
       itemBuilder: (context, index) {
         final barber = storeBarbers[index];
         final isSelected = _selectedBarber?.id == barber.id;
+
         return AlcesCard(
           onTap: () {
             setState(() {
               _selectedBarber = barber;
+              _selectedTime = null; // Clear time when barber changes
             });
             _loadUnavailableSlots();
             _nextStep();
@@ -547,9 +548,18 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildSummarySection(Store store) {
     final dateStr = _selectedDate != null ? DateFormat('dd/MM/yyyy').format(_selectedDate!) : '';
-    final discount = _selectedService != null ? _appState.getDiscountForService(_selectedService!) : 0.0;
-    final originalPrice = _selectedService?.price ?? 0.0;
-    final finalPrice = originalPrice - discount;
+    
+    double totalOriginal = 0;
+    double totalDiscount = 0;
+    double finalPrice = 0;
+
+    for (var service in _selectedServices) {
+      totalOriginal += service.price;
+      totalDiscount += _appState.getDiscountForService(service);
+    }
+    finalPrice = totalOriginal - totalDiscount;
+
+    final serviceNames = _selectedServices.map((s) => s.name).join(' + ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -564,7 +574,7 @@ class _BookingScreenState extends State<BookingScreen> {
             children: [
               _buildSummaryRow(Icons.store, 'Unidade', store.name.replaceAll("Alce\'s Barbearia - ", "")),
               const Divider(color: Colors.white12, height: 24),
-              _buildSummaryRow(Icons.cut, 'Serviço', _selectedService?.name ?? ''),
+              _buildSummaryRow(Icons.cut, 'Serviços', serviceNames),
               const Divider(color: Colors.white12, height: 24),
               _buildSummaryRow(Icons.person, 'Barbeiro', _selectedBarber?.name ?? ''),
               const Divider(color: Colors.white12, height: 24),
@@ -572,17 +582,17 @@ class _BookingScreenState extends State<BookingScreen> {
               
               const Divider(color: Colors.white12, height: 24),
               
-              if (discount > 0) ...[
+              if (totalDiscount > 0) ...[
                 _buildSummaryRow(
                   Icons.receipt,
                   'Valor Original',
-                  'R\$ ${originalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                  'R\$ ${totalOriginal.toStringAsFixed(2).replaceAll('.', ',')}',
                 ),
                 const SizedBox(height: 12),
                 _buildSummaryRow(
                   Icons.star,
                   'Benefício Clube Alce\'s',
-                  '- R\$ ${discount.toStringAsFixed(2).replaceAll('.', ',')}',
+                  '- R\$ ${totalDiscount.toStringAsFixed(2).replaceAll('.', ',')}',
                   valueColor: const Color(0xFF52B788),
                   isBoldValue: true,
                 ),
@@ -690,8 +700,8 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                 ),
               ),
-              // Sticky actions bar at bottom if required (Step 2 or 3)
-              if (_currentStep == 2 || _currentStep == 3)
+              // Sticky actions bar at bottom
+              if (_currentStep == 0 || _currentStep == 2 || _currentStep == 3)
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -701,7 +711,15 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: SafeArea(
                     child: Row(
                       children: [
-                        if (_currentStep == 2) ...[
+                        if (_currentStep == 0) ...[
+                          Expanded(
+                            child: AlcesButton(
+                              text: 'Continuar',
+                              isPrimary: true,
+                              onPressed: _selectedServices.isNotEmpty ? _nextStep : null,
+                            ),
+                          ),
+                        ] else if (_currentStep == 2) ...[
                           Expanded(
                             child: AlcesButton(
                               text: 'Revisar Agendamento',
