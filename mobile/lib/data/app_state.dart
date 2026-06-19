@@ -5,6 +5,7 @@ import '../models/barber.dart';
 import '../models/service_item.dart';
 import '../models/appointment.dart';
 import '../models/product.dart';
+import '../models/plan.dart';
 
 class AppState {
   // Singleton instance
@@ -17,6 +18,7 @@ class AppState {
   final ValueNotifier<List<Barber>> barbers = ValueNotifier<List<Barber>>([]);
   final ValueNotifier<List<ServiceItem>> services = ValueNotifier<List<ServiceItem>>([]);
   final ValueNotifier<List<ProductItem>> products = ValueNotifier<List<ProductItem>>([]);
+  final ValueNotifier<List<SubscriptionPlan>> plans = ValueNotifier<List<SubscriptionPlan>>([]);
   
   final ValueNotifier<bool> isLoading = ValueNotifier<bool>(true);
 
@@ -58,11 +60,13 @@ class AppState {
       final barbersData = await supabase.from('barbers').select();
       final servicesData = await supabase.from('services').select();
       final productsData = await supabase.from('products').select();
+      final plansData = await supabase.from('plans').select();
 
       stores.value = storesData.map<Store>((e) => Store.fromJson(e)).toList();
       barbers.value = barbersData.map<Barber>((e) => Barber.fromJson(e)).toList();
       services.value = servicesData.map<ServiceItem>((e) => ServiceItem.fromJson(e)).toList();
       products.value = productsData.map<ProductItem>((e) => ProductItem.fromJson(e)).toList();
+      plans.value = plansData.map<SubscriptionPlan>((e) => SubscriptionPlan.fromJson(e)).toList();
 
       if (stores.value.isNotEmpty) {
         // Find 'Matriz' to set as default if it exists, otherwise the first one
@@ -83,7 +87,17 @@ class AppState {
     activeStore.value = store;
   }
 
-  void addAppointment(Appointment appt) {
+  Future<void> addAppointment(Appointment appt) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) throw Exception('Usuário não logado');
+
+    final data = appt.toJson();
+    data['user_id'] = user.id;
+
+    // Salvar no Supabase
+    await supabase.from('appointments').insert(data);
+
+    // Atualizar UI
     final list = List<Appointment>.from(upcomingAppointments.value);
     list.add(appt);
     upcomingAppointments.value = list;

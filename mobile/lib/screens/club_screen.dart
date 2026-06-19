@@ -15,49 +15,7 @@ class _ClubScreenState extends State<ClubScreen> {
   final AppState _appState = AppState();
   String _selectedPaymentMethod = 'pix';
 
-  static final List<SubscriptionPlan> _plans = [
-    SubscriptionPlan(
-      id: 'plan-essencial',
-      name: 'Clube Essencial',
-      description: 'Perfeito para manter o visual sempre alinhado.',
-      price: 89.90,
-      billingCycle: 'mensal',
-      features: [
-        '2 Cortes de Cabelo por mês',
-        '10% de desconto em qualquer produto',
-        'Café espresso cortesia',
-        'Sem taxa de adesão'
-      ],
-    ),
-    SubscriptionPlan(
-      id: 'plan-premium',
-      name: 'Clube Premium',
-      description: 'Nosso clube mais popular, visual impecável toda semana.',
-      price: 149.90,
-      billingCycle: 'mensal',
-      features: [
-        'Cortes ilimitados de cabelo',
-        '1 Barboterapia inclusa por mês',
-        '15% de desconto em produtos',
-        'Cerveja artesanal ou café de cortesia',
-        'Agendamento prioritário'
-      ],
-    ),
-    SubscriptionPlan(
-      id: 'plan-vip',
-      name: 'Clube Alce\'s VIP',
-      description: 'A experiência máxima da Alce\'s Barbearia.',
-      price: 199.90,
-      billingCycle: 'mensal',
-      features: [
-        'Cortes e Barbas ILIMITADOS',
-        '20% de desconto em toda a linha de produtos',
-        'Bebidas premium liberadas (chopp/cerveja/café)',
-        '1 Massagem capilar ou relaxamento por mês',
-        'Atendimento com profissionais líderes'
-      ],
-    ),
-  ];
+
 
   void _showCheckoutSheet(BuildContext context, SubscriptionPlan plan) {
     showModalBottomSheet(
@@ -314,8 +272,14 @@ class _ClubScreenState extends State<ClubScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Map plans
-                ..._plans.map((plan) {
+                ValueListenableBuilder<List<SubscriptionPlan>>(
+                  valueListenable: _appState.plans,
+                  builder: (context, plansList, _) {
+                    if (plansList.isEmpty) {
+                      return const Center(child: Text('Nenhum plano disponível no momento.', style: TextStyle(color: Colors.white)));
+                    }
+                    return Column(
+                      children: plansList.map((plan) {
                   final isCurrentPlan = activePlan == plan.name;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
@@ -413,10 +377,10 @@ class _ClubScreenState extends State<ClubScreen> {
                               },
                             ),
                         ],
-                      ),
-                    ),
-                  );
-                }),
+                  }).toList(),
+                );
+              },
+            ),
               ],
             ),
           );

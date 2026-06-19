@@ -63,7 +63,7 @@ class _BookingScreenState extends State<BookingScreen> {
     });
   }
 
-  void _confirmBooking(Store store) {
+  Future<void> _confirmBooking(Store store) async {
     if (_selectedService == null || _selectedBarber == null || _selectedDate == null || _selectedTime == null) {
       return;
     }
@@ -79,8 +79,27 @@ class _BookingScreenState extends State<BookingScreen> {
       status: 'confirmed',
     );
 
-    _appState.addAppointment(newAppt);
-    _showSuccessDialog(store);
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryGold)),
+    );
+
+    try {
+      await _appState.addAppointment(newAppt);
+      if (mounted) {
+        Navigator.pop(context); // close loading
+        _showSuccessDialog(store);
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao agendar: $e')),
+        );
+      }
+    }
   }
 
   void _showSuccessDialog(Store store) {
