@@ -20,11 +20,11 @@ class ServiceItem {
   factory ServiceItem.fromJson(Map<String, dynamic> json) {
     return ServiceItem(
       id: json['id'] as String,
-      storeId: json['store_id'] as String,
+      storeId: json['store_id'] as String? ?? 'global',
       name: json['name'] as String,
       description: json['description'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      duration: json['duration'] as int? ?? 30,
+      duration: json['duration'] as int? ?? json['duration_minutes'] as int? ?? 30,
       category: json['category'] as String? ?? 'Geral',
     );
   }
