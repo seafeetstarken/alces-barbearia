@@ -14,6 +14,35 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   final AppState _appState = AppState();
+  bool _isReserving = false;
+
+  Future<void> _handleReservation() async {
+    setState(() => _isReserving = true);
+    try {
+      await _appState.reserveProducts();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Produtos reservados com sucesso! Retire no balcão.'),
+            backgroundColor: Color(0xFF52B788),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao reservar: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isReserving = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +54,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
       body: ValueListenableBuilder<Store>(
         valueListenable: _appState.activeStore,
         builder: (context, activeStore, _) {
-          // Get products for this store
           final storeProducts = _appState.products.value.toList();
 
-          // Group products by category
           final Map<String, List<ProductItem>> categorized = {};
           for (var item in storeProducts) {
             if (!categorized.containsKey(item.category)) {
@@ -46,99 +73,176 @@ class _ProductsScreenState extends State<ProductsScreen> {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: categorized.length,
-            itemBuilder: (context, catIndex) {
-              final category = categorized.keys.elementAt(catIndex);
-              final items = categorized[category]!;
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          return ValueListenableBuilder<Map<ProductItem, int>>(
+            valueListenable: _appState.cart,
+            builder: (context, cart, _) {
+              return Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      category.toUpperCase(),
-                      style: const TextStyle(
-                        color: AppTheme.primaryGold,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      childAspectRatio: 0.75, // Taller cards for images
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final product = items[index];
-                      return AlcesCard(
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Product Image Placeholder
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.image_not_supported,
-                                    color: AppTheme.textMuted,
-                                    size: 40,
-                                  ),
-                                ),
-                              ),
+                  ListView.builder(
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: cart.isNotEmpty ? 100 : 16),
+                    itemCount: categorized.length,
+                    itemBuilder: (context, catIndex) {
+                      final category = categorized.keys.elementAt(catIndex);
+                      final items = categorized[category]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Text(
+                              category.toUpperCase(),
+                              style: const TextStyle(color: AppTheme.primaryGold, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.5),
                             ),
-                            // Product Details
-                            Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
+                          ),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.65,
+                            ),
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final product = items[index];
+                              final qty = cart[product] ?? 0;
+
+                              return AlcesCard(
+                                padding: EdgeInsets.zero,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    Text(
-                                      product.name,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                    Expanded(
+                                      flex: 3,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.05),
+                                          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                                        ),
+                                        child: const Center(child: Icon(Icons.image_not_supported, color: AppTheme.textMuted, size: 40)),
                                       ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Text(
-                                      'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryGold,
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              product.name,
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              'R\$ ${product.price.toStringAsFixed(2).replaceAll('.', ',')}',
+                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            if (qty == 0)
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 32,
+                                                child: ElevatedButton(
+                                                  onPressed: () => _appState.addToCart(product),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: AppTheme.primaryGold.withOpacity(0.15),
+                                                    foregroundColor: AppTheme.primaryGold,
+                                                    elevation: 0,
+                                                    padding: EdgeInsets.zero,
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                  ),
+                                                  child: const Text('Adicionar', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                                ),
+                                              )
+                                            else
+                                              Container(
+                                                height: 32,
+                                                decoration: BoxDecoration(
+                                                  color: AppTheme.cardDark,
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(color: AppTheme.primaryGold.withOpacity(0.5)),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    IconButton(
+                                                      icon: const Icon(Icons.remove, size: 16, color: AppTheme.primaryGold),
+                                                      padding: EdgeInsets.zero,
+                                                      constraints: const BoxConstraints(),
+                                                      onPressed: () => _appState.removeFromCart(product),
+                                                    ),
+                                                    Text('$qty', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                                    IconButton(
+                                                      icon: const Icon(Icons.add, size: 16, color: AppTheme.primaryGold),
+                                                      padding: EdgeInsets.zero,
+                                                      constraints: const BoxConstraints(),
+                                                      onPressed: () => _appState.addToCart(product),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
+                              );
+                            },
+                          ),
+                        ],
                       );
                     },
                   ),
-                  const SizedBox(height: 16),
+                  if (cart.isNotEmpty)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A1A),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, -5))],
+                          border: Border(top: Border.all(color: Colors.white.withOpacity(0.1))),
+                        ),
+                        child: SafeArea(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text('Total da Reserva', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                                  Text(
+                                    'R\$ ${_appState.cartTotal.toStringAsFixed(2).replaceAll('.', ',')}',
+                                    style: const TextStyle(color: AppTheme.primaryGold, fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              ElevatedButton(
+                                onPressed: _isReserving ? null : _handleReservation,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primaryGold,
+                                  foregroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: _isReserving
+                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                                    : const Text('Reservar', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               );
             },

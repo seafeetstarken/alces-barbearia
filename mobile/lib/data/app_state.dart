@@ -198,4 +198,37 @@ class AppState {
     });
     return total;
   }
+
+  Future<void> reserveProducts() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) throw Exception('Usuário não logado');
+    if (cart.value.isEmpty) return;
+
+    final store = activeStore.value;
+    final total = cartTotal;
+
+    final itemsList = cart.value.entries.map((entry) {
+      return {
+        'product_id': entry.key.id,
+        'name': entry.key.name,
+        'price': entry.key.price,
+        'quantity': entry.value,
+        'subtotal': entry.key.price * entry.value,
+      };
+    }).toList();
+
+    try {
+      await supabase.from('product_reservations').insert({
+        'user_id': user.id,
+        'store_id': store.id.isNotEmpty ? store.id : null,
+        'total_amount': total,
+        'items': itemsList,
+        'status': 'Aguardando Retirada',
+      });
+      clearCart();
+    } catch (e) {
+      debugPrint('Erro ao reservar produtos: $e');
+      rethrow;
+    }
+  }
 }
