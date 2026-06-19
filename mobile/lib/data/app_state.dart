@@ -81,7 +81,6 @@ class AppState {
         } catch (_) {}
       }
 
-      final user = supabase.auth.currentUser;
       if (user != null) {
         try {
           final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id);
