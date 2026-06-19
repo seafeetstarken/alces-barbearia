@@ -46612,7 +46612,7 @@ a6=i.a
 a1.gwE()
 a7=n.w
 a7.toString
-h=new A.f4("appt-"+a2+"-"+a3+"-"+a4,a0,a5,a6,a7,j,"confirmed")
+h=new A.f4("appt-"+a2+"-"+a3+"-"+a4,a0,a5,a6,a7,j,"Agendado")
 s=10
 return A.u(a1.zp(h),$async$tr)
 case 10:case 8:++k
