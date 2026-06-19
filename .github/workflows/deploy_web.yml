@@ -32,7 +32,19 @@ jobs:
           cd mobile
           flutter create . --platforms web
 
-      - name: Build Web
+      - name: Build for GitHub Pages
+        run: |
+          cd mobile
+          flutter build web --base-href "/alces-barbearia/" --release
+
+      - name: Deploy to GitHub Pages Branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./mobile/build/web
+          publish_branch: gh-pages
+
+      - name: Build for Vercel
         run: |
           cd mobile
           flutter build web --base-href "/" --release
