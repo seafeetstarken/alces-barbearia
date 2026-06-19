@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../data/app_state.dart';
 import '../models/appointment.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User profile header details
-            CardShell(
+            AlcesCard(
               child: Row(
                 children: [
                   CircleAvatar(
@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               valueListenable: _appState.activePlan,
               builder: (context, planName, _) {
                 final hasActivePlan = planName != null && planName.isNotEmpty;
-                return CardShell(
+                return AlcesCard(
                   border: Border.all(
                     color: hasActivePlan
                         ? const Color(0xFF52B788).withOpacity(0.3)
@@ -169,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: CardShell(
+                      child: AlcesCard(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

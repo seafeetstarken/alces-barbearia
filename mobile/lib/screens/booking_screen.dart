@@ -6,7 +6,7 @@ import '../models/barber.dart';
 import '../models/service_item.dart';
 import '../models/appointment.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -117,8 +117,9 @@ class _BookingScreenState extends State<BookingScreen> {
                 style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
               const SizedBox(height: 24),
-              PrimaryButton(
+              AlcesButton(
                 text: 'Excelente',
+                isPrimary: true,
                 onPressed: () {
                   Navigator.pop(context); // close dialog
                   _resetBooking();
@@ -187,7 +188,7 @@ class _BookingScreenState extends State<BookingScreen> {
         final isSelected = _selectedService?.id == service.id;
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: CardShell(
+          child: AlcesCard(
             onTap: () {
               setState(() {
                 _selectedService = service;
@@ -258,7 +259,7 @@ class _BookingScreenState extends State<BookingScreen> {
       itemBuilder: (context, index) {
         final barber = storeBarbers[index];
         final isSelected = _selectedBarber?.id == barber.id;
-        return CardShell(
+        return AlcesCard(
           onTap: () {
             setState(() {
               _selectedBarber = barber;
@@ -457,7 +458,7 @@ class _BookingScreenState extends State<BookingScreen> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
         ),
         const SizedBox(height: 16),
-        CardShell(
+        AlcesCard(
           child: Column(
             children: [
               _buildSummaryRow(Icons.store, 'Unidade', store.name.replaceAll("Alce\'s Barbearia - ", "")),
@@ -571,25 +572,34 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
               // Sticky actions bar at bottom if required (Step 2 or 3)
               if (_currentStep == 2 || _currentStep == 3)
-                StickyActionBar(
-                  child: Row(
-                    children: [
-                      if (_currentStep == 2) ...[
-                        Expanded(
-                          child: PrimaryButton(
-                            text: 'Revisar Agendamento',
-                            onPressed: _selectedTime != null ? _nextStep : null,
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundDark,
+                    border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+                  ),
+                  child: SafeArea(
+                    child: Row(
+                      children: [
+                        if (_currentStep == 2) ...[
+                          Expanded(
+                            child: AlcesButton(
+                              text: 'Revisar Agendamento',
+                              isPrimary: true,
+                              onPressed: _selectedTime != null ? _nextStep : null,
+                            ),
                           ),
-                        ),
-                      ] else if (_currentStep == 3) ...[
-                        Expanded(
-                          child: PrimaryButton(
-                            text: 'Confirmar e Agendar',
-                            onPressed: () => _confirmBooking(activeStore),
+                        ] else if (_currentStep == 3) ...[
+                          Expanded(
+                            child: AlcesButton(
+                              text: 'Confirmar e Agendar',
+                              isPrimary: true,
+                              onPressed: () => _confirmBooking(activeStore),
+                            ),
                           ),
-                        ),
-                      ]
-                    ],
+                        ]
+                      ],
+                    ),
                   ),
                 ),
             ],

@@ -3,7 +3,7 @@ import '../data/app_state.dart';
 import '../models/store.dart';
 import '../models/service_item.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 import 'main_screen.dart';
 
 class ServicesScreen extends StatefulWidget {
@@ -74,7 +74,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   ...items.map((service) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: CardShell(
+                      child: AlcesCard(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -133,8 +133,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                   ],
                                 ),
                                 SizedBox(
-                                  height: 32,
-                                  child: ElevatedButton(
+                                  height: 36,
+                                  width: 100,
+                                  child: AlcesButton(
+                                    text: 'Agendar',
+                                    isPrimary: true,
                                     onPressed: () {
                                       // Switch tab to Booking (Index 1)
                                       final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
@@ -142,22 +145,6 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                         mainScreenState.changeTab(1); // 1 is Agenda
                                       }
                                     },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppTheme.primaryGold,
-                                      foregroundColor: Colors.black,
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Agendar',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ],

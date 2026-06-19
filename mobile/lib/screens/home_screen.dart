@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/app_state.dart';
 import '../models/store.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 import 'main_screen.dart';
+import 'products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final isSelected = activeStore.id == store.id;
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: CardShell(
+                      child: AlcesCard(
                         onTap: () {
                           _appState.changeStore(store);
                           Navigator.pop(context);
@@ -221,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
 
                   // Welcome Card & Cashback Info
-                  CardShell(
+                  AlcesCard(
                     padding: const EdgeInsets.all(20),
                     child: Row(
                       children: [
@@ -278,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     valueListenable: _appState.activePlan,
                     builder: (context, planName, _) {
                       final hasActivePlan = planName != null;
-                      return CardShell(
+                      return AlcesCard(
                         padding: const EdgeInsets.all(20),
                         border: Border.all(
                           color: hasActivePlan
@@ -334,8 +335,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            PrimaryButton(
+                            AlcesButton(
                               text: hasActivePlan ? 'Gerenciar Assinatura' : 'Conhecer Planos',
+                              isPrimary: true,
                               onPressed: () {
                                 // Navigate to tab index 3 (Clube)
                                 final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
@@ -356,7 +358,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: CardShell(
+                        child: AlcesCard(
+                          padding: const EdgeInsets.all(12),
                           onTap: () {
                             final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
                             if (mainScreenState != null) {
@@ -364,7 +367,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           },
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(10),
@@ -373,24 +375,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.calendar_today,
-                                    color: AppTheme.primaryGold),
+                                    color: AppTheme.primaryGold, size: 20),
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8),
                               const Text('Agendar',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       color: Colors.white)),
-                              const Text('Escolha dia e hora',
-                                  style: TextStyle(
-                                      fontSize: 12, color: AppTheme.textMuted)),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: CardShell(
+                        child: AlcesCard(
+                          padding: const EdgeInsets.all(12),
                           onTap: () {
                             final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
                             if (mainScreenState != null) {
@@ -398,7 +398,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           },
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(10),
@@ -407,17 +406,46 @@ class _HomeScreenState extends State<HomeScreen> {
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.cut,
-                                    color: AppTheme.primaryGold),
+                                    color: AppTheme.primaryGold, size: 20),
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8),
                               const Text('Serviços',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       color: Colors.white)),
-                              const Text('Valores e duração',
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: AlcesCard(
+                          padding: const EdgeInsets.all(12),
+                          onTap: () {
+                            // Navigate to Products Screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ProductsScreen()),
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryGold.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.local_mall,
+                                    color: AppTheme.primaryGold, size: 20),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text('Produtos',
                                   style: TextStyle(
-                                      fontSize: 12, color: AppTheme.textMuted)),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: Colors.white)),
                             ],
                           ),
                         ),
@@ -454,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Container(
                           width: 150,
                           margin: const EdgeInsets.only(right: 16),
-                          child: CardShell(
+                          child: AlcesCard(
                             padding: const EdgeInsets.all(12),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -500,7 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 28),
 
                   // Footer / Info info
-                  CardShell(
+                  AlcesCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [

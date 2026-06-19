@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/app_state.dart';
 import '../models/plan.dart';
 import '../theme/app_theme.dart';
-import '../widgets/custom_widgets.dart';
+import '../widgets/alces_ui.dart';
 
 class ClubScreen extends StatefulWidget {
   const ClubScreen({super.key});
@@ -98,7 +98,7 @@ class _ClubScreenState extends State<ClubScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  CardShell(
+                  AlcesCard(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -148,7 +148,7 @@ class _ClubScreenState extends State<ClubScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: CardShell(
+                        child: AlcesCard(
                           onTap: () => setModalState(() => _selectedPaymentMethod = 'pix'),
                           border: Border.all(
                             color: _selectedPaymentMethod == 'pix'
@@ -173,7 +173,7 @@ class _ClubScreenState extends State<ClubScreen> {
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: CardShell(
+                        child: AlcesCard(
                           onTap: () => setModalState(() => _selectedPaymentMethod = 'card'),
                           border: Border.all(
                             color: _selectedPaymentMethod == 'card'
@@ -199,8 +199,9 @@ class _ClubScreenState extends State<ClubScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  PrimaryButton(
+                  AlcesButton(
                     text: 'Assinar Agora',
+                    isPrimary: true,
                     onPressed: () {
                       _appState.selectPlan(plan.name);
                       Navigator.pop(context);
@@ -248,8 +249,9 @@ class _ClubScreenState extends State<ClubScreen> {
                 style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
               const SizedBox(height: 24),
-              PrimaryButton(
+              AlcesButton(
                 text: 'Aproveitar Benefícios',
+                isPrimary: true,
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -317,7 +319,7 @@ class _ClubScreenState extends State<ClubScreen> {
                   final isCurrentPlan = activePlan == plan.name;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: CardShell(
+                    child: AlcesCard(
                       border: Border.all(
                         color: isCurrentPlan
                             ? const Color(0xFF52B788)
@@ -339,7 +341,15 @@ class _ClubScreenState extends State<ClubScreen> {
                                 ),
                               ),
                               if (isCurrentPlan)
-                                StatusBadge.success(text: 'Ativo')
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF52B788).withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
+                                  ),
+                                  child: const Text('Ativo', style: TextStyle(color: Color(0xFF52B788), fontSize: 10, fontWeight: FontWeight.bold)),
+                                )
                               else
                                 Text(
                                   'R\$ ${plan.price.toStringAsFixed(2).replaceAll('.', ',')}/mês',
@@ -381,15 +391,17 @@ class _ClubScreenState extends State<ClubScreen> {
                           }),
                           const SizedBox(height: 16),
                           if (!isCurrentPlan)
-                            PrimaryButton(
+                            AlcesButton(
                               text: 'Assinar ${plan.name}',
+                              isPrimary: true,
                               onPressed: activePlan != null
                                   ? null // Disable if they already have another plan (can only have one)
                                   : () => _showCheckoutSheet(context, plan),
                             )
                           else
-                            SecondaryButton(
+                            AlcesButton(
                               text: 'Cancelar Assinatura',
+                              isPrimary: false,
                               onPressed: () {
                                 _appState.selectPlan(''); // Reset active plan
                                 ScaffoldMessenger.of(context).showSnackBar(
