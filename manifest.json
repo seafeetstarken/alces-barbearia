@@ -1,6 +1,6 @@
 {
-    "name": "alces_barbearia",
-    "short_name": "alces_barbearia",
+    "name": "mobile",
+    "short_name": "mobile",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
