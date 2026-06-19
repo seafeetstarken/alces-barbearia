@@ -352,9 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               }
-            ),
-
-            ValueListenableBuilder<String?>(
+                  ValueListenableBuilder<String?>(
               valueListenable: _appState.activePlan,
               builder: (context, planName, _) {
                 final hasActivePlan = planName != null && planName.isNotEmpty;
@@ -419,6 +417,109 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           child: const Text('Inativo', style: TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
                         ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            
+            // Preferência de Unidade
+            ValueListenableBuilder<Store>(
+              valueListenable: _appState.activeStore,
+              builder: (context, activeStore, _) {
+                return AlcesCard(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: AppTheme.backgroundDark,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (context) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Selecionar Unidade Preferida',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Selecione qual barbearia ficará salva como sua unidade padrão:',
+                                style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+                              ),
+                              const SizedBox(height: 20),
+                              ..._appState.stores.value.map((store) {
+                                final isSelected = activeStore.id == store.id;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: AlcesCard(
+                                    onTap: () {
+                                      _appState.changeStore(store);
+                                      Navigator.pop(context);
+                                    },
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppTheme.primaryGold
+                                          : Colors.white.withOpacity(0.06),
+                                      width: 1.5,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.store, color: AppTheme.primaryGold),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Text(
+                                            store.name.replaceAll("Alce's Barbearia - ", ""),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: isSelected ? AppTheme.primaryGold : Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          const Icon(Icons.check_circle, color: AppTheme.primaryGold),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.place, color: AppTheme.primaryGold),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Unidade de Preferência',
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              activeStore.name.replaceAll("Alce's Barbearia - ", ""),
+                              style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: AppTheme.primaryGold),
                     ],
                   ),
                 );

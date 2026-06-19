@@ -76,6 +76,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: AlcesCard(
                         onTap: () {
+                          // Add to global cart if not already present
+                          if (!_appState.bookingCart.value.any((s) => s.id == service.id)) {
+                            _appState.bookingCart.value = List.from(_appState.bookingCart.value)..add(service);
+                          }
+                          
                           final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
                           if (mainScreenState != null) {
                             mainScreenState.changeTab(1); // 1 is Agenda

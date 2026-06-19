@@ -33,6 +33,9 @@ class AppState {
   // Shopping cart items (Product -> Quantity)
   final ValueNotifier<Map<ProductItem, int>> cart = ValueNotifier<Map<ProductItem, int>>({});
 
+  // Global booking cart for services
+  final ValueNotifier<List<ServiceItem>> bookingCart = ValueNotifier<List<ServiceItem>>([]);
+
   // Active membership plan (null if none, otherwise plan name)
   final ValueNotifier<String?> activePlan = ValueNotifier<String?>(null);
 

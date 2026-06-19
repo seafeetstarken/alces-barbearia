@@ -64,6 +64,29 @@ class _BookingScreenState extends State<BookingScreen> {
     });
   }
 
+  // Calculate how many 30-minute slots we need
+  int get _slotsNeeded {
+    int totalMinutes = _selectedServices.fold(0, (sum, item) => sum + item.duration);
+    return (totalMinutes / 30).ceil();
+  }
+
+  // Check if a starting time slot and subsequent needed slots are available
+  bool _isSlotAvailable(String startTime) {
+    int startIndex = _timeSlots.indexOf(startTime);
+    if (startIndex == -1) return false;
+    
+    int needed = _slotsNeeded;
+    if (startIndex + needed > _timeSlots.length) return false;
+
+    for (int i = 0; i < needed; i++) {
+      String currentSlot = _timeSlots[startIndex + i];
+      if (_unavailableSlots.contains(currentSlot) || _unavailableSlots.contains('$currentSlot:00')) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> _loadUnavailableSlots() async {
     if (_selectedBarber == null || _selectedDate == null) return;
     setState(() => _isLoadingSlots = true);
@@ -72,7 +95,7 @@ class _BookingScreenState extends State<BookingScreen> {
       setState(() {
         _unavailableSlots = slots;
         _isLoadingSlots = false;
-        if (_selectedTime != null && _unavailableSlots.contains(_selectedTime)) {
+        if (_selectedTime != null && !_isSlotAvailable(_selectedTime!)) {
           _selectedTime = null;
         }
       });
@@ -92,15 +115,26 @@ class _BookingScreenState extends State<BookingScreen> {
     );
 
     try {
-      for (var service in _selectedServices) {
+      int startIndex = _timeSlots.indexOf(_selectedTime!);
+      if (startIndex == -1) throw Exception("Horário inválido");
+
+      // We insert consecutive appointments for each needed 30-minute slot
+      int needed = _slotsNeeded;
+      for (int i = 0; i < needed; i++) {
+        String currentSlotTime = _timeSlots[startIndex + i];
+        
+        // Distribute services if possible, otherwise map to the list
+        // Let's associate service index, or if more slots than services, just use the first/last service
+        final service = i < _selectedServices.length ? _selectedServices[i] : _selectedServices.last;
+
         final newAppt = Appointment(
-          id: 'appt-${DateTime.now().millisecondsSinceEpoch}-${service.id.substring(0, 4)}',
+          id: 'appt-${DateTime.now().millisecondsSinceEpoch}-$i-${service.id.substring(0, 4)}',
           storeId: store.id,
           barberId: _selectedBarber!.id,
           serviceId: service.id,
           clientName: _appState.userName,
           date: _selectedDate!,
-          time: _selectedTime!,
+          time: currentSlotTime,
           status: 'confirmed',
         );
         await _appState.addAppointment(newAppt);
@@ -390,12 +424,30 @@ class _BookingScreenState extends State<BookingScreen> {
     // Generate next 7 days starting from today
     final days = List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
 
+    int totalMinutes = _selectedServices.fold(0, (sum, item) => sum + item.duration);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Selecione o Dia',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Selecione o Dia',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryGold.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Duração: $totalMinutes min',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         // Horizontal calendar
@@ -499,26 +551,26 @@ class _BookingScreenState extends State<BookingScreen> {
             itemCount: _timeSlots.length,
             itemBuilder: (context, index) {
               final time = _timeSlots[index];
-              // Our db stores time as '09:00:00', but timeSlots is '09:00'. We need to check both.
-              final isUnavailable = _unavailableSlots.contains(time) || _unavailableSlots.contains('$time:00');
+              // Check availability based on required consecutive slots
+              final isAvailable = _isSlotAvailable(time);
               final isSelected = _selectedTime == time;
 
             return GestureDetector(
-              onTap: isUnavailable
+              onTap: !isAvailable
                   ? null
                   : () => setState(() => _selectedTime = time),
               child: Container(
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppTheme.primaryGold
-                      : isUnavailable
+                      : !isAvailable
                           ? Colors.white.withOpacity(0.02)
                           : AppTheme.cardDark,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected
                         ? AppTheme.primaryGold
-                        : isUnavailable
+                        : !isAvailable
                             ? Colors.transparent
                             : Colors.white.withOpacity(0.06),
                   ),
@@ -531,10 +583,10 @@ class _BookingScreenState extends State<BookingScreen> {
                       fontWeight: FontWeight.bold,
                       color: isSelected
                           ? Colors.black
-                          : isUnavailable
+                          : !isAvailable
                               ? Colors.white.withOpacity(0.12)
                               : Colors.white,
-                      decoration: isUnavailable ? TextDecoration.lineThrough : null,
+                      decoration: !isAvailable ? TextDecoration.lineThrough : null,
                     ),
                   ),
                 ),
