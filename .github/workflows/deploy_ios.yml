@@ -60,6 +60,10 @@ jobs:
           content = content.replace('PROVISIONING_PROFILE_SPECIFIER = \"\";', 'PROVISIONING_PROFILE_SPECIFIER = \"Alces Barbearia AppStore Profile\";')
           content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"Alces Barbearia AppStore Profile\";\n\t\t\t\tDEVELOPMENT_TEAM = \"6H2443ML7C\";')
 
+          # 5. Forçar Bundle ID
+          import re
+          content = re.sub(r'PRODUCT_BUNDLE_IDENTIFIER = .*?;', 'PRODUCT_BUNDLE_IDENTIFIER = com.seafeetstarken.alcesBarbearia;', content)
+
           with open(path, 'w') as f:
               f.write(content)
           print('Xcode project modified successfully for Manual Signing!')
