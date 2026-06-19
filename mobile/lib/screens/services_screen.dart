@@ -75,6 +75,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: AlcesCard(
+                        onTap: () {
+                          final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                          if (mainScreenState != null) {
+                            mainScreenState.changeTab(1); // 1 is Agenda
+                          }
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -132,19 +138,22 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 36,
-                                  width: 120, // Increased to avoid text wrapping
-                                  child: AlcesButton(
-                                    text: 'Agendar',
-                                    isPrimary: true,
-                                    onPressed: () {
-                                      // Switch tab to Booking (Index 1)
-                                      final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
-                                      if (mainScreenState != null) {
-                                        mainScreenState.changeTab(1); // 1 is Agenda
-                                      }
-                                    },
+                                Container(
+                                  height: 32,
+                                  width: 110,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primaryGold,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      'SELECIONAR',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
