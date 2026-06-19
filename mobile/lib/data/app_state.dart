@@ -163,6 +163,24 @@ class AppState {
       final list = List<Appointment>.from(upcomingAppointments.value);
       list.removeWhere((a) => a.id == appointmentId);
       upcomingAppointments.value = list;
+
+      // Deduct Gamification Rewards
+      final user = supabase.auth.currentUser;
+      if (user != null) {
+        int newXp = userXp.value - 50;
+        if (newXp < 0) newXp = 0;
+        
+        int newCoins = userCoins.value - 10;
+        if (newCoins < 0) newCoins = 0;
+
+        await supabase.from('profiles').update({
+          'xp': newXp,
+          'alce_coins': newCoins,
+        }).eq('id', user.id);
+        
+        userXp.value = newXp;
+        userCoins.value = newCoins;
+      }
     } catch (e) {
       debugPrint('Erro ao cancelar agendamento: $e');
       rethrow;
