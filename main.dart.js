@@ -46041,7 +46041,7 @@ p=r.e
 if(p!=null)return A.a5j(!1,A.dg(16),!0,s,q,!0,q,q,q,q,q,q,q,q,q,p,q,q,q,q)
 return s}}
 A.GH.prototype={
-H(a){return A.ax9("assets/images/logo.png",new A.XV(),B.BE,140,null)}}
+H(a){return A.ax9("assets/images/logo.png",new A.XV(),B.BE,200,null)}}
 A.XV.prototype={
 $3(a,b,c){var s=null,r=A.V(a).p3.a
 return A.bd(A.b([B.Gf,B.cu,A.aF("ALCE'S",s,s,s,r==null?s:r.ais(8),s,s)],t.p),B.w,B.p,B.bj)},
