@@ -33,7 +33,10 @@ jobs:
           flutter create --platforms=ios --org com.seafeetstarken .
           # Evitar a pergunta manual de conformidade de criptografia na Apple
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" ios/Runner/Info.plist
-
+          # Adicionar permissoes necessarias para Image Picker
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'Precisamos acessar sua galeria para você escolher uma foto de perfil.'" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Precisamos acessar sua câmera para você tirar uma foto de perfil.'" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string 'Precisamos acessar seu microfone para capturar vídeos.'" ios/Runner/Info.plist
       - name: Configure Manual Signing in Xcode Project
         run: |
           python3 -c "
