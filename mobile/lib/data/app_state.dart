@@ -46,6 +46,7 @@ class AppState {
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
   final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
   final ValueNotifier<bool> isAdmin = ValueNotifier<bool>(false);
+  final ValueNotifier<String?> userCpf = ValueNotifier<String?>(null);
   
   // Profile fields
   String get userName {
@@ -84,6 +85,7 @@ class AppState {
             userBirthDate.value = profileData['birth_date'];
             userSavedEmail.value = profileData['email'];
             isAdmin.value = profileData['is_admin'] ?? false;
+            userCpf.value = profileData['cpf'];
           }
         } catch (_) {}
       }
@@ -263,7 +265,13 @@ class AppState {
     // Save to Supabase for TestFlight persistence
     final user = supabase.auth.currentUser;
     if (user != null) {
-      supabase.from('profiles').update({'active_plan': activePlan.value}).eq('id', user.id);
+      final updates = <String, dynamic>{
+        'active_plan': activePlan.value,
+      };
+      if (activePlan.value == null) {
+        updates['active_subscription_status'] = 'CANCELED';
+      }
+      supabase.from('profiles').update(updates).eq('id', user.id);
     }
   }
 

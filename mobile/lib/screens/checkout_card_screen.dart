@@ -60,8 +60,12 @@ class _CheckoutCardScreenState extends State<CheckoutCardScreen> {
 
       final creditCardHolderInfo = {
         "name": _nameController.text,
-        "email": appState.userEmail.isNotEmpty ? appState.userEmail : "cliente@email.com",
-        "cpfCnpj": "00000000000",
+        "email": appState.userSavedEmail.value?.isNotEmpty == true 
+            ? appState.userSavedEmail.value! 
+            : (appState.userEmail.isNotEmpty ? appState.userEmail : "cliente@email.com"),
+        "cpfCnpj": appState.userCpf.value?.isNotEmpty == true 
+            ? appState.userCpf.value! 
+            : "00000000000",
         "postalCode": "89010-000",
         "addressNumber": "100",
         "addressComplement": "",

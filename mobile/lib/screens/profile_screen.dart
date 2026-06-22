@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AppState _appState = AppState();
 
   Future<void> _showCompleteProfileDialog() async {
-    final emailController = TextEditingController(text: _appState.userSavedEmail.value ?? '');
     final addressController = TextEditingController();
     final dateController = TextEditingController();
     
@@ -53,15 +52,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextField(
-                      controller: emailController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'E-mail',
-                        prefixIcon: Icon(Icons.email, color: AppTheme.primaryGold),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     TextField(
                       controller: dateController,
                       keyboardType: TextInputType.number,
@@ -100,9 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGold),
                   onPressed: () async {
-                    if (emailController.text.isEmpty || dateController.text.length < 10) {
+                    if (dateController.text.length < 10) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('E-mail e Data de Nascimento válidos são obrigatórios!')),
+                        const SnackBar(content: Text('Data de Nascimento válida é obrigatória!')),
                       );
                       return;
                     }
@@ -118,7 +108,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     final user = Supabase.instance.client.auth.currentUser;
                     if (user != null) {
                       await Supabase.instance.client.from('profiles').update({
-                        'email': emailController.text,
                         'birth_date': parsedDate.toIso8601String(),
                         'address': addressController.text,
                         'xp': _appState.userXp.value + 100,
@@ -129,7 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _appState.userXp.value += 100;
                       _appState.userCoins.value += 100;
                       _appState.userBirthDate.value = parsedDate.toIso8601String();
-                      _appState.userSavedEmail.value = emailController.text;
                       
                       if (context.mounted) {
                         Navigator.pop(context);
