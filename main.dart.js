@@ -8507,10 +8507,14 @@ Wv:function Wv(a){var _=this
 _.d=a
 _.e="pix"
 _.c=_.a=null},
-avl:function avl(a,b){this.a=a
-this.b=b},
-avk:function avk(a,b){this.a=a
-this.b=b},
+avl:function avl(a,b,c){this.a=a
+this.b=b
+this.c=c},
+avk:function avk(a,b,c,d){var _=this
+_.a=a
+_.b=b
+_.c=c
+_.d=d},
 avg:function avg(a){this.a=a},
 avh:function avh(a,b){this.a=a
 this.b=b},
@@ -8518,9 +8522,11 @@ avf:function avf(a){this.a=a},
 avi:function avi(a,b){this.a=a
 this.b=b},
 ave:function ave(a){this.a=a},
-avj:function avj(a,b,c){this.a=a
-this.b=b
-this.c=c},
+avj:function avj(a,b,c,d){var _=this
+_.a=a
+_.b=b
+_.c=c
+_.d=d},
 avc:function avc(a){this.a=a},
 avd:function avd(a){this.a=a},
 avn:function avn(a){this.a=a},
@@ -49250,28 +49256,28 @@ $S:0}
 A.Be.prototype={
 af(){return new A.Wv($.kJ())}}
 A.Wv.prototype={
-an8(a,b){A.aHz(B.ao,new A.avl(this,b),a,!0,B.l6,t.z)},
+an8(a,b){A.aHz(B.ao,new A.avl(this,b,a),a,!0,B.l6,t.z)},
 and(a,b){A.LX(!0,new A.avn(b),a,t.z)},
 I(a){var s=null
 return A.i0(A.kO(s,!0,s,s,s,s,B.aii),s,new A.cc(this.d.z,new A.avt(this),s,s,t.Sj),s)}}
 A.avl.prototype={
-$1(a){return new A.nh(new A.avk(this.a,this.b),null)},
+$1(a){return new A.nh(new A.avk(this.a,a,this.b,this.c),null)},
 $S:133}
 A.avk.prototype={
-$2(a,b){var s,r,q,p,o,n,m,l=null,k=t.l,j=A.bJ(a,l,k).w
-k=A.bJ(a,l,k).w
-s=A.Z(a).ok.r
-r=t.p
-s=A.by(A.b([A.aq("Confirmar Assinatura",l,l,l,s==null?l:s.l2(B.e,B.z),l,l),A.hb(l,l,B.Tq,l,l,new A.avg(a),l,l,l)],r),B.t,B.av,B.m,0)
-q=this.b
-p=A.b1(A.b([A.aq(q.b,l,l,l,B.ey,l,l),B.bW,A.aq(q.c,l,l,l,B.c7,l,l)],r),B.D,B.n,B.m)
-o=B.d.a3(q.d,2)
-p=A.by(A.b([p,A.aq("R$ "+A.cj(o,".",",")+"/m\xeas",l,l,l,B.cD,l,l)],r),B.t,B.av,B.m,0)
-o=this.a
-n=A.dB(o.e==="pix"?B.f:A.a3(15,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255),1.5)
-n=A.cL(new A.ce(A.b1(A.b([A.hP(B.tH,o.e==="pix"?B.f:B.ai,l,l),B.fR,B.aiG,B.aiX],r),B.t,B.n,B.m),B.ah,new A.avh(o,b),n,l),1,l)
-m=A.dB(o.e==="card"?B.f:A.a3(15,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255),1.5)
-return new A.b0(new A.aE(16,24,16,j.f.d+k.r.d+24),A.b1(A.b([s,B.ak,new A.ce(p,B.ah,l,l,l),B.bF,B.aiM,B.fQ,A.by(A.b([n,B.dk,A.cL(new A.ce(A.b1(A.b([A.hP(B.nV,o.e==="card"?B.f:B.ai,l,l),B.fR,B.ai2,B.aiD],r),B.t,B.n,B.m),B.ah,new A.avi(o,b),m,l),1,l)],r),B.t,B.n,B.m,0),B.c5,new A.fa("Continuar para Pagamento",new A.avj(o,a,q),!0,!1,l)],r),B.D,B.n,B.aN),l)},
+$2(a,b){var s,r,q,p,o,n,m=this,l=null,k=m.b,j=t.l,i=A.bJ(k,l,j).w
+j=A.bJ(k,l,j).w
+k=A.Z(k).ok.r
+s=t.p
+k=A.by(A.b([A.aq("Confirmar Assinatura",l,l,l,k==null?l:k.l2(B.e,B.z),l,l),A.hb(l,l,B.Tq,l,l,new A.avg(a),l,l,l)],s),B.t,B.av,B.m,0)
+r=m.c
+q=A.b1(A.b([A.aq(r.b,l,l,l,B.ey,l,l),B.bW,A.aq(r.c,l,l,l,B.c7,l,l)],s),B.D,B.n,B.m)
+p=B.d.a3(r.d,2)
+q=A.by(A.b([q,A.aq("R$ "+A.cj(p,".",",")+"/m\xeas",l,l,l,B.cD,l,l)],s),B.t,B.av,B.m,0)
+p=m.a
+o=A.dB(p.e==="pix"?B.f:A.a3(15,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255),1.5)
+o=A.cL(new A.ce(A.b1(A.b([A.hP(B.tH,p.e==="pix"?B.f:B.ai,l,l),B.fR,B.aiG,B.aiX],s),B.t,B.n,B.m),B.ah,new A.avh(p,b),o,l),1,l)
+n=A.dB(p.e==="card"?B.f:A.a3(15,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255),1.5)
+return new A.b0(new A.aE(16,24,16,i.f.d+j.r.d+24),A.b1(A.b([k,B.ak,new A.ce(q,B.ah,l,l,l),B.bF,B.aiM,B.fQ,A.by(A.b([o,B.dk,A.cL(new A.ce(A.b1(A.b([A.hP(B.nV,p.e==="card"?B.f:B.ai,l,l),B.fR,B.ai2,B.aiD],s),B.t,B.n,B.m),B.ah,new A.avi(p,b),n,l),1,l)],s),B.t,B.n,B.m,0),B.c5,new A.fa("Continuar para Pagamento",new A.avj(p,a,m.d,r),!0,!1,l)],s),B.D,B.n,B.aN),l)},
 $S:527}
 A.avg.prototype={
 $0(){A.c8(this.a,!1).ds(null)
@@ -49292,25 +49298,25 @@ $S:0}
 A.avj.prototype={
 $0(){var s=0,r=A.w(t.H),q=this,p,o,n,m,l
 var $async$$0=A.x(function(a,b){if(a===1)return A.t(b,r)
-for(;;)switch(s){case 0:l=q.b
-A.c8(l,!1).ds(null)
+for(;;)switch(s){case 0:A.c8(q.b,!1).ds(null)
 p=q.a
 o=q.c
-n=t.y
+n=q.d
+m=t.y
 s=p.e==="pix"?2:4
 break
-case 2:n=A.jh(new A.avc(o),null,n)
+case 2:m=A.jh(new A.avc(n),null,m)
 s=5
-return A.p(A.c8(l,!1).eX(n),$async$$0)
-case 5:m=b
+return A.p(A.c8(o,!1).eX(m),$async$$0)
+case 5:l=b
 s=3
 break
-case 4:n=A.jh(new A.avd(o),null,n)
+case 4:m=A.jh(new A.avd(n),null,m)
 s=6
-return A.p(A.c8(l,!1).eX(n),$async$$0)
-case 6:m=b
-case 3:if(m===!0&&l.e!=null){p.d.EU(o.b)
-p.and(l,o)}return A.u(null,r)}})
+return A.p(A.c8(o,!1).eX(m),$async$$0)
+case 6:l=b
+case 3:if(l===!0&&o.e!=null){p.d.EU(n.b)
+p.and(o,n)}return A.u(null,r)}})
 return A.v($async$$0,r)},
 $S:7}
 A.avc.prototype={
