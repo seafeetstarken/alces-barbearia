@@ -45,6 +45,7 @@ class AppState {
   final ValueNotifier<int> userLevel = ValueNotifier<int>(1);
   final ValueNotifier<String?> userBirthDate = ValueNotifier<String?>(null);
   final ValueNotifier<String?> userSavedEmail = ValueNotifier<String?>(null);
+  final ValueNotifier<bool> isAdmin = ValueNotifier<bool>(false);
   
   // Profile fields
   String get userName {
@@ -82,6 +83,7 @@ class AppState {
             userLevel.value = profileData['level'] ?? 1;
             userBirthDate.value = profileData['birth_date'];
             userSavedEmail.value = profileData['email'];
+            isAdmin.value = profileData['is_admin'] ?? false;
           }
         } catch (_) {}
       }
@@ -379,5 +381,30 @@ class AppState {
 
     final data = response.data as Map<String, dynamic>;
     return data['subscription'] as Map<String, dynamic>;
+  }
+
+  // --- Admin Methods ---
+  Future<List<Map<String, dynamic>>> fetchAllUsers() async {
+    final response = await supabase
+        .from('profiles')
+        .select('id, full_name, phone')
+        .order('full_name', ascending: true);
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<void> assignPlanToUser(String userId, String planId) async {
+    if (!isAdmin.value) throw Exception('Não autorizado');
+    
+    // Calcula a validade de 1 mês
+    final startedAt = DateTime.now();
+    final expiresAt = startedAt.add(const Duration(days: 30));
+
+    await supabase.from('user_subscriptions').insert({
+      'user_id': userId,
+      'plan_id': planId,
+      'status': 'Ativo',
+      'started_at': startedAt.toIso8601String(),
+      'expires_at': expiresAt.toIso8601String(),
+    });
   }
 }

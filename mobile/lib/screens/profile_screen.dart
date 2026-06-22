@@ -10,6 +10,7 @@ import '../widgets/alces_ui.dart';
 import 'gamification_info_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'welcome_screen.dart';
+import 'admin_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -548,6 +549,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             const SizedBox(height: 28),
+
+            // Admin Section
+            ValueListenableBuilder<bool>(
+              valueListenable: _appState.isAdmin,
+              builder: (context, isAdmin, _) {
+                if (!isAdmin) return const SizedBox.shrink();
+                
+                return Column(
+                  children: [
+                    AlcesCard(
+                      border: Border.all(color: Colors.redAccent.withOpacity(0.5), width: 1.5),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AdminScreen()),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.admin_panel_settings, color: Colors.redAccent),
+                          ),
+                          const SizedBox(width: 16),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Painel Administrativo',
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Gerenciar clientes e assinaturas',
+                                  style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right, color: Colors.redAccent),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                  ],
+                );
+              },
+            ),
 
             // Upcoming appointments section
             Text(

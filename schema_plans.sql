@@ -32,6 +32,17 @@ CREATE POLICY "Plans are viewable by everyone" ON public.plans FOR SELECT USING 
 CREATE POLICY "Users can view own subscriptions" ON public.user_subscriptions FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own subscriptions" ON public.user_subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+-- Admin Policies for Subscriptions
+CREATE POLICY "Admins can view all subscriptions" ON public.user_subscriptions FOR SELECT USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+CREATE POLICY "Admins can insert any subscription" ON public.user_subscriptions FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+CREATE POLICY "Admins can update any subscription" ON public.user_subscriptions FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+
 -- Insert Real Plans
 INSERT INTO public.plans (name, price, billing_cycle, features, is_active) VALUES 
 ('Corte Ilimitado', 119.90, 'mensal', '["Corte ilimitado", "Descontos em empresas parceiras", "Desconto em serviços adicionais", "Até 30% de descontos em produtos"]'::jsonb, TRUE),
