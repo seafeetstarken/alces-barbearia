@@ -17,25 +17,23 @@ class _ClubScreenState extends State<ClubScreen> {
   final AppState _appState = AppState();
   String _selectedPaymentMethod = 'pix';
 
-
-
-  void _showCheckoutSheet(BuildContext context, SubscriptionPlan plan) {
+  void _showCheckoutSheet(BuildContext parentContext, SubscriptionPlan plan) {
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       backgroundColor: AppTheme.backgroundDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder: (stateContext, setModalState) {
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 16,
                 24,
                 16,
-                MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 24,
+                MediaQuery.of(sheetContext).viewInsets.bottom + MediaQuery.of(sheetContext).padding.bottom + 24,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -46,14 +44,14 @@ class _ClubScreenState extends State<ClubScreen> {
                     children: [
                       Text(
                         'Confirmar Assinatura',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: AppTheme.textMuted),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.pop(stateContext),
                       )
                     ],
                   ),
@@ -163,12 +161,12 @@ class _ClubScreenState extends State<ClubScreen> {
                     text: 'Continuar para Pagamento',
                     isPrimary: true,
                     onPressed: () async {
-                      Navigator.pop(context); // close bottom sheet
+                      Navigator.pop(stateContext); // close bottom sheet
                       
                       bool? success;
                       if (_selectedPaymentMethod == 'pix') {
                         success = await Navigator.push(
-                          context,
+                          parentContext,
                           MaterialPageRoute(
                             builder: (_) => CheckoutPixScreen(
                               amount: plan.price,
@@ -179,7 +177,7 @@ class _ClubScreenState extends State<ClubScreen> {
                         );
                       } else {
                         success = await Navigator.push(
-                          context,
+                          parentContext,
                           MaterialPageRoute(
                             builder: (_) => CheckoutCardScreen(
                               amount: plan.price,
@@ -190,9 +188,9 @@ class _ClubScreenState extends State<ClubScreen> {
                         );
                       }
 
-                      if (success == true && context.mounted) {
+                      if (success == true && parentContext.mounted) {
                         _appState.selectPlan(plan.name);
-                        _showSuccessDialog(context, plan);
+                        _showSuccessDialog(parentContext, plan);
                       }
                     },
                   ),
