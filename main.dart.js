@@ -49160,34 +49160,36 @@ break
 case 6:case 1:return A.u(q,r)
 case 2:return A.t(o.at(-1),r)}})
 return A.v($async$z1,r)},
-I(a){var s,r,q,p,o,n,m=this,l=null,k="encodedImage"
-if(m.w){s=m.a
-r=s.e
-s=A.aq(r?'Sua assinatura do plano "'+A.j(s.f)+"\" foi ativada com sucesso no Clube Alce's!":"Seu agendamento na unidade Escola Agr\xedcola foi confirmado com sucesso.",l,l,l,B.pL,B.bb,l)
-q=t.p
-p=A.b1(A.b([A.aq(r?"+100":"+50",l,l,l,B.pO,l,l),B.ai9],q),B.t,B.n,B.m)
-o=A.bI(l,l,B.r,B.iY,l,l,l,40,l,l,l,l,1)
-return A.hZ(l,B.ao,A.fr(A.n9(A.b1(A.b([B.TC,B.c3,B.aip,B.ai,s,B.dl,new A.ce(A.b1(A.b([B.aje,B.ai,A.by(A.b([p,o,A.b1(A.b([A.aq(m.a.e?"+30":"+10",l,l,l,B.pO,l,l),B.ait],q),B.t,B.n,B.m)],q),B.t,B.kN,B.m,0)],q),B.t,B.n,B.m),B.ah,l,l,l),B.Ku,A.r3(B.ajb,new A.av0(a),A.oj(l,l,B.f,l,l,l,l,l,l,l,l,l,B.n0,l,new A.cw(A.c5(12),B.u),l,l,l,l,l))],q),B.bX,B.fo,B.m),B.cd),l,l),l)}s=A.kN(B.F,l,0,l,l,A.h9(l,l,B.nZ,l,l,new A.av1(a),l,l,l),B.aiz)
-if(m.d)r=B.r7
-else{r=m.e
-if(r!=null)r=A.fr(A.aq("Erro: "+r,l,l,l,B.agF,l,l),l,l)
-else{r=B.d.a3(m.a.c,2)
-q=t.p
-r=A.b([new A.ce(A.b1(A.b([B.air,B.c4,A.aq("R$ "+A.cs(r,".",","),l,l,l,B.afO,l,l)],q),B.t,B.n,B.m),B.ah,l,l,l),B.c3],q)
-p=m.f
-if((p==null?l:p.h(0,k))!=null){p=A.c5(16)
-r.push(A.fr(A.bI(l,new A.rw(A.aPJ(l,l,new A.oX(B.mp.d1(m.f.h(0,k)),1)),l,l,l,B.qJ,l),B.r,l,l,new A.bA(B.e,l,l,p,l,l,B.V),l,250,l,B.ah,l,l,250),l,l))}r.push(B.c3)
-p=m.f
-if((p==null?l:p.h(0,"payload"))!=null){p=A.a3(13,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255)
-o=A.c5(12)
-n=A.dB(B.iY,1)
-o=A.bI(l,A.aq(m.f.h(0,"payload"),3,B.aG,l,B.agj,l,l),B.r,l,l,new A.bA(p,l,n,o,l,l,B.V),l,l,l,B.ah,l,l,l)
-n=A.oj(l,l,B.f,l,l,l,l,l,l,l,l,l,B.n0,l,new A.cw(A.c5(12),B.u),l,l,l,l,l)
-B.b.N(r,A.b([B.aix,B.c1,o,B.ai,new A.C0(!0,new A.av2(m),l,l,l,n,B.r,l,!1,l,!0,l,new A.XR(B.aiG,B.TR,n,l,l),l)],q))}r.push(B.dl)
-r.push(B.aiO)
-r.push(B.c3)
-r.push(A.Gg(B.ajc,new A.av3(a),l))
-r=A.n9(A.b1(r,B.bX,B.n,B.m),B.cd)}}return A.hZ(s,B.ao,r,l)}}
+I(a){var s,r,q,p,o,n,m,l=this,k=null,j="encodedImage",i=l.a,h=i.e
+if(h){s=i.f
+if(s==null)s=""
+r=s.toLowerCase()
+if(B.c.q(r,"cabelo e barba ilimitado")){q=750
+p=350}else if(B.c.q(r,"corte ilimitado")||B.c.q(r,"barba ilimitado")){q=500
+p=250}else{q=100
+p=30}}else{q=50
+p=10}if(l.w){s=t.p
+return A.hZ(k,B.ao,A.fr(A.n9(A.b1(A.b([B.TC,B.c3,B.aip,B.ai,A.aq(h?'Sua assinatura do plano "'+A.j(i.f)+"\" foi ativada com sucesso no Clube Alce's!":"Seu agendamento na unidade Escola Agr\xedcola foi confirmado com sucesso.",k,k,k,B.pL,B.bb,k),B.dl,new A.ce(A.b1(A.b([B.aje,B.ai,A.by(A.b([A.b1(A.b([A.aq("+"+q,k,k,k,B.pO,k,k),B.ai9],s),B.t,B.n,B.m),A.bI(k,k,B.r,B.iY,k,k,k,40,k,k,k,k,1),A.b1(A.b([A.aq("+"+p,k,k,k,B.pO,k,k),B.ait],s),B.t,B.n,B.m)],s),B.t,B.kN,B.m,0)],s),B.t,B.n,B.m),B.ah,k,k,k),B.Ku,A.r3(B.ajb,new A.av0(a),A.oj(k,k,B.f,k,k,k,k,k,k,k,k,k,B.n0,k,new A.cw(A.c5(12),B.u),k,k,k,k,k))],s),B.bX,B.fo,B.m),B.cd),k,k),k)}h=A.kN(B.F,k,0,k,k,A.h9(k,k,B.nZ,k,k,new A.av1(a),k,k,k),B.aiz)
+if(l.d)i=B.r7
+else{s=l.e
+if(s!=null)i=A.fr(A.aq("Erro: "+s,k,k,k,B.agF,k,k),k,k)
+else{i=B.d.a3(i.c,2)
+s=t.p
+i=A.b([new A.ce(A.b1(A.b([B.air,B.c4,A.aq("R$ "+A.cs(i,".",","),k,k,k,B.afO,k,k)],s),B.t,B.n,B.m),B.ah,k,k,k),B.c3],s)
+o=l.f
+if((o==null?k:o.h(0,j))!=null){o=A.c5(16)
+i.push(A.fr(A.bI(k,new A.rw(A.aPJ(k,k,new A.oX(B.mp.d1(l.f.h(0,j)),1)),k,k,k,B.qJ,k),B.r,k,k,new A.bA(B.e,k,k,o,k,k,B.V),k,250,k,B.ah,k,k,250),k,k))}i.push(B.c3)
+o=l.f
+if((o==null?k:o.h(0,"payload"))!=null){o=A.a3(13,B.e.n()>>>16&255,B.e.n()>>>8&255,B.e.n()&255)
+n=A.c5(12)
+m=A.dB(B.iY,1)
+n=A.bI(k,A.aq(l.f.h(0,"payload"),3,B.aG,k,B.agj,k,k),B.r,k,k,new A.bA(o,k,m,n,k,k,B.V),k,k,k,B.ah,k,k,k)
+m=A.oj(k,k,B.f,k,k,k,k,k,k,k,k,k,B.n0,k,new A.cw(A.c5(12),B.u),k,k,k,k,k)
+B.b.N(i,A.b([B.aix,B.c1,n,B.ai,new A.C0(!0,new A.av2(l),k,k,k,m,B.r,k,!1,k,!0,k,new A.XR(B.aiG,B.TR,m,k,k),k)],s))}i.push(B.dl)
+i.push(B.aiO)
+i.push(B.c3)
+i.push(A.Gg(B.ajc,new A.av3(a),k))
+i=A.n9(A.b1(i,B.bX,B.n,B.m),B.cd)}}return A.hZ(h,B.ao,i,k)}}
 A.auY.prototype={
 $0(){var s,r="pixQrCode",q="invoiceUrl",p=this.b,o=this.a,n=J.al(o.a,r)
 n=n==null?null:J.al(n,"encodedImage")
