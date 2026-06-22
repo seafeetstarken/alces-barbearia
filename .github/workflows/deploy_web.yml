@@ -35,7 +35,7 @@ jobs:
       - name: Build for GitHub Pages
         run: |
           cd mobile
-          flutter build web --base-href "/alces-barbearia/" --release
+          flutter build web --web-renderer canvaskit --base-href "/alces-barbearia/" --release
 
       - name: Deploy to GitHub Pages Branch
         uses: peaceiris/actions-gh-pages@v4
