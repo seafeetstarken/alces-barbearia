@@ -51,10 +51,8 @@ class AppTheme {
         primary: primaryGold,
         secondary: primaryGoldDark,
         surface: cardDark,
-        background: backgroundDark,
         onPrimary: Colors.white,
         onSurface: textLight,
-        onBackground: textLight,
         error: statusError,
       ),
       textTheme: _textTheme,
@@ -65,7 +63,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: primaryGold),
         titleTextStyle: _textTheme.titleLarge?.copyWith(color: primaryGold),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardDark,
         elevation: 4,
         shadowColor: Colors.black45,

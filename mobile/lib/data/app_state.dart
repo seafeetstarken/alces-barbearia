@@ -294,16 +294,16 @@ class AppState {
     // Call checkout single for products (Avulso)
     try {
       final customerId = await getOrCreateAsaasCustomer();
-      final response = await supabase.functions.invoke('checkout-single', body: {
+      await supabase.functions.invoke('checkout-single', body: {
         'amount': total,
         'billingType': 'PIX',
         'customerId': customerId,
         'description': 'Reserva de Produtos - Alce\'s Barbearia',
       });
-      // Handle the PIX code response here if needed
     } catch (e) {
       debugPrint('Erro ao pagar produtos: $e');
     }
+
 
     try {
       await supabase.from('product_reservations').insert({

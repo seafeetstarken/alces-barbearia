@@ -38,13 +38,21 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
 
   Future<void> _generatePixCharge() async {
     try {
-      // MOCK PARA TESTFLIGHT: Bypass Asaas call
-      await Future.delayed(const Duration(seconds: 2));
+      final appState = AppState();
+
+      final payment = await appState.checkoutSingle(
+        amount: widget.amount,
+        billingType: 'PIX',
+        appointmentId: widget.appointmentId,
+        description: widget.description ?? "Agendamento - Alce's Barbearia",
+      );
 
       setState(() {
         _paymentData = {
-          'encodedImage': 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=', // Black pixel
-          'payload': '00020101021126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426655440000520400005303986540510.005802BR5915Alces Barbearia6009Sao Paulo62070503***63041A2B',
+          'encodedImage': payment['pixQrCode']?['encodedImage'],
+          'payload': payment['pixQrCode']?['payload'] ?? payment['invoiceUrl'],
+          'invoiceUrl': payment['invoiceUrl'],
+          'paymentId': payment['id'],
         };
         _isLoading = false;
       });

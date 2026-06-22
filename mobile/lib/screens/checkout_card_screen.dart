@@ -48,7 +48,7 @@ class _CheckoutCardScreenState extends State<CheckoutCardScreen> {
 
       final parts = _expiryController.text.split('/');
       final expiryMonth = parts[0];
-      final expiryYear = '20${parts[1]}'; // Assuming formats like 12/28
+      final expiryYear = '20${parts[1]}';
 
       final creditCard = {
         "holderName": _nameController.text,
@@ -58,50 +58,53 @@ class _CheckoutCardScreenState extends State<CheckoutCardScreen> {
         "ccv": _cvvController.text,
       };
 
-      // Mock holder info to bypass Asaas strict validation for Sandbox
       final creditCardHolderInfo = {
         "name": _nameController.text,
-        "email": appState.userName.isNotEmpty ? "${appState.userName.replaceAll(' ', '').toLowerCase()}@email.com" : "cliente@email.com",
+        "email": appState.userEmail.isNotEmpty ? appState.userEmail : "cliente@email.com",
         "cpfCnpj": "00000000000",
         "postalCode": "89010-000",
         "addressNumber": "100",
         "addressComplement": "",
-        "phone": "47999999999",
+        "phone": appState.userPhone.isNotEmpty ? appState.userPhone : "47999999999",
       };
 
-      // MOCK PARA TESTFLIGHT: Bypass Asaas call
-      await Future.delayed(const Duration(seconds: 2));
-      // if (widget.isSubscription) {
-      //   await appState.checkoutSubscription(
-      //     planName: widget.planName ?? 'Plano Clube',
-      //     price: widget.amount,
-      //     billingType: 'CREDIT_CARD',
-      //     creditCard: creditCard,
-      //     creditCardHolderInfo: creditCardHolderInfo,
-      //   );
-      // } else {
-      //   await appState.checkoutSingle(
-      //     amount: widget.amount,
-      //     billingType: 'CREDIT_CARD',
-      //     description: widget.description,
-      //     appointmentId: widget.appointmentId,
-      //     creditCard: creditCard,
-      //     creditCardHolderInfo: creditCardHolderInfo,
-      //   );
-      // }
+      if (widget.isSubscription) {
+        await appState.checkoutSubscription(
+          planName: widget.planName ?? 'Plano Clube',
+          price: widget.amount,
+          billingType: 'CREDIT_CARD',
+          creditCard: creditCard,
+          creditCardHolderInfo: creditCardHolderInfo,
+        );
+      } else {
+        await appState.checkoutSingle(
+          amount: widget.amount,
+          billingType: 'CREDIT_CARD',
+          description: widget.description,
+          appointmentId: widget.appointmentId,
+          creditCard: creditCard,
+          creditCardHolderInfo: creditCardHolderInfo,
+        );
+      }
 
       if (!mounted) return;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pagamento Aprovado com Sucesso!'), backgroundColor: AppTheme.primaryGold),
+        const SnackBar(
+          content: Text('✅ Pagamento Aprovado!'),
+          backgroundColor: AppTheme.primaryGold,
+        ),
       );
-      
+
       Navigator.pop(context, true);
 
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro no pagamento: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Erro no pagamento: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
