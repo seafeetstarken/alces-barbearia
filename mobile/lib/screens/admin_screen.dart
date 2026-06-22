@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../data/app_state.dart';
 import '../models/plan.dart';
-import '../core/theme.dart';
+import '../theme/app_theme.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({Key? key}) : super(key: key);
+  const AdminScreen({super.key});
 
   @override
-  _AdminScreenState createState() => _AdminScreenState();
+  State<AdminScreen> createState() => _AdminScreenState();
 }
 
 class _AdminScreenState extends State<AdminScreen> {
@@ -25,15 +25,21 @@ class _AdminScreenState extends State<AdminScreen> {
     setState(() => _isLoading = true);
     try {
       final users = await appState.fetchAllUsers();
-      setState(() {
-        _users = users;
-      });
+      if (mounted) {
+        setState(() {
+          _users = users;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao buscar usuários: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao buscar usuários: $e')),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -53,26 +59,26 @@ class _AdminScreenState extends State<AdminScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: AppColors.surface,
-              title: Text('Atribuir Plano Manualmente', style: TextStyle(color: AppColors.textPrimary)),
+              backgroundColor: AppTheme.cardDark,
+              title: const Text('Atribuir Plano Manualmente', style: TextStyle(color: AppTheme.textLight)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Cliente: ${user['full_name'] ?? 'Sem nome'}', style: TextStyle(color: AppColors.textSecondary)),
+                  Text('Cliente: ${user['full_name'] ?? 'Sem nome'}', style: const TextStyle(color: AppTheme.textMuted)),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<SubscriptionPlan>(
-                    dropdownColor: AppColors.surface,
-                    decoration: InputDecoration(
+                    dropdownColor: AppTheme.cardDark,
+                    decoration: const InputDecoration(
                       labelText: 'Selecione o Plano',
-                      labelStyle: TextStyle(color: AppColors.textSecondary),
-                      border: const OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.border)),
+                      labelStyle: TextStyle(color: AppTheme.textMuted),
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
                     ),
                     items: appState.plans.value.map((plan) {
                       return DropdownMenuItem<SubscriptionPlan>(
                         value: plan,
-                        child: Text(plan.name, style: TextStyle(color: AppColors.textPrimary)),
+                        child: Text(plan.name, style: const TextStyle(color: AppTheme.textLight)),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -86,10 +92,10 @@ class _AdminScreenState extends State<AdminScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+                  child: const Text('Cancelar', style: TextStyle(color: AppTheme.textMuted)),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGold),
                   onPressed: () async {
                     if (selectedPlan == null) return;
                     
@@ -105,16 +111,20 @@ class _AdminScreenState extends State<AdminScreen> {
 
                       await appState.assignPlanToUser(user['id'], selectedPlan!.id);
                       
-                      Navigator.pop(context); // Fechar loading
+                      if (mounted) Navigator.pop(context); // Fechar loading
                       
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Plano ${selectedPlan!.name} atribuído com sucesso!')),
-                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Plano ${selectedPlan!.name} atribuído com sucesso!')),
+                        );
+                      }
                     } catch (e) {
-                      Navigator.pop(context); // Fechar loading
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erro ao atribuir plano: $e')),
-                      );
+                      if (mounted) Navigator.pop(context); // Fechar loading
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Erro ao atribuir plano: $e')),
+                        );
+                      }
                     }
                   },
                   child: const Text('Confirmar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
@@ -130,11 +140,11 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppTheme.backgroundDark,
       appBar: AppBar(
         title: const Text('Painel Administrativo'),
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.primary,
+        backgroundColor: AppTheme.cardDark,
+        foregroundColor: AppTheme.primaryGold,
         elevation: 0,
       ),
       body: _isLoading 
@@ -145,13 +155,13 @@ class _AdminScreenState extends State<AdminScreen> {
               final user = _users[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: AppColors.primary.withOpacity(0.2),
-                  child: Icon(Icons.person, color: AppColors.primary),
+                  backgroundColor: AppTheme.primaryGold.withOpacity(0.2),
+                  child: const Icon(Icons.person, color: AppTheme.primaryGold),
                 ),
-                title: Text(user['full_name'] ?? 'Usuário sem nome', style: TextStyle(color: AppColors.textPrimary)),
-                subtitle: Text(user['phone'] ?? 'Sem telefone', style: TextStyle(color: AppColors.textSecondary)),
+                title: Text(user['full_name'] ?? 'Usuário sem nome', style: const TextStyle(color: AppTheme.textLight)),
+                subtitle: Text(user['phone'] ?? 'Sem telefone', style: const TextStyle(color: AppTheme.textMuted)),
                 trailing: IconButton(
-                  icon: Icon(Icons.card_membership, color: AppColors.primary),
+                  icon: const Icon(Icons.card_membership, color: AppTheme.primaryGold),
                   onPressed: () => _showAssignPlanDialog(user),
                   tooltip: 'Atribuir Plano',
                 ),
