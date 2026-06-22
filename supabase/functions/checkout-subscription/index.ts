@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createSubscription } from '../_shared/asaas.ts'
+import { createSubscription, getSubscriptionPayments, getPixQrCode } from '../_shared/asaas.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,8 +53,32 @@ serve(async (req) => {
       })
       .eq('id', user.id)
 
+    let pixQrCode = null
+    let invoiceUrl = asaasSub.invoiceUrl
+    
+    if (billingType === 'PIX' || !billingType) {
+      try {
+        // Wait 1.5 seconds to make sure Asaas generated the first payment
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        const payments = await getSubscriptionPayments(asaasSub.id)
+        if (payments && payments.data && payments.data.length > 0) {
+          const firstPayment = payments.data[0]
+          invoiceUrl = firstPayment.invoiceUrl || invoiceUrl
+          pixQrCode = await getPixQrCode(firstPayment.id)
+        }
+      } catch (err) {
+        console.error("Failed to fetch Pix QR code for subscription:", err)
+      }
+    }
+
     return new Response(
-      JSON.stringify({ subscription: asaasSub }),
+      JSON.stringify({ 
+        subscription: {
+          ...asaasSub,
+          invoiceUrl,
+          pixQrCode
+        } 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
@@ -64,3 +88,4 @@ serve(async (req) => {
     })
   }
 })
+

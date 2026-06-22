@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createPayment } from '../_shared/asaas.ts'
+import { createPayment, getPixQrCode } from '../_shared/asaas.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,11 +55,26 @@ serve(async (req) => {
         .eq('id', appointmentId)
     }
 
+    let pixQrCode = null
+    if (billingType === 'PIX' || !billingType) {
+      try {
+        pixQrCode = await getPixQrCode(asaasPayment.id)
+      } catch (err) {
+        console.error("Failed to fetch Pix QR code:", err)
+      }
+    }
+
     return new Response(
-      JSON.stringify({ payment: asaasPayment }),
+      JSON.stringify({ 
+        payment: {
+          ...asaasPayment,
+          pixQrCode
+        } 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,

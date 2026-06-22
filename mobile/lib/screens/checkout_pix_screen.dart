@@ -39,20 +39,29 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
   Future<void> _generatePixCharge() async {
     try {
       final appState = AppState();
+      final Map<String, dynamic> result;
 
-      final payment = await appState.checkoutSingle(
-        amount: widget.amount,
-        billingType: 'PIX',
-        appointmentId: widget.appointmentId,
-        description: widget.description ?? "Agendamento - Alce's Barbearia",
-      );
+      if (widget.isSubscription) {
+        result = await appState.checkoutSubscription(
+          planName: widget.planName ?? 'Plano Clube',
+          price: widget.amount,
+          billingType: 'PIX',
+        );
+      } else {
+        result = await appState.checkoutSingle(
+          amount: widget.amount,
+          billingType: 'PIX',
+          appointmentId: widget.appointmentId,
+          description: widget.description ?? "Agendamento - Alce's Barbearia",
+        );
+      }
 
       setState(() {
         _paymentData = {
-          'encodedImage': payment['pixQrCode']?['encodedImage'],
-          'payload': payment['pixQrCode']?['payload'] ?? payment['invoiceUrl'],
-          'invoiceUrl': payment['invoiceUrl'],
-          'paymentId': payment['id'],
+          'encodedImage': result['pixQrCode']?['encodedImage'],
+          'payload': result['pixQrCode']?['payload'] ?? result['invoiceUrl'],
+          'invoiceUrl': result['invoiceUrl'],
+          'paymentId': result['id'],
         };
         _isLoading = false;
       });

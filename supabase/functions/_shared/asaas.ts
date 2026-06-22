@@ -48,3 +48,13 @@ export const createSubscription = async (subData: { customer: string; billingTyp
 export const createPayment = async (payData: { customer: string; billingType: string; value: number; dueDate: string; description: string; creditCard?: any; creditCardHolderInfo?: any }) => {
   return await asaasRequest('/payments', 'POST', payData);
 };
+
+export const getPixQrCode = async (paymentId: string) => {
+  return await asaasRequest(`/payments/${paymentId}/pixQrCode`, 'GET');
+};
+
+export const getSubscriptionPayments = async (subscriptionId: string) => {
+  return await asaasRequest(`/payments?subscription=${subscriptionId}`, 'GET');
+};
+
+

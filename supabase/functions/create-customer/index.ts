@@ -43,7 +43,7 @@ serve(async (req) => {
     const asaasCustomer = await createCustomer({
       name: name || profile?.full_name || 'Alce Client',
       email: user.email || profile?.email,
-      cpfCnpj: cpf,
+      cpfCnpj: cpf || '00000000191',
       phone: phone
     })
 
