@@ -49,7 +49,7 @@ serve(async (req) => {
       .from('profiles')
       .update({ 
         active_subscription_id: asaasSub.id,
-        active_subscription_status: asaasSub.status // usually 'PENDING' until paid
+        active_subscription_status: 'PENDING' // Manually set to PENDING until webhook confirms first payment
       })
       .eq('id', user.id)
 
