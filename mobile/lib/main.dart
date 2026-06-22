@@ -8,21 +8,25 @@ import 'package:intl/date_symbol_data_local.dart';
 bool _supabaseInitialized = false;
 
 void main() async {
+  print('1. ensureInitialized');
   WidgetsFlutterBinding.ensureInitialized();
+  print('2. initializeDateFormatting');
   await initializeDateFormatting('pt_BR', null);
 
-  // Initialize Supabase
+  print('3. Supabase.initialize');
   try {
     await Supabase.initialize(
       url: 'https://baafdmeulyzpcgbqqeut.supabase.co',
       anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhYWZkbWV1bHl6cGNnYnFxZXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDMyNzgsImV4cCI6MjA5NzMxOTI3OH0.cycNHV-8ckDsaM6IC4TeFnTqN9-fnCUFcOsKVN86cME',
     );
     _supabaseInitialized = true;
+    print('4. Supabase initialized successfully');
   } catch (e, stack) {
     print('Error initializing Supabase: $e');
     print(stack);
   }
 
+  print('5. runApp');
   runApp(const AlcesApp());
 }
 
