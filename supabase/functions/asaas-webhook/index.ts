@@ -27,10 +27,29 @@ serve(async (req) => {
     if (payment.subscription) {
       if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
         // Find profile with this subscription ID
-        await supabaseClient
+        const { data: profile } = await supabaseClient
           .from('profiles')
-          .update({ active_subscription_status: 'ACTIVE' })
+          .select('id, xp, alce_coins, active_subscription_status')
           .eq('active_subscription_id', payment.subscription)
+          .maybeSingle()
+
+        if (profile) {
+          if (profile.active_subscription_status !== 'ACTIVE') {
+            await supabaseClient
+              .from('profiles')
+              .update({ 
+                active_subscription_status: 'ACTIVE',
+                xp: (profile.xp || 0) + 100, // 100 XP
+                alce_coins: (profile.alce_coins || 0) + 30 // 30 AlceCoins
+              })
+              .eq('id', profile.id)
+          } else {
+            await supabaseClient
+              .from('profiles')
+              .update({ active_subscription_status: 'ACTIVE' })
+              .eq('id', profile.id)
+          }
+        }
       } else if (event === 'PAYMENT_OVERDUE' || event === 'PAYMENT_DELETED') {
         // Suspend subscription
         await supabaseClient
@@ -39,6 +58,7 @@ serve(async (req) => {
           .eq('active_subscription_id', payment.subscription)
       }
     } 
+
     // Handle Single Payments (Avulso)
     else if (payment.externalReference) {
       // payment.externalReference holds our appointment ID
