@@ -155,6 +155,23 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int xpReward = 50;
+    int coinsReward = 10;
+
+    if (widget.isSubscription) {
+      final name = (widget.planName ?? '').toLowerCase();
+      if (name.contains('cabelo e barba ilimitado')) {
+        xpReward = 750;
+        coinsReward = 350;
+      } else if (name.contains('corte ilimitado') || name.contains('barba ilimitado')) {
+        xpReward = 500;
+        coinsReward = 250;
+      } else {
+        xpReward = 100;
+        coinsReward = 30;
+      }
+    }
+
     if (_isPaid) {
       return Scaffold(
         backgroundColor: AppTheme.backgroundDark,
@@ -207,7 +224,7 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
                           Column(
                             children: [
                               Text(
-                                widget.isSubscription ? '+100' : '+50',
+                                '+$xpReward',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -221,7 +238,7 @@ class _CheckoutPixScreenState extends State<CheckoutPixScreen> {
                           Column(
                             children: [
                               Text(
-                                widget.isSubscription ? '+30' : '+10',
+                                '+$coinsReward',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,

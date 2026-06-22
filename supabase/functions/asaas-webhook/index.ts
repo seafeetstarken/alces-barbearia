@@ -35,12 +35,24 @@ serve(async (req) => {
 
         if (profile) {
           if (profile.active_subscription_status !== 'ACTIVE') {
+            let xpReward = 100;
+            let coinsReward = 30;
+
+            const desc = (payment.description || '').toLowerCase();
+            if (desc.includes('cabelo e barba ilimitado')) {
+              xpReward = 750;
+              coinsReward = 350;
+            } else if (desc.includes('corte ilimitado') || desc.includes('barba ilimitado')) {
+              xpReward = 500;
+              coinsReward = 250;
+            }
+
             await supabaseClient
               .from('profiles')
               .update({ 
                 active_subscription_status: 'ACTIVE',
-                xp: (profile.xp || 0) + 100, // 100 XP
-                alce_coins: (profile.alce_coins || 0) + 30 // 30 AlceCoins
+                xp: (profile.xp || 0) + xpReward,
+                alce_coins: (profile.alce_coins || 0) + coinsReward
               })
               .eq('id', profile.id)
           } else {
