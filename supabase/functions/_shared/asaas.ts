@@ -5,7 +5,7 @@ export const getAsaasConfig = () => {
   
   const baseUrl = isProduction 
     ? 'https://api.asaas.com/v3'
-    : 'https://sandbox.asaas.com/api/v3';
+    : 'https://api-sandbox.asaas.com/v3';
 
   return { baseUrl, apiKey };
 };
