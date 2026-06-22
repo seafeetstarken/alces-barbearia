@@ -28,7 +28,7 @@ serve(async (req) => {
     // Retrieve profile to see if it already has an asaas_customer_id
     const { data: profile } = await supabaseClient
       .from('profiles')
-      .select('asaas_customer_id, email, full_name')
+      .select('asaas_customer_id, email, full_name, phone, cpf')
       .eq('id', user.id)
       .single()
 
@@ -43,8 +43,8 @@ serve(async (req) => {
     const asaasCustomer = await createCustomer({
       name: name || profile?.full_name || 'Alce Client',
       email: user.email || profile?.email,
-      cpfCnpj: cpf || '00000000191',
-      phone: phone
+      cpfCnpj: cpf || profile?.cpf || '00000000191',
+      phone: phone || profile?.phone
     })
 
     // Update profile with the new customer ID
