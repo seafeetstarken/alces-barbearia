@@ -82,6 +82,25 @@ class _BookingScreenState extends State<BookingScreen> {
     int needed = _slotsNeeded;
     if (startIndex + needed > _timeSlots.length) return false;
 
+    // Check if slot has already passed today
+    if (_selectedDate != null) {
+      final now = DateTime.now();
+      final isToday = _selectedDate!.year == now.year &&
+          _selectedDate!.month == now.month &&
+          _selectedDate!.day == now.day;
+          
+      if (isToday) {
+        final parts = startTime.split(':');
+        final hour = int.parse(parts[0]);
+        final minute = int.parse(parts[1]);
+        final slotTime = DateTime(now.year, now.month, now.day, hour, minute);
+        
+        if (slotTime.isBefore(now)) {
+          return false;
+        }
+      }
+    }
+
     for (int i = 0; i < needed; i++) {
       String currentSlot = _timeSlots[startIndex + i];
       if (_unavailableSlots.contains(currentSlot) || _unavailableSlots.contains('$currentSlot:00')) {
