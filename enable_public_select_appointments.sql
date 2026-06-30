@@ -2,8 +2,10 @@
 -- ALCE'S BARBEARIA - SQL MIGRATION & BUG FIXES
 -- ========================================================
 
--- 1. Criar a tabela user_store_memberships se não existir (necessária para o web-admin)
-CREATE TABLE IF NOT EXISTS public.user_store_memberships (
+-- 1. Dropar a tabela antiga se existir e criá-la do zero para garantir todas as chaves estrangeiras
+DROP TABLE IF EXISTS public.user_store_memberships CASCADE;
+
+CREATE TABLE public.user_store_memberships (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   store_id UUID NOT NULL REFERENCES public.stores(id) ON DELETE CASCADE,
