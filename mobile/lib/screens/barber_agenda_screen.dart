@@ -381,15 +381,31 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(
-                                                appt.clientName,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                  decoration: isCanceled ? TextDecoration.lineThrough : null,
+                                              Expanded(
+
+                                                child: Text(
+
+                                                  appt.clientName,
+
+                                                  style: TextStyle(
+
+                                                    fontSize: 16,
+
+                                                    fontWeight: FontWeight.bold,
+
+                                                    color: Colors.white,
+
+                                                    decoration: isCanceled ? TextDecoration.lineThrough : null,
+
+                                                  ),
+
+                                                  overflow: TextOverflow.ellipsis,
+
                                                 ),
+
                                               ),
+
+                                              const SizedBox(width: 8),
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                                 decoration: BoxDecoration(
@@ -412,11 +428,21 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
                                             children: [
                                               const Icon(Icons.cut, size: 14, color: AppTheme.textMuted),
                                               const SizedBox(width: 6),
-                                              Text(
-                                                appt.serviceName,
-                                                style: const TextStyle(fontSize: 13, color: AppTheme.textLight),
+                                              Expanded(
+
+                                                child: Text(
+
+                                                  appt.serviceName,
+
+                                                  style: const TextStyle(fontSize: 13, color: AppTheme.textLight),
+
+                                                  overflow: TextOverflow.ellipsis,
+
+                                                ),
+
                                               ),
-                                              const Spacer(),
+
+                                              const SizedBox(width: 8),
                                               Text(
                                                 'R\$ ${appt.servicePrice.toStringAsFixed(2).replaceAll('.', ',')}',
                                                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),

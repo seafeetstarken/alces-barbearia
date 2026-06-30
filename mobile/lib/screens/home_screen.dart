@@ -343,12 +343,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   children: [
                                                     const Icon(Icons.workspace_premium, color: Color(0xFF52B788), size: 14),
                                                     const SizedBox(width: 4),
-                                                    Text(
-                                                      'Alces Games • Lvl $level • $xp XP • $coins Coins',
-                                                      style: const TextStyle(
-                                                        color: Color(0xFF52B788),
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 12,
+                                                    Expanded(
+                                                      child: Text(
+                                                        'Alces Games • Lvl $level • $xp XP • $coins Coins',
+                                                        style: const TextStyle(
+                                                          color: Color(0xFF52B788),
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 12,
+                                                        ),
+                                                        overflow: TextOverflow.ellipsis,
                                                       ),
                                                     ),
                                                   ],

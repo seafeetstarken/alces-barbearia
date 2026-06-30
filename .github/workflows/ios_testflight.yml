@@ -59,22 +59,9 @@ jobs:
         run: sed -i '' "s/TEAM_ID_PLACEHOLDER/${{ secrets.APPLE_DEVELOPER_PORTAL_TEAM_ID }}/g" mobile/ios/ExportOptions.plist
 
       - name: Force Manual Signing in Xcode
-        run: |
-          python3 -c "
-          import os
-          path = 'mobile/ios/Runner.xcodeproj/project.pbxproj'
-          with open(path, 'r') as f:
-              content = f.read()
-          content = content.replace('ProvisioningStyle = Automatic;', 'ProvisioningStyle = Manual;')
-          content = content.replace('CODE_SIGN_STYLE = Automatic;', 'CODE_SIGN_STYLE = Manual;')
-          content = content.replace('DEVELOPMENT_TEAM = \"\";', 'DEVELOPMENT_TEAM = \"${{ secrets.APPLE_DEVELOPER_PORTAL_TEAM_ID }}\";')
-          content = content.replace('CODE_SIGN_IDENTITY = \"iPhone Developer\";', 'CODE_SIGN_IDENTITY = \"Apple Distribution\";')
-          content = content.replace('\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"iPhone Developer\";', '\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";')
-          content = content.replace('PROVISIONING_PROFILE_SPECIFIER = \"\";', 'PROVISIONING_PROFILE_SPECIFIER = \"Alces Barbearia AppStore Profile\";')
-          with open(path, 'w') as f:
-              f.write(content)
-          print('Xcode project updated to Manual Signing')
-          "
+        env:
+          TEAM_ID: ${{ secrets.APPLE_DEVELOPER_PORTAL_TEAM_ID }}
+        run: python3 mobile/ios/configure_signing.py
 
       - name: Build iOS IPA
         working-directory: mobile

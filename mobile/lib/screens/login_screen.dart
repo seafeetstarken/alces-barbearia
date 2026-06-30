@@ -88,82 +88,95 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 40),
-                  Text(
-                    'Informe os campos abaixo:',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.primaryGold,
-                      fontWeight: FontWeight.bold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  
-                  // Phone / Username Field
-                  TextField(
-                    controller: _phoneController,
-                    style: const TextStyle(color: Colors.white),
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Celular ou Usuário',
-                      prefixIcon: Icon(Icons.person, color: AppTheme.primaryGold),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Password Field
-                  TextField(
-                    controller: _passwordController,
-                    style: const TextStyle(color: Colors.white),
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Sua senha',
-                      prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryGold),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: AppTheme.primaryGold,
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 40),
+                            Text(
+                              'Informe os campos abaixo:',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppTheme.primaryGold,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 40),
+                            
+                            // Phone / Username Field
+                            TextField(
+                              controller: _phoneController,
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                labelText: 'Celular ou Usuário',
+                                prefixIcon: Icon(Icons.person, color: AppTheme.primaryGold),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            // Password Field
+                            TextField(
+                              controller: _passwordController,
+                              style: const TextStyle(color: Colors.white),
+                              obscureText: _obscurePassword,
+                              decoration: InputDecoration(
+                                labelText: 'Sua senha',
+                                prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryGold),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    color: AppTheme.primaryGold,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            
+                            // Recovery Buttons
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                AlcesTextButton(
+                                  text: 'ESQUECI O USUÁRIO',
+                                  onPressed: () {},
+                                ),
+                                AlcesTextButton(
+                                  text: 'ESQUECI A SENHA',
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
+                            
+                            const Spacer(),
+                            
+                            AlcesButton(
+                              text: 'Logar',
+                              isPrimary: true,
+                              isLoading: _isLoading,
+                              onPressed: _isLoading ? null : _handleLogin,
+                            ),
+                          ],
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  
-                  // Recovery Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      AlcesTextButton(
-                        text: 'ESQUECI O USUÁRIO',
-                        onPressed: () {},
-                      ),
-                      AlcesTextButton(
-                        text: 'ESQUECI A SENHA',
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  
-                  const Spacer(),
-                  
-                  AlcesButton(
-                    text: 'Logar',
-                    isPrimary: true,
-                    isLoading: _isLoading,
-                    onPressed: _isLoading ? null : _handleLogin,
-                  ),
-                ],
-              ),
+                );
+              }
             ),
           ),
         ],
