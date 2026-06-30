@@ -52,3 +52,16 @@ CREATE POLICY "Barbers can update their appointment status"
         AND b.id = appointments.barber_id
     )
   );
+
+-- 6. RLS: Barbeiros ativos podem consultar perfis de clientes para agendamento manual
+DROP POLICY IF EXISTS "Barbers can view all profiles" ON public.profiles;
+
+CREATE POLICY "Barbers can view all profiles"
+  ON public.profiles FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.barbers b
+      WHERE b.profile_id = auth.uid()
+        AND b.is_active = true
+    )
+  );
