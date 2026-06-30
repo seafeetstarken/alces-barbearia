@@ -54,10 +54,17 @@ DROP POLICY IF EXISTS "Anyone can view appointments to see occupied slots" ON pu
 CREATE POLICY "Anyone can view appointments to see occupied slots"
 ON public.appointments FOR SELECT
 USING (true);
--- Adicionar as colunas de plano na tabela de perfis (profiles) se não existirem
+-- Adicionar as colunas de permissão e plano na tabela de perfis (profiles) se não existirem
 ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'barber',
+ADD COLUMN IF NOT EXISTS avatar_url TEXT,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW(),
 ADD COLUMN IF NOT EXISTS active_plan TEXT,
 ADD COLUMN IF NOT EXISTS active_subscription_status TEXT DEFAULT 'INACTIVE';
+
+-- Atualizar/criar restrição (constraint) de valores para role
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_role_check;
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_role_check CHECK (role IN ('owner', 'manager', 'leader', 'barber', 'super_admin'));
 
 -- Sincronizar assinaturas ativas existentes com a tabela de perfis
 UPDATE public.profiles p
