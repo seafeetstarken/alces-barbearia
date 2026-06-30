@@ -13,3 +13,7 @@ DROP POLICY IF EXISTS "Users can view own appointments" ON public.appointments;
 CREATE POLICY "Anyone can view appointments to see occupied slots"
 ON public.appointments FOR SELECT
 USING (true);
+-- Adicionar as colunas de plano na tabela de perfis (profiles) se não existirem
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS active_plan TEXT,
+ADD COLUMN IF NOT EXISTS active_subscription_status TEXT DEFAULT 'INACTIVE';
