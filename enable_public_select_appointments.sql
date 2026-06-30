@@ -28,3 +28,11 @@ FROM public.user_subscriptions us
 JOIN public.plans pl ON us.plan_id = pl.id
 WHERE us.user_id = p.id
   AND us.status = 'Ativo';
+
+-- Vincular todos os administradores (is_admin = true) a todas as lojas criadas no banco
+INSERT INTO public.user_store_memberships (user_id, store_id, role, is_active)
+SELECT p.id, s.id, 'owner', true
+FROM public.profiles p
+CROSS JOIN public.stores s
+WHERE p.is_admin = true
+ON CONFLICT (user_id, store_id) DO UPDATE SET role = 'owner', is_active = true;
