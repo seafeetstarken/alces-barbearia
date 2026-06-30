@@ -14,8 +14,8 @@
   <string>manual</string>
   <key>provisioningProfiles</key>
   <dict>
-    <key>com.alcesbarbearia.app</key>
-    <string>Alce's Barbearia Distribution</string>
+    <key>com.seafeetstarken.alcesBarbearia</key>
+    <string>Alces Barbearia AppStore Profile</string>
   </dict>
   <key>destination</key>
   <string>export</string>
