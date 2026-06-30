@@ -46786,7 +46786,7 @@ case 24:q=27
 a=$.ck().b
 a===$&&A.a()
 s=30
-return A.n(a.df("appointments").mT().ec("user_id",h.a).xy("status","cancelled"),$async$kH)
+return A.n(a.df("appointments").mT().ec("user_id",h.a).xy("status","Cancelado"),$async$kH)
 case 30:d=a8
 a=J.fq(d,new A.a41(),t.D4)
 a=A.a0(a,a.$ti.i("aq.E"))
@@ -46877,7 +46877,7 @@ h=i.b
 h===$&&A.a()
 g=t.z
 s=6
-return A.n(h.df("appointments").bS(A.a4(["status","cancelled"],g,g)).ec("id",a),$async$rG)
+return A.n(h.df("appointments").bS(A.a4(["status","Cancelado"],g,g)).ec("id",a),$async$rG)
 case 6:h=o.z
 n=A.dJ(h.a,!0,t.D4)
 J.aW1(n,new A.a3Z(a))
@@ -46920,7 +46920,7 @@ n=b.lF().split("T")[0]
 k=$.ck().b
 k===$&&A.a()
 s=7
-return A.n(k.df("appointments").k7("appointment_time").ec("barber_id",a).ec("appointment_date",n).xy("status","cancelled"),$async$CD)
+return A.n(k.df("appointments").k7("appointment_time").ec("barber_id",a).ec("appointment_date",n).xy("status","Cancelado"),$async$CD)
 case 7:m=d
 k=J.fq(m,new A.a40(),t.N)
 k=A.a0(k,k.$ti.i("aq.E"))
@@ -49395,7 +49395,7 @@ l=new A.c3(Date.now(),0,!1)
 k=A.jF("yyyy-MM-dd",null).hK(l)
 b=$.ck().b
 b===$&&A.a()
-b=b.df("appointments").k7("*, profiles(full_name, phone)").ec("barber_id",m.a).xy("status","cancelled")
+b=b.df("appointments").k7("*, profiles(full_name, phone)").ec("barber_id",m.a).xy("status","Cancelado")
 s=7
 return A.n(A.rV(b.uX(b.JS("appointment_date","gte."+A.j(k))),b.$ti.c).MV("appointment_date",!0).MV("appointment_time",!0),$async$vt)
 case 7:j=a1
