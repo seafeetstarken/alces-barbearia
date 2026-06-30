@@ -669,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                      isBarber ? 'Minha Agenda' : 'Serviços',
+                                      isBarber ? 'Agenda' : 'Serviços',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,

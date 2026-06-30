@@ -175,7 +175,12 @@ class AppState {
     if (user == null) throw Exception('Usuário não logado');
 
     final data = appt.toJson();
-    data['user_id'] = user.id;
+    
+    // Se for barbeiro agendando, respeitamos o appt.userId (que pode ser null para walk-in ou o UUID do cliente selecionado).
+    // Se for o próprio cliente agendando, associamos ao ID dele se ainda não estiver definido.
+    if (userRole.value != UserRole.barber) {
+      data['user_id'] = data['user_id'] ?? user.id;
+    }
 
     // Salvar no Supabase
     await supabase.from('appointments').insert(data);

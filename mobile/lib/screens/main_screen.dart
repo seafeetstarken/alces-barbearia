@@ -87,7 +87,7 @@ class MainScreenState extends State<MainScreen> {
                     ? const [
                         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                         BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Agendar'),
-                        BottomNavigationBarItem(icon: Icon(Icons.event_note), label: 'Minha Agenda'),
+                        BottomNavigationBarItem(icon: Icon(Icons.event_note), label: 'Agenda'),
                         BottomNavigationBarItem(icon: Icon(Icons.cut), label: 'Serviços'),
                         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
                       ]

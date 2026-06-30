@@ -4,6 +4,7 @@ class Appointment {
   final String barberId;
   final String serviceId;
   final String? clientName;
+  final String? userId;
   final DateTime date;
   final String time;
   final String status;
@@ -14,6 +15,7 @@ class Appointment {
     required this.barberId,
     required this.serviceId,
     this.clientName,
+    this.userId,
     required this.date,
     required this.time,
     required this.status,
@@ -26,6 +28,7 @@ class Appointment {
       barberId: json['barber_id'] as String,
       serviceId: json['service_id'] as String,
       clientName: json['client_name'] as String?,
+      userId: json['user_id'] as String?,
       date: DateTime.parse(json['appointment_date'] as String),
       time: json['appointment_time'] as String,
       status: json['status'] as String? ?? 'Agendado',
@@ -38,6 +41,7 @@ class Appointment {
       'barber_id': barberId,
       'service_id': serviceId,
       'client_name': clientName,
+      'user_id': userId,
       'appointment_date': date.toIso8601String().split('T')[0],
       'appointment_time': time,
       'status': status,

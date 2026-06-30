@@ -40,6 +40,13 @@ class _BookingScreenState extends State<BookingScreen> {
   bool _isLoadingSlots = false;
   final TextEditingController _clientNameController = TextEditingController();
 
+  Map<String, dynamic>? _selectedClient;
+  bool _isWalkIn = false;
+  List<Map<String, dynamic>> _allClients = [];
+  List<Map<String, dynamic>> _filteredClients = [];
+  bool _isLoadingClients = false;
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -49,17 +56,52 @@ class _BookingScreenState extends State<BookingScreen> {
     // Pré-selecionar o barbeiro logado
     if (_appState.userRole.value == UserRole.barber) {
       _selectedBarber = _appState.linkedBarber.value;
+      _loadClients();
+      _searchController.addListener(_filterClients);
     }
   }
 
   @override
   void dispose() {
     _clientNameController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
+  Future<void> _loadClients() async {
+    setState(() => _isLoadingClients = true);
+    try {
+      final clients = await _appState.fetchAllUsers();
+      setState(() {
+        _allClients = clients;
+        _filteredClients = clients;
+      });
+    } catch (e) {
+      debugPrint('Erro ao carregar clientes: $e');
+    } finally {
+      setState(() => _isLoadingClients = false);
+    }
+  }
+
+  void _filterClients() {
+    final query = _searchController.text.toLowerCase().trim();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredClients = _allClients;
+      } else {
+        _filteredClients = _allClients.where((c) {
+          final name = (c['full_name'] as String? ?? '').toLowerCase();
+          final phone = (c['phone'] as String? ?? '').toLowerCase();
+          return name.contains(query) || phone.contains(query);
+        }).toList();
+      }
+    });
+  }
+
   void _nextStep() {
-    if (_currentStep < 3) {
+    final isBarber = _appState.userRole.value == UserRole.barber;
+    final maxStep = isBarber ? 4 : 3;
+    if (_currentStep < maxStep) {
       setState(() => _currentStep++);
     }
   }
@@ -144,11 +186,20 @@ class _BookingScreenState extends State<BookingScreen> {
     }
 
     if (_appState.userRole.value == UserRole.barber) {
-      if (_clientNameController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, informe o nome do cliente para prosseguir.')),
-        );
-        return;
+      if (_isWalkIn) {
+        if (_clientNameController.text.trim().isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Por favor, informe o nome do cliente para prosseguir.')),
+          );
+          return;
+        }
+      } else {
+        if (_selectedClient == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Por favor, selecione um cliente para prosseguir.')),
+          );
+          return;
+        }
       }
       await _processBookingInsertion(store, null);
       return;
@@ -251,8 +302,11 @@ class _BookingScreenState extends State<BookingScreen> {
           barberId: _selectedBarber!.id,
           serviceId: service.id,
           clientName: _appState.userRole.value == UserRole.barber
-              ? _clientNameController.text.trim()
+              ? (_isWalkIn ? _clientNameController.text.trim() : _selectedClient?['full_name'])
               : _appState.userName,
+          userId: _appState.userRole.value == UserRole.barber
+              ? (_isWalkIn ? null : _selectedClient?['id'])
+              : null,
           date: _selectedDate!,
           time: currentSlotTime,
           status: paymentMethod != null ? 'Aguardando Pagamento' : 'Agendado',
@@ -343,10 +397,16 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildStepIndicator() {
-    final stepNames = ['Serviço', 'Barbeiro', 'Data/Hora', 'Resumo'];
+    final isBarber = _appState.userRole.value == UserRole.barber;
+    final stepNames = isBarber 
+        ? ['Serviço', 'Barbeiro', 'Data/Hora', 'Cliente', 'Resumo'] 
+        : ['Serviço', 'Barbeiro', 'Data/Hora', 'Resumo'];
+    final totalSteps = stepNames.length;
+    final generateLength = totalSteps * 2 - 1;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(7, (index) {
+      children: List.generate(generateLength, (index) {
         if (index.isOdd) {
           final stepIndex = index ~/ 2;
           final isActive = stepIndex < _currentStep;
@@ -365,8 +425,8 @@ class _BookingScreenState extends State<BookingScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 32,
-                height: 32,
+                width: 30,
+                height: 30,
                 decoration: BoxDecoration(
                   color: isCurrent
                       ? AppTheme.primaryGold
@@ -381,11 +441,11 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
                 child: Center(
                   child: isActive && !isCurrent
-                      ? const Icon(Icons.check, size: 16, color: AppTheme.primaryGold)
+                      ? const Icon(Icons.check, size: 14, color: AppTheme.primaryGold)
                       : Text(
                           '${stepIndex + 1}',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: isCurrent ? Colors.black : Colors.white54,
                           ),
@@ -396,7 +456,7 @@ class _BookingScreenState extends State<BookingScreen> {
               Text(
                 stepNames[stepIndex],
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                   color: isCurrent ? Colors.white : (isActive ? Colors.white70 : AppTheme.textMuted),
                 ),
@@ -405,6 +465,147 @@ class _BookingScreenState extends State<BookingScreen> {
           );
         }
       }),
+    );
+  }
+
+  Widget _buildClientSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Selecione o Cliente',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+        ),
+        const SizedBox(height: 16),
+
+        // Search Bar
+        TextField(
+          controller: _searchController,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: 'Buscar por nome ou celular',
+            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryGold),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.white54),
+                    onPressed: () {
+                      _searchController.clear();
+                      _filterClients();
+                    },
+                  )
+                : null,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Walk-in Toggle Button
+        AlcesCard(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          onTap: () {
+            setState(() {
+              _isWalkIn = !_isWalkIn;
+              if (_isWalkIn) {
+                _selectedClient = null;
+              }
+            });
+          },
+          border: Border.all(
+            color: _isWalkIn ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
+            width: _isWalkIn ? 2.0 : 1.0,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _isWalkIn ? Icons.check_box : Icons.check_box_outline_blank,
+                color: _isWalkIn ? AppTheme.primaryGold : Colors.white54,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Cliente Walk-in (Sem Cadastro)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                    SizedBox(height: 2),
+                    Text('Digite o nome do cliente manualmente', style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        if (_isWalkIn) ...[
+          const SizedBox(height: 16),
+          const Text('Nome do Cliente *', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryGold)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _clientNameController,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              labelText: 'Nome do cliente',
+              hintText: 'Digite o nome do cliente...',
+            ),
+          ),
+        ],
+
+        if (!_isWalkIn) ...[
+          const SizedBox(height: 24),
+          const Text('Clientes Cadastrados', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white70)),
+          const SizedBox(height: 10),
+          if (_isLoadingClients)
+            const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: AppTheme.primaryGold)))
+          else if (_filteredClients.isEmpty)
+            const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('Nenhum cliente cadastrado com esse nome.', style: TextStyle(color: AppTheme.textMuted))))
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _filteredClients.length,
+              itemBuilder: (context, index) {
+                final client = _filteredClients[index];
+                final isSelected = _selectedClient?['id'] == client['id'];
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: AlcesCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    onTap: () {
+                      setState(() {
+                        _selectedClient = client;
+                      });
+                    },
+                    border: Border.all(
+                      color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.04),
+                      width: isSelected ? 1.5 : 1.0,
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: isSelected ? AppTheme.primaryGold : Colors.white12,
+                          radius: 18,
+                          child: Icon(Icons.person, color: isSelected ? Colors.black : Colors.white70, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(client['full_name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                              if (client['phone'] != null)
+                                Text(client['phone'], style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                            ],
+                          ),
+                        ),
+                        if (isSelected)
+                          const Icon(Icons.check_circle, color: AppTheme.primaryGold),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
+      ],
     );
   }
 
@@ -868,21 +1069,29 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         const SizedBox(height: 16),
         if (_appState.userRole.value == UserRole.barber) ...[
-          const Text(
-            'Nome do Cliente (Agendamento Manual)',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryGold),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _clientNameController,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              labelText: 'Nome do cliente',
-              prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
-              hintText: 'Digite o nome do cliente...',
+          AlcesCard(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                const Icon(Icons.person, color: AppTheme.primaryGold),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Cliente do Agendamento', style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                      const SizedBox(height: 4),
+                      Text(
+                        _isWalkIn ? '${_clientNameController.text.trim()} (Walk-in)' : (_selectedClient?['full_name'] ?? ''),
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
         ],
         AlcesCard(
           child: Column(
@@ -1105,6 +1314,11 @@ class _BookingScreenState extends State<BookingScreen> {
                       ] else if (_currentStep == 2) ...[
                         _buildDateTimeSelection(),
                       ] else if (_currentStep == 3) ...[
+                        if (_appState.userRole.value == UserRole.barber)
+                          _buildClientSelection()
+                        else
+                          _buildSummarySection(activeStore),
+                      ] else if (_currentStep == 4) ...[
                         _buildSummarySection(activeStore),
                       ],
                     ],
@@ -1112,7 +1326,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               // Sticky actions bar at bottom
-              if (_currentStep == 0 || _currentStep == 2 || _currentStep == 3)
+              if (_currentStep == 0 || _currentStep == 2 || _currentStep == 3 || _currentStep == 4)
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -1133,20 +1347,49 @@ class _BookingScreenState extends State<BookingScreen> {
                         ] else if (_currentStep == 2) ...[
                           Expanded(
                             child: AlcesButton(
-                              text: 'Revisar Agendamento',
+                              text: 'Continuar',
                               isPrimary: true,
                               onPressed: _selectedTime != null ? _nextStep : null,
                             ),
                           ),
                         ] else if (_currentStep == 3) ...[
+                          if (_appState.userRole.value == UserRole.barber)
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: () {
+                                  if (_isWalkIn && _clientNameController.text.trim().isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Por favor, informe o nome do cliente.')),
+                                    );
+                                    return;
+                                  }
+                                  if (!_isWalkIn && _selectedClient == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Por favor, selecione um cliente.')),
+                                    );
+                                    return;
+                                  }
+                                  _nextStep();
+                                },
+                              ),
+                            )
+                          else
+                            Expanded(
+                              child: AlcesButton(
+                                text: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
+                                    ? 'Confirmar Agendamento' 
+                                    : 'Confirmar e Agendar Avulso',
+                                isPrimary: false,
+                                onPressed: () => _confirmBooking(activeStore),
+                              ),
+                            ),
+                        ] else if (_currentStep == 4) ...[
                           Expanded(
                             child: AlcesButton(
-                              text: _appState.userRole.value == UserRole.barber
-                                  ? 'Confirmar Agendamento'
-                                  : ((_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
-                                      ? 'Confirmar Agendamento' 
-                                      : 'Confirmar e Agendar Avulso'),
-                              isPrimary: _appState.userRole.value == UserRole.barber ? true : false,
+                              text: 'Confirmar Agendamento',
+                              isPrimary: true,
                               onPressed: () => _confirmBooking(activeStore),
                             ),
                           ),
