@@ -1098,8 +1098,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildStatItem('Atendimentos (Mês)', '128', Icons.people_outline),
-                  _buildStatItem('Faturamento Estimado', 'R\$ 6.400,00', Icons.monetization_on_outlined, color: AppTheme.primaryGold),
+                  _buildStatItem('Atendimentos (Mês)', '0', Icons.people_outline),
+                  _buildStatItem('Faturamento Estimado', 'R\$ 0,00', Icons.monetization_on_outlined, color: AppTheme.primaryGold),
                 ],
               ),
             ],

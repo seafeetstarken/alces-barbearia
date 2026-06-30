@@ -31,9 +31,9 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
   @override
   void initState() {
     super.initState();
-    // Gera 14 dias (7 no passado, hoje, 7 no futuro)
-    _calendarDays = List.generate(15, (index) {
-      return DateTime.now().subtract(const Duration(days: 7)).add(Duration(days: index));
+    // Gera 14 dias a partir de hoje (remove dias anteriores)
+    _calendarDays = List.generate(14, (index) {
+      return DateTime.now().add(Duration(days: index));
     });
     _loadAgenda();
     WidgetsBinding.instance.addPostFrameCallback((_) {

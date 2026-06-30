@@ -466,6 +466,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 return AlcesCard(
                                   padding: const EdgeInsets.all(16),
+                                  onTap: () {
+                                    final mainScreenState = context.findAncestorStateOfType<MainScreenState>();
+                                    if (mainScreenState != null) {
+                                      mainScreenState.changeTab(2); // 2 is Minha Agenda for barber
+                                    }
+                                  },
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
