@@ -71,10 +71,16 @@ jobs:
         working-directory: mobile
         run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
+      - name: Find IPA File
+        id: ipa_find
+        run: |
+          IPA_PATH=$(ls mobile/build/ios/ipa/*.ipa)
+          echo "ipa_path=$IPA_PATH" >> $GITHUB_OUTPUT
+
       - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
-          app-path: 'mobile/build/ios/ipa/*.ipa'
+          app-path: ${{ steps.ipa_find.outputs.ipa_path }}
           issuer-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER }}
           api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
