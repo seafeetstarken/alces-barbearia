@@ -47968,55 +47968,54 @@ case 5:return A.q(null,r)
 case 1:return A.p(p.at(-1),r)}})
 return A.r($async$v_,r)},
 ng(a,b){return this.alO(a,b)},
-alO(c1,c2){var s=0,r=A.t(t.yp),q,p=2,o=[],n=this,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,c0
-var $async$ng=A.u(function(c3,c4){if(c3===1){o.push(c4)
-s=p}for(;;)switch(s){case 0:b8=n.c
-b8.toString
+alO(b8,b9){var s=0,r=A.t(t.yp),q,p=2,o=[],n=this,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7
+var $async$ng=A.u(function(c0,c1){if(c0===1){o.push(c1)
+s=p}for(;;)switch(s){case 0:b5=n.c
+b5.toString
 a0=t.z
-A.zv(!1,new A.ask(),b8,a0)
+A.zv(!1,new A.ask(),b5,a0)
 m=A.b([],t.s)
 p=4
-b8=n.y
+b5=n.y
 a1=n.x
 a1.toString
-l=B.b.ht(b8,a1)
-if(J.d(l,-1)){b8=A.cv("Hor\xe1rio inv\xe1lido")
-throw A.f(b8)}k=n.gIX()
-j=0,a1=n.d,a2=c2==null,a3=!a2,a4=a1.a,a5=c1.a,a6=n.f,a7=n.as
+l=B.b.ht(b5,a1)
+if(J.d(l,-1)){b5=A.cv("Hor\xe1rio inv\xe1lido")
+throw A.f(b5)}k=n.gIX()
+j=0,a1=n.d,a2=a1.a,a3=b8.a,a4=n.f,a5=n.as
 case 7:if(!(j<k)){s=9
-break}i=b8[l+j]
-h=j<a6.length?a6[j]:B.b.gal(a6)
-a8=Date.now()
-a9=A.j(j)
-b0=B.c.V(h.a,0,4)
-b1=n.r.a
-b2=h.a
-if(a4.a===B.aO)if(n.ax)b3=B.c.dC(a7.a.a)
-else{b3=n.at
-b3=b3==null?null:b3.h(0,"full_name")}else b3=a1.gqe()
-b4=null
-if(a4.a===B.aO)if(!n.ax){b4=n.at
-b4=b4==null?null:b4.h(0,"id")}b5=n.w
-b5.toString
-b6=a3?"Aguardando Pagamento":"Agendado"
-g=new A.eQ("appt-"+a8+"-"+a9+"-"+b0,a5,b1,b2,b3,b4,b5,i,b6)
+break}i=b5[l+j]
+h=j<a4.length?a4[j]:B.b.gal(a4)
+a6=Date.now()
+a7=A.j(j)
+a8=B.c.V(h.a,0,4)
+a9=n.r.a
+b0=h.a
+if(a2.a===B.aO)if(n.ax)b1=B.c.dC(a5.a.a)
+else{b1=n.at
+b1=b1==null?null:b1.h(0,"full_name")}else b1=a1.gqe()
+b2=null
+if(a2.a===B.aO)if(!n.ax){b2=n.at
+b2=b2==null?null:b2.h(0,"id")}b3=n.w
+b3.toString
+g=new A.eQ("appt-"+a6+"-"+a7+"-"+a8,a3,a9,b0,b1,b2,b3,i,"Agendado")
 s=10
 return A.n(a1.Bk(g),$async$ng)
-case 10:f=c4
+case 10:f=c1
 J.eP(m,f)
 case 8:++j
 s=7
 break
-case 9:b8=n.c
-if(b8!=null)A.bW(b8,!1).d4(null)
-s=a2?11:12
+case 9:b5=n.c
+if(b5!=null)A.bW(b5,!1).d4(null)
+s=b9==null?11:12
 break
-case 11:s=a4.a!==B.aO?13:14
+case 11:s=a2.a!==B.aO?13:14
 break
 case 13:p=16
-b8=$.ck().b
-b8===$&&A.a()
-a2=b8.gdA().d.a
+b5=$.ck().b
+b5===$&&A.a()
+a2=b5.gdA().d.a
 e=a2==null?null:a2.r
 s=e!=null?19:20
 break
@@ -48025,21 +48024,21 @@ d=a2.a+50*k
 a1=a1.ay
 c=a1.a+10*k
 s=21
-return A.n(b8.df("profiles").bS(A.a4(["xp",d,"alce_coins",c],a0,a0)).ec("id",e.a),$async$ng)
+return A.n(b5.df("profiles").bS(A.a4(["xp",d,"alce_coins",c],a0,a0)).ec("id",e.a),$async$ng)
 case 21:a2.sp(d)
 a1.sp(c)
 case 20:p=4
 s=18
 break
 case 16:p=15
-b9=o.pop()
-b=A.T(b9)
+b6=o.pop()
+b=A.T(b6)
 A.fH().$1("Erro gamification ao agendar: "+A.j(b))
 s=18
 break
 case 15:s=4
 break
-case 18:case 14:if(n.c!=null)n.G3(c1)
+case 18:case 14:if(n.c!=null)n.G3(b8)
 case 12:q=m
 s=1
 break
@@ -48047,11 +48046,11 @@ p=2
 s=6
 break
 case 4:p=3
-c0=o.pop()
-a=A.T(c0)
-b8=n.c
-if(b8!=null){A.bW(b8,!1).d4(null)
-n.c.a8(t.q).f.d7(A.jb(null,null,null,null,null,B.v,null,A.a3("Erro ao agendar: "+A.j(a),null,null,null,null,null,null),null,B.ar,null,null,null,null,null,null,null,null,null,null))}throw c0
+b7=o.pop()
+a=A.T(b7)
+b5=n.c
+if(b5!=null){A.bW(b5,!1).d4(null)
+n.c.a8(t.q).f.d7(A.jb(null,null,null,null,null,B.v,null,A.a3("Erro ao agendar: "+A.j(a),null,null,null,null,null,null),null,B.ar,null,null,null,null,null,null,null,null,null,null))}throw b7
 s=6
 break
 case 3:s=2
