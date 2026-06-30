@@ -31,13 +31,16 @@ class BarberAppointmentView {
     final resolvedServicePrice = (service?['price'] as num?)?.toDouble() ?? 0.0;
     final resolvedDuration = service?['duration_minutes'] as int? ?? 30;
 
+    final rawTime = json['appointment_time'] as String;
+    final resolvedTime = rawTime.length > 5 ? rawTime.substring(0, 5) : rawTime;
+
     return BarberAppointmentView(
       id: json['id'] as String,
       clientName: resolvedClientName,
       serviceName: resolvedServiceName,
       servicePrice: resolvedServicePrice,
       date: DateTime.parse(json['appointment_date'] as String),
-      time: json['appointment_time'] as String,
+      time: resolvedTime,
       durationMinutes: resolvedDuration,
       status: json['status'] as String? ?? 'Agendado',
     );
