@@ -7,6 +7,7 @@
 
 -- Remover a política antiga restritiva se existir
 DROP POLICY IF EXISTS "Users can view own appointments" ON public.appointments;
+DROP POLICY IF EXISTS "Anyone can view appointments to see occupied slots" ON public.appointments;
 
 -- Criar a nova política que permite a qualquer usuário autenticado (ou anônimo) visualizar
 -- os agendamentos cadastrados (necessário para o calendário poder checar quais slots estão ocupados)
