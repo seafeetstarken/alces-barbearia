@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .from('appointments')
           .select('*, profiles(full_name, phone)')
           .eq('barber_id', barber.id)
-          .neq('status', 'cancelled')
+          .neq('status', 'Cancelado')
           .gte('appointment_date', todayStr)
           .order('appointment_date', ascending: true)
           .order('appointment_time', ascending: true);

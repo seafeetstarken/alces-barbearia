@@ -117,7 +117,7 @@ class AppState {
 
       if (user != null) {
         try {
-          final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id).neq('status', 'cancelled');
+          final appointmentsData = await supabase.from('appointments').select().eq('user_id', user.id).neq('status', 'Cancelado');
           upcomingAppointments.value = appointmentsData.map<Appointment>((e) => Appointment.fromJson(e)).toList();
         } catch (e) {
           debugPrint('Error loading appointments: $e');
@@ -208,7 +208,7 @@ class AppState {
 
   Future<void> cancelAppointment(String appointmentId) async {
     try {
-      await supabase.from('appointments').update({'status': 'cancelled'}).eq('id', appointmentId);
+      await supabase.from('appointments').update({'status': 'Cancelado'}).eq('id', appointmentId);
       final list = List<Appointment>.from(upcomingAppointments.value);
       list.removeWhere((a) => a.id == appointmentId);
       upcomingAppointments.value = list;
@@ -245,7 +245,7 @@ class AppState {
           .select('appointment_time')
           .eq('barber_id', barberId)
           .eq('appointment_date', dateStr)
-          .neq('status', 'cancelled');
+          .neq('status', 'Cancelado');
       
       return response.map<String>((e) => e['appointment_time'] as String).toList();
     } catch (e) {
