@@ -73,7 +73,7 @@ interface AppSidebarProps {
 const AppSidebar = ({ storeName = "Barbearia Central" }: AppSidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isOwner, isManager, isSuperAdmin, isLeader } = useAuth();
+  const { isOwner, isManager, isSuperAdmin, isLeader, signOut } = useAuth();
 
   const isActive = (href: string) => location.pathname.startsWith(href);
 
@@ -176,7 +176,10 @@ const AppSidebar = ({ storeName = "Barbearia Central" }: AppSidebarProps) => {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => navigate("/")}
+              onClick={async () => {
+                await signOut();
+                navigate("/");
+              }}
               className="rounded-lg text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
               <LogOut className="w-4 h-4" />

@@ -13,6 +13,11 @@ const StoreSelection = () => {
   const { signOut } = useAuth();
   const { barbers } = useBarbers();
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   const handleSelectStore = (storeId: string) => {
     setActiveStoreId(storeId);
     navigate(`/dashboard/${storeId}`);
@@ -32,7 +37,7 @@ const StoreSelection = () => {
               <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground">Barbearia</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
             <LogOut className="w-4 h-4 mr-2" />
             Sair
           </Button>
