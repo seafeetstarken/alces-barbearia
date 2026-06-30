@@ -170,7 +170,7 @@ class AppState {
     activeStore.value = store;
   }
 
-  Future<void> addAppointment(Appointment appt) async {
+  Future<String> addAppointment(Appointment appt) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception('Usuário não logado');
 
@@ -182,13 +182,28 @@ class AppState {
       data['user_id'] = data['user_id'] ?? user.id;
     }
 
-    // Salvar no Supabase
-    await supabase.from('appointments').insert(data);
+    // Salvar no Supabase e retornar o ID gerado
+    final response = await supabase.from('appointments').insert(data).select('id').single();
+    final generatedId = response['id'] as String;
 
-    // Atualizar UI
+    // Atualizar UI com o objeto contendo o ID correto
+    final updatedAppt = Appointment(
+      id: generatedId,
+      storeId: appt.storeId,
+      barberId: appt.barberId,
+      serviceId: appt.serviceId,
+      clientName: appt.clientName,
+      userId: appt.userId,
+      date: appt.date,
+      time: appt.time,
+      status: appt.status,
+    );
+
     final list = List<Appointment>.from(upcomingAppointments.value);
-    list.add(appt);
+    list.add(updatedAppt);
     upcomingAppointments.value = list;
+
+    return generatedId;
   }
 
   Future<void> cancelAppointment(String appointmentId) async {

@@ -240,17 +240,41 @@ class _BookingScreenState extends State<BookingScreen> {
                 title: const Text('PIX', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(context);
-                  final success = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CheckoutPixScreen(
-                        amount: finalPrice,
-                        description: 'Agendamento Alce\'s Barbearia',
+                  
+                  List<String> ids = [];
+                  try {
+                    ids = await _processBookingInsertion(store, 'PIX');
+                  } catch (e) {
+                    return;
+                  }
+
+                  if (ids.isEmpty) return;
+
+                  if (mounted) {
+                    final success = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CheckoutPixScreen(
+                          amount: finalPrice,
+                          description: 'Agendamento Alce\'s Barbearia',
+                          appointmentId: ids[0],
+                        ),
                       ),
-                    ),
-                  );
-                  if (success == true && mounted) {
-                    await _processBookingInsertion(store, 'PIX');
+                    );
+
+                    if (success == true) {
+                      await _confirmAppointmentsPayment(ids);
+                      if (mounted) {
+                        _showSuccessDialog(store);
+                      }
+                    } else {
+                      await _deletePendingAppointments(ids);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Agendamento cancelado (pagamento pendente)')),
+                        );
+                      }
+                    }
                   }
                 },
               ),
@@ -259,17 +283,41 @@ class _BookingScreenState extends State<BookingScreen> {
                 title: const Text('Cartão de Crédito', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(context);
-                  final success = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CheckoutCardScreen(
-                        amount: finalPrice,
-                        description: 'Agendamento Alce\'s Barbearia',
+                  
+                  List<String> ids = [];
+                  try {
+                    ids = await _processBookingInsertion(store, 'CREDIT_CARD');
+                  } catch (e) {
+                    return;
+                  }
+
+                  if (ids.isEmpty) return;
+
+                  if (mounted) {
+                    final success = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CheckoutCardScreen(
+                          amount: finalPrice,
+                          description: 'Agendamento Alce\'s Barbearia',
+                          appointmentId: ids[0],
+                        ),
                       ),
-                    ),
-                  );
-                  if (success == true && mounted) {
-                    await _processBookingInsertion(store, 'CREDIT_CARD');
+                    );
+
+                    if (success == true) {
+                      await _confirmAppointmentsPayment(ids);
+                      if (mounted) {
+                        _showSuccessDialog(store);
+                      }
+                    } else {
+                      await _deletePendingAppointments(ids);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Agendamento cancelado (pagamento pendente)')),
+                        );
+                      }
+                    }
                   }
                 },
               ),
@@ -280,13 +328,58 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  Future<void> _processBookingInsertion(Store store, String? paymentMethod) async {
+  Future<void> _confirmAppointmentsPayment(List<String> ids) async {
+    try {
+      final client = Supabase.instance.client;
+      for (final id in ids) {
+        await client.from('appointments').update({
+          'status': 'Agendado',
+          'payment_status': 'PAID',
+        }).eq('id', id);
+      }
+      
+      int needed = _slotsNeeded;
+      if (_appState.userRole.value != UserRole.barber) {
+        final user = client.auth.currentUser;
+        if (user != null) {
+          final newXp = _appState.userXp.value + (50 * needed);
+          final newCoins = _appState.userCoins.value + (10 * needed);
+          await client.from('profiles').update({
+            'xp': newXp,
+            'alce_coins': newCoins,
+          }).eq('id', user.id);
+          _appState.userXp.value = newXp;
+          _appState.userCoins.value = newCoins;
+        }
+      }
+    } catch (e) {
+      debugPrint('Erro ao confirmar pagamento dos agendamentos: $e');
+    }
+  }
+
+  Future<void> _deletePendingAppointments(List<String> ids) async {
+    try {
+      final client = Supabase.instance.client;
+      for (final id in ids) {
+        await client.from('appointments').delete().eq('id', id);
+        
+        final list = List<Appointment>.from(_appState.upcomingAppointments.value);
+        list.removeWhere((appt) => appt.id == id);
+        _appState.upcomingAppointments.value = list;
+      }
+    } catch (e) {
+      debugPrint('Erro ao cancelar agendamentos pendentes: $e');
+    }
+  }
+
+  Future<List<String>> _processBookingInsertion(Store store, String? paymentMethod) async {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryGold)),
     );
 
+    final List<String> insertedIds = [];
     try {
       int startIndex = _timeSlots.indexOf(_selectedTime!);
       if (startIndex == -1) throw Exception("Horário inválido");
@@ -311,32 +404,39 @@ class _BookingScreenState extends State<BookingScreen> {
           time: currentSlotTime,
           status: paymentMethod != null ? 'Aguardando Pagamento' : 'Agendado',
         );
-        await _appState.addAppointment(newAppt);
-      }
-
-      // Bypass gamification for barbers
-      if (_appState.userRole.value != UserRole.barber) {
-        try {
-          final user = Supabase.instance.client.auth.currentUser;
-          if (user != null) {
-            final newXp = _appState.userXp.value + (50 * needed);
-            final newCoins = _appState.userCoins.value + (10 * needed);
-            await Supabase.instance.client.from('profiles').update({
-              'xp': newXp,
-              'alce_coins': newCoins,
-            }).eq('id', user.id);
-            _appState.userXp.value = newXp;
-            _appState.userCoins.value = newCoins;
-          }
-        } catch (e) {
-          debugPrint('Erro gamification ao agendar: $e');
-        }
+        final generatedId = await _appState.addAppointment(newAppt);
+        insertedIds.add(generatedId);
       }
 
       if (mounted) {
         Navigator.pop(context); // close loading
-        _showSuccessDialog(store);
       }
+
+      if (paymentMethod == null) {
+        if (_appState.userRole.value != UserRole.barber) {
+          try {
+            final user = Supabase.instance.client.auth.currentUser;
+            if (user != null) {
+              final newXp = _appState.userXp.value + (50 * needed);
+              final newCoins = _appState.userCoins.value + (10 * needed);
+              await Supabase.instance.client.from('profiles').update({
+                'xp': newXp,
+                'alce_coins': newCoins,
+              }).eq('id', user.id);
+              _appState.userXp.value = newXp;
+              _appState.userCoins.value = newCoins;
+            }
+          } catch (e) {
+            debugPrint('Erro gamification ao agendar: $e');
+          }
+        }
+
+        if (mounted) {
+          _showSuccessDialog(store);
+        }
+      }
+
+      return insertedIds;
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // close loading
@@ -344,6 +444,7 @@ class _BookingScreenState extends State<BookingScreen> {
           SnackBar(content: Text('Erro ao agendar: $e')),
         );
       }
+      rethrow;
     }
   }
 
