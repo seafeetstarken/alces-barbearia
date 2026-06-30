@@ -6,6 +6,7 @@ import '../models/barber.dart';
 import '../models/service_item.dart';
 import '../models/appointment.dart';
 import '../models/plan.dart';
+import '../models/user_role.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'checkout_pix_screen.dart';
@@ -37,12 +38,24 @@ class _BookingScreenState extends State<BookingScreen> {
 
   List<String> _unavailableSlots = [];
   bool _isLoadingSlots = false;
+  final TextEditingController _clientNameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     // Default to today for selected date
     _selectedDate = DateTime.now();
+
+    // Pré-selecionar o barbeiro logado
+    if (_appState.userRole.value == UserRole.barber) {
+      _selectedBarber = _appState.linkedBarber.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    _clientNameController.dispose();
+    super.dispose();
   }
 
   void _nextStep() {
@@ -127,6 +140,17 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Future<void> _confirmBooking(Store store) async {
     if (_selectedServices.isEmpty || _selectedBarber == null || _selectedDate == null || _selectedTime == null) {
+      return;
+    }
+
+    if (_appState.userRole.value == UserRole.barber) {
+      if (_clientNameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, informe o nome do cliente para prosseguir.')),
+        );
+        return;
+      }
+      await _processBookingInsertion(store, null);
       return;
     }
 
@@ -226,7 +250,9 @@ class _BookingScreenState extends State<BookingScreen> {
           storeId: store.id,
           barberId: _selectedBarber!.id,
           serviceId: service.id,
-          clientName: _appState.userName,
+          clientName: _appState.userRole.value == UserRole.barber
+              ? _clientNameController.text.trim()
+              : _appState.userName,
           date: _selectedDate!,
           time: currentSlotTime,
           status: paymentMethod != null ? 'Aguardando Pagamento' : 'Agendado',
@@ -234,20 +260,23 @@ class _BookingScreenState extends State<BookingScreen> {
         await _appState.addAppointment(newAppt);
       }
 
-      try {
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user != null) {
-          final newXp = _appState.userXp.value + (50 * needed);
-          final newCoins = _appState.userCoins.value + (10 * needed);
-          await Supabase.instance.client.from('profiles').update({
-            'xp': newXp,
-            'alce_coins': newCoins,
-          }).eq('id', user.id);
-          _appState.userXp.value = newXp;
-          _appState.userCoins.value = newCoins;
+      // Bypass gamification for barbers
+      if (_appState.userRole.value != UserRole.barber) {
+        try {
+          final user = Supabase.instance.client.auth.currentUser;
+          if (user != null) {
+            final newXp = _appState.userXp.value + (50 * needed);
+            final newCoins = _appState.userCoins.value + (10 * needed);
+            await Supabase.instance.client.from('profiles').update({
+              'xp': newXp,
+              'alce_coins': newCoins,
+            }).eq('id', user.id);
+            _appState.userXp.value = newXp;
+            _appState.userCoins.value = newCoins;
+          }
+        } catch (e) {
+          debugPrint('Erro gamification ao agendar: $e');
         }
-      } catch (e) {
-        debugPrint('Erro gamification ao agendar: $e');
       }
 
       if (mounted) {
@@ -817,7 +846,7 @@ class _BookingScreenState extends State<BookingScreen> {
     SubscriptionPlan? recommendedPlan;
     double priceDiff = 0;
     
-    if (!hasActivePlan && finalPrice > 0) {
+    if (!hasActivePlan && finalPrice > 0 && _appState.userRole.value != UserRole.barber) {
       final plans = _appState.plans.value.isNotEmpty 
           ? _appState.plans.value 
           : [SubscriptionPlan(id: 'mock', name: 'Plano Premium', description: 'Assinatura Padrão', price: 99.90, billingCycle: 'MONTHLY', features: [])];
@@ -838,6 +867,23 @@ class _BookingScreenState extends State<BookingScreen> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
         ),
         const SizedBox(height: 16),
+        if (_appState.userRole.value == UserRole.barber) ...[
+          const Text(
+            'Nome do Cliente (Agendamento Manual)',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryGold),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _clientNameController,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              labelText: 'Nome do cliente',
+              prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryGold),
+              hintText: 'Digite o nome do cliente...',
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
         AlcesCard(
           child: Column(
             children: [
@@ -1095,10 +1141,12 @@ class _BookingScreenState extends State<BookingScreen> {
                         ] else if (_currentStep == 3) ...[
                           Expanded(
                             child: AlcesButton(
-                              text: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
-                                  ? 'Confirmar Agendamento' 
-                                  : 'Confirmar e Agendar Avulso',
-                              isPrimary: false,
+                              text: _appState.userRole.value == UserRole.barber
+                                  ? 'Confirmar Agendamento'
+                                  : ((_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
+                                      ? 'Confirmar Agendamento' 
+                                      : 'Confirmar e Agendar Avulso'),
+                              isPrimary: _appState.userRole.value == UserRole.barber ? true : false,
                               onPressed: () => _confirmBooking(activeStore),
                             ),
                           ),

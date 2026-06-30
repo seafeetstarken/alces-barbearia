@@ -6,12 +6,19 @@ import '../models/service_item.dart';
 import '../models/appointment.dart';
 import '../models/product.dart';
 import '../models/plan.dart';
+import '../models/user_role.dart';
+import 'barber_repository.dart';
 
 class AppState {
   // Singleton instance
   static final AppState _instance = AppState._internal();
   factory AppState() => _instance;
   AppState._internal();
+
+  // Barber/User roles
+  final ValueNotifier<UserRole> userRole = ValueNotifier<UserRole>(UserRole.client);
+  final ValueNotifier<Barber?> linkedBarber = ValueNotifier<Barber?>(null);
+  final BarberRepository barberRepo = BarberRepository();
 
   // Supabase collections
   final ValueNotifier<List<Store>> stores = ValueNotifier<List<Store>>([]);
@@ -88,6 +95,24 @@ class AppState {
             userCpf.value = profileData['cpf'];
           }
         } catch (_) {}
+
+        try {
+          final linked = await barberRepo.getLinkedBarber(user.id);
+          if (linked != null) {
+            userRole.value = UserRole.barber;
+            linkedBarber.value = linked;
+          } else if (isAdmin.value) {
+            userRole.value = UserRole.admin;
+          } else {
+            userRole.value = UserRole.client;
+            linkedBarber.value = null;
+          }
+        } catch (e) {
+          debugPrint('Erro ao carregar barbeiro vinculado: $e');
+        }
+      } else {
+        userRole.value = UserRole.client;
+        linkedBarber.value = null;
       }
 
       if (user != null) {

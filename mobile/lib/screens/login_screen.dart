@@ -19,14 +19,17 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _handleLogin() async {
-    final phone = _phoneController.text.trim();
+    final input = _phoneController.text.trim();
     final password = _passwordController.text.trim();
-    if (phone.isEmpty || password.isEmpty) return;
+    if (input.isEmpty || password.isEmpty) return;
 
     setState(() => _isLoading = true);
     
-    // Fake email approach for phone auth
-    final email = '$phone@alces.com.br';
+    // Suporta celular, usuário (jorge, peterson, etc) ou email completo
+    String email = input;
+    if (!email.contains('@')) {
+      email = '$email@alces.com.br';
+    }
     
     try {
       await Supabase.instance.client.auth.signInWithPassword(
@@ -101,14 +104,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 40),
                   
-                  // Phone Field
+                  // Phone / Username Field
                   TextField(
                     controller: _phoneController,
                     style: const TextStyle(color: Colors.white),
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
-                      labelText: 'Celular (DDD+Nr)',
-                      prefixIcon: Icon(Icons.phone_android, color: AppTheme.primaryGold),
+                      labelText: 'Celular ou Usuário',
+                      prefixIcon: Icon(Icons.person, color: AppTheme.primaryGold),
                     ),
                   ),
                   const SizedBox(height: 24),

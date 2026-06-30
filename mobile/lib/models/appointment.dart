@@ -37,6 +37,7 @@ class Appointment {
       'store_id': storeId,
       'barber_id': barberId,
       'service_id': serviceId,
+      'client_name': clientName,
       'appointment_date': date.toIso8601String().split('T')[0],
       'appointment_time': time,
       'status': status,
