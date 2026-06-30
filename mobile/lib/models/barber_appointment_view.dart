@@ -32,7 +32,14 @@ class BarberAppointmentView {
     final resolvedDuration = service?['duration_minutes'] as int? ?? 30;
 
     final rawTime = json['appointment_time'] as String;
-    final resolvedTime = rawTime.length > 5 ? rawTime.substring(0, 5) : rawTime;
+    String resolvedTime = rawTime.trim();
+    if (resolvedTime.contains(' ')) resolvedTime = resolvedTime.split(' ')[0];
+    final parts = resolvedTime.split(':');
+    if (parts.length >= 2) {
+      final h = parts[0].padLeft(2, '0');
+      final m = parts[1].padLeft(2, '0');
+      resolvedTime = '$h:$m';
+    }
 
     return BarberAppointmentView(
       id: json['id'] as String,

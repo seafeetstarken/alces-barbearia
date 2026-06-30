@@ -774,7 +774,6 @@ class _BookingScreenState extends State<BookingScreen> {
               _selectedTime = null; // Clear time when barber changes
             });
             _loadUnavailableSlots();
-            _nextStep();
           },
           border: Border.all(
             color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
@@ -1336,7 +1335,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               // Sticky actions bar at bottom
-              if (_currentStep == 0 || _currentStep == 2 || _currentStep == 3 || _currentStep == 4)
+              if (_currentStep == 0 || _currentStep == 1 || _currentStep == 2 || _currentStep == 3 || _currentStep == 4)
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -1352,6 +1351,14 @@ class _BookingScreenState extends State<BookingScreen> {
                               text: 'Continuar',
                               isPrimary: true,
                               onPressed: _selectedServices.isNotEmpty ? _nextStep : null,
+                            ),
+                          ),
+                        ] else if (_currentStep == 1) ...[
+                          Expanded(
+                            child: AlcesButton(
+                              text: 'Continuar',
+                              isPrimary: true,
+                              onPressed: _selectedBarber != null ? _nextStep : null,
                             ),
                           ),
                         ] else if (_currentStep == 2) ...[

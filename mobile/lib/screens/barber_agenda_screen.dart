@@ -26,6 +26,7 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
   ];
 
   late List<DateTime> _calendarDays;
+  final ScrollController _calendarScrollController = ScrollController();
 
   @override
   void initState() {
@@ -35,6 +36,36 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
       return DateTime.now().subtract(const Duration(days: 7)).add(Duration(days: index));
     });
     _loadAgenda();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDate();
+    });
+  }
+
+  @override
+  void dispose() {
+    _calendarScrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToSelectedDate() {
+    if (!_calendarScrollController.hasClients) return;
+    
+    final index = _calendarDays.indexWhere((date) =>
+        date.year == _selectedDate.year &&
+        date.month == _selectedDate.month &&
+        date.day == _selectedDate.day);
+        
+    if (index != -1) {
+      const itemWidth = 70.0; // 58 container width + 12 margin (6 on each side)
+      final screenWidth = MediaQuery.of(context).size.width;
+      final targetScroll = (index * itemWidth) - (screenWidth / 2) + (itemWidth / 2);
+      
+      _calendarScrollController.animateTo(
+        targetScroll.clamp(0.0, _calendarScrollController.position.maxScrollExtent),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   Future<void> _loadAgenda() async {
@@ -176,6 +207,7 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
               color: Colors.black12,
               height: 96,
               child: ListView.builder(
+                controller: _calendarScrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: _calendarDays.length,
                 itemBuilder: (context, index) {
@@ -197,6 +229,7 @@ class _BarberAgendaScreenState extends State<BarberAgendaScreen> {
                           _selectedDate = date;
                         });
                         _loadAgenda();
+                        _scrollToSelectedDate();
                       },
                       child: Container(
                         width: 58,

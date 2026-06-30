@@ -5,6 +5,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../data/app_state.dart';
 import '../models/appointment.dart';
 import '../models/store.dart';
+import '../models/user_role.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'gamification_info_screen.dart';
@@ -221,12 +222,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isBarber = _appState.userRole.value == UserRole.barber;
-    final displayName = isBarber 
-        ? (_appState.linkedBarber.value?.name ?? _appState.userName)
-        : _appState.userName;
+    return ValueListenableBuilder<UserRole>(
+      valueListenable: _appState.userRole,
+      builder: (context, role, _) {
+        return ValueListenableBuilder<Barber?>(
+          valueListenable: _appState.linkedBarber,
+          builder: (context, barber, _) {
+            final isBarber = role == UserRole.barber;
+            final displayName = isBarber 
+                ? (barber?.name ?? _appState.userName)
+                : _appState.userName;
 
-    return Scaffold(
+            return Scaffold(
       appBar: AppBar(
         title: const Text('Meu Perfil'),
         centerTitle: true,
@@ -803,6 +810,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+            );
+          },
+        );
+      },
     );
   }
 
