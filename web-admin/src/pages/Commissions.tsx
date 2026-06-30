@@ -27,11 +27,7 @@ interface PointsBreakdown {
   totalPoints: number;
 }
 
-const pointsBreakdown: PointsBreakdown[] = [
-  { service: "Corte", count: 8, pointsPerService: 1, totalPoints: 8 },
-  { service: "Corte + Barba", count: 6, pointsPerService: 2, totalPoints: 12 },
-  { service: "Barba", count: 2, pointsPerService: 1, totalPoints: 2 },
-];
+const pointsBreakdown: PointsBreakdown[] = [];
 
 interface DailyCommission {
   date: string;
@@ -41,24 +37,16 @@ interface DailyCommission {
   value: number;
 }
 
-const weeklyData: DailyCommission[] = [
-  { date: "21/01", dayName: "Seg", points: 22, services: 14, value: 346.50 },
-  { date: "20/01", dayName: "Dom", points: 0, services: 0, value: 0 },
-  { date: "19/01", dayName: "Sáb", points: 28, services: 18, value: 441.00 },
-  { date: "18/01", dayName: "Sex", points: 18, services: 12, value: 283.50 },
-  { date: "17/01", dayName: "Qui", points: 20, services: 13, value: 315.00 },
-  { date: "16/01", dayName: "Qua", points: 15, services: 10, value: 236.25 },
-  { date: "15/01", dayName: "Ter", points: 19, services: 12, value: 299.25 },
-];
+const weeklyData: DailyCommission[] = [];
 
 const Commissions = () => {
-  const totalPoints = 22;
+  const totalPoints = 0;
   const goalPoints = 30;
   const multiplier = 1.0;
   const baseValue = 15.75;
-  const estimatedValue = totalPoints * baseValue * multiplier;
-  const weeklyTotal = weeklyData.reduce((sum, day) => sum + day.value, 0);
-  const weeklyPoints = weeklyData.reduce((sum, day) => sum + day.points, 0);
+  const estimatedValue = 0;
+  const weeklyTotal = 0;
+  const weeklyPoints = 0;
 
   return (
     <DashboardLayout

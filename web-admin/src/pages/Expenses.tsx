@@ -28,62 +28,7 @@ interface Expense {
   paymentMethod: "pix" | "card" | "cash" | "transfer";
 }
 
-const expenses: Expense[] = [
-  {
-    id: "1",
-    description: "Lâminas de barbear",
-    category: "supplies",
-    amount: 180,
-    date: "2025-01-21",
-    paidBy: "Caixa",
-    paymentMethod: "cash",
-  },
-  {
-    id: "2",
-    description: "Conta de energia",
-    category: "utilities",
-    amount: 450,
-    date: "2025-01-20",
-    paidBy: "Conta empresa",
-    paymentMethod: "transfer",
-  },
-  {
-    id: "3",
-    description: "Manutenção ar condicionado",
-    category: "maintenance",
-    amount: 350,
-    date: "2025-01-19",
-    paidBy: "Conta empresa",
-    paymentMethod: "pix",
-  },
-  {
-    id: "4",
-    description: "Produtos de limpeza",
-    category: "supplies",
-    amount: 95,
-    date: "2025-01-18",
-    paidBy: "Caixa",
-    paymentMethod: "cash",
-  },
-  {
-    id: "5",
-    description: "Café e água",
-    category: "supplies",
-    amount: 120,
-    date: "2025-01-17",
-    paidBy: "Caixa",
-    paymentMethod: "pix",
-  },
-  {
-    id: "6",
-    description: "Conserto cadeira",
-    category: "maintenance",
-    amount: 200,
-    date: "2025-01-15",
-    paidBy: "Conta empresa",
-    paymentMethod: "transfer",
-  },
-];
+const expenses: Expense[] = [];
 
 const categoryConfig = {
   supplies: { label: "Suprimentos", icon: ShoppingCart, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
@@ -190,45 +135,51 @@ const Expenses = () => {
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y divide-border">
-            {expenses.map((expense) => {
-              const CategoryIcon = categoryConfig[expense.category].icon;
-              
-              return (
-                <div
-                  key={expense.id}
-                  className="flex items-center justify-between px-6 py-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      categoryConfig[expense.category].color.split(" ").slice(0, 2).join(" ")
-                    }`}>
-                      <CategoryIcon className={`w-5 h-5 ${
-                        categoryConfig[expense.category].color.split(" ").slice(2).join(" ")
-                      }`} />
+            {expenses.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                Nenhuma despesa registrada neste período.
+              </p>
+            ) : (
+              expenses.map((expense) => {
+                const CategoryIcon = categoryConfig[expense.category].icon;
+                
+                return (
+                  <div
+                    key={expense.id}
+                    className="flex items-center justify-between px-6 py-4 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        categoryConfig[expense.category].color.split(" ").slice(0, 2).join(" ")
+                      }`}>
+                        <CategoryIcon className={`w-5 h-5 ${
+                          categoryConfig[expense.category].color.split(" ").slice(2).join(" ")
+                        }`} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{expense.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Badge className={categoryConfig[expense.category].color}>
+                            {categoryConfig[expense.category].label}
+                          </Badge>
+                          <span>•</span>
+                          <span>{expense.paidBy}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">{expense.description}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Badge className={categoryConfig[expense.category].color}>
-                          {categoryConfig[expense.category].label}
-                        </Badge>
-                        <span>•</span>
-                        <span>{expense.paidBy}</span>
+                    <div className="text-right">
+                      <p className="font-semibold text-destructive">
+                        - R$ {expense.amount.toFixed(2)}
+                      </p>
+                      <div className="flex items-center gap-1 justify-end text-sm text-muted-foreground">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>{new Date(expense.date).toLocaleDateString("pt-BR")}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-destructive">
-                      - R$ {expense.amount.toFixed(2)}
-                    </p>
-                    <div className="flex items-center gap-1 justify-end text-sm text-muted-foreground">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{new Date(expense.date).toLocaleDateString("pt-BR")}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>

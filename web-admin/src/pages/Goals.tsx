@@ -34,7 +34,7 @@ const goals: GoalProgress[] = [
     description: "Alcançar 30 pontos por dia",
     type: "individual",
     period: "daily",
-    current: 22,
+    current: 0,
     target: 30,
     bonus: 20,
     unit: "pontos",
@@ -45,7 +45,7 @@ const goals: GoalProgress[] = [
     description: "Alcançar 200 pontos na semana",
     type: "individual",
     period: "weekly",
-    current: 122,
+    current: 0,
     target: 200,
     bonus: 100,
     unit: "pontos",
@@ -56,7 +56,7 @@ const goals: GoalProgress[] = [
     description: "Alcançar 800 pontos no mês",
     type: "individual",
     period: "monthly",
-    current: 360,
+    current: 0,
     target: 800,
     bonus: 300,
     unit: "pontos",
@@ -67,7 +67,7 @@ const goals: GoalProgress[] = [
     description: "Faturamento total da loja no mês",
     type: "team",
     period: "monthly",
-    current: 23500,
+    current: 0,
     target: 35000,
     bonus: 500,
     unit: "R$",
@@ -82,16 +82,11 @@ interface Ranking {
   bonus: number;
 }
 
-const rankings: Ranking[] = [
-  { position: 1, name: "João Pedro", initials: "JP", points: 360, bonus: 420 },
-  { position: 2, name: "Lucas Almeida", initials: "LA", points: 280, bonus: 200 },
-  { position: 3, name: "Rafael Santos", initials: "RS", points: 245, bonus: 100 },
-  { position: 4, name: "Pedro Costa", initials: "PC", points: 180, bonus: 0 },
-];
+const rankings: Ranking[] = [];
 
 const Goals = () => {
-  const totalBonusEarned = 420;
-  const potentialBonus = 720;
+  const totalBonusEarned = 0;
+  const potentialBonus = 920;
 
   return (
     <DashboardLayout
@@ -226,42 +221,48 @@ const Goals = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {rankings.map((barber) => (
-              <div
-                key={barber.position}
-                className={`flex items-center gap-3 p-3 rounded-lg ${
-                  barber.position === 1 
-                    ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" 
-                    : "bg-muted/50"
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                  barber.position === 1 
-                    ? "bg-amber-500 text-primary-foreground" 
-                    : barber.position === 2 
-                    ? "bg-gray-400 text-primary-foreground"
-                    : barber.position === 3
-                    ? "bg-amber-700 text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {barber.position}
+            {rankings.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Nenhum barbeiro pontuou neste período ainda.
+              </p>
+            ) : (
+              rankings.map((barber) => (
+                <div
+                  key={barber.position}
+                  className={`flex items-center gap-3 p-3 rounded-lg ${
+                    barber.position === 1 
+                      ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" 
+                      : "bg-muted/50"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                    barber.position === 1 
+                      ? "bg-amber-500 text-primary-foreground" 
+                      : barber.position === 2 
+                      ? "bg-gray-400 text-primary-foreground"
+                      : barber.position === 3
+                      ? "bg-amber-700 text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {barber.position}
+                  </div>
+                  <Avatar className="w-10 h-10">
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
+                      {barber.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground text-sm">{barber.name}</p>
+                    <p className="text-xs text-muted-foreground">{barber.points} pontos</p>
+                  </div>
+                  {barber.bonus > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +R$ {barber.bonus}
+                    </Badge>
+                  )}
                 </div>
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
-                    {barber.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="font-medium text-foreground text-sm">{barber.name}</p>
-                  <p className="text-xs text-muted-foreground">{barber.points} pontos</p>
-                </div>
-                {barber.bonus > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +R$ {barber.bonus}
-                  </Badge>
-                )}
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
