@@ -18,3 +18,13 @@ USING (true);
 ALTER TABLE public.profiles 
 ADD COLUMN IF NOT EXISTS active_plan TEXT,
 ADD COLUMN IF NOT EXISTS active_subscription_status TEXT DEFAULT 'INACTIVE';
+
+-- Sincronizar assinaturas ativas existentes com a tabela de perfis
+UPDATE public.profiles p
+SET 
+  active_plan = pl.name,
+  active_subscription_status = 'ACTIVE'
+FROM public.user_subscriptions us
+JOIN public.plans pl ON us.plan_id = pl.id
+WHERE us.user_id = p.id
+  AND us.status = 'Ativo';

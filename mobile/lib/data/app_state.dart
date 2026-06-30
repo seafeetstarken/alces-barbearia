@@ -93,6 +93,7 @@ class AppState {
             userSavedEmail.value = profileData['email'];
             isAdmin.value = profileData['is_admin'] ?? false;
             userCpf.value = profileData['cpf'];
+            activePlan.value = profileData['active_plan'] as String?;
           }
         } catch (_) {}
 
@@ -458,5 +459,17 @@ class AppState {
       'started_at': startedAt.toIso8601String(),
       'expires_at': expiresAt.toIso8601String(),
     });
+
+    try {
+      final planData = await supabase.from('plans').select('name').eq('id', planId).single();
+      final planName = planData['name'] as String;
+
+      await supabase.from('profiles').update({
+        'active_plan': planName,
+        'active_subscription_status': 'ACTIVE',
+      }).eq('id', userId);
+    } catch (e) {
+      debugPrint('Erro ao sincronizar plano no perfil do usuário: $e');
+    }
   }
 }
