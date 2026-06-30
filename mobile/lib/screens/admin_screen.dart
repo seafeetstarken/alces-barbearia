@@ -56,6 +56,7 @@ class _AdminScreenState extends State<AdminScreen> {
     showDialog(
       context: context,
       builder: (context) {
+        bool isSaving = false;
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -91,35 +92,31 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: isSaving ? null : () => Navigator.pop(context),
                   child: const Text('Cancelar', style: TextStyle(color: AppTheme.textMuted)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGold),
-                  onPressed: () async {
+                  onPressed: isSaving ? null : () async {
                     if (selectedPlan == null) return;
                     
+                    setDialogState(() {
+                      isSaving = true;
+                    });
+                    
                     try {
-                      // Mostra um loading
-                      Navigator.pop(context); // Fechar dialog atual
-                      
-                      showDialog(
-                        context: context, 
-                        barrierDismissible: false,
-                        builder: (_) => const Center(child: CircularProgressIndicator())
-                      );
-
                       await appState.assignPlanToUser(user['id'], selectedPlan!.id);
                       
-                      if (mounted) Navigator.pop(context); // Fechar loading
-                      
                       if (mounted) {
+                        Navigator.pop(context); // Fechar dialog atual
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Plano ${selectedPlan!.name} atribuído com sucesso!')),
                         );
                       }
                     } catch (e) {
-                      if (mounted) Navigator.pop(context); // Fechar loading
+                      setDialogState(() {
+                        isSaving = false;
+                      });
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Erro ao atribuir plano: $e')),
@@ -127,7 +124,16 @@ class _AdminScreenState extends State<AdminScreen> {
                       }
                     }
                   },
-                  child: const Text('Confirmar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Confirmar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 ),
               ],
             );
