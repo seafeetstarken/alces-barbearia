@@ -1,16 +1,54 @@
 -- ========================================================
--- ALCE'S BARBEARIA - ENABLE APPOINTMENTS SELECT FOR PUBLIC/CLIENTS
--- Execute este script no SQL Editor do Supabase para corrigir
--- a falha de horários agendados por outros clientes não aparecerem
--- bloqueados no calendário.
+-- ALCE'S BARBEARIA - SQL MIGRATION & BUG FIXES
 -- ========================================================
 
--- Remover a política antiga restritiva se existir
+-- 1. Criar a tabela user_store_memberships se não existir (necessária para o web-admin)
+CREATE TABLE IF NOT EXISTS public.user_store_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  store_id UUID NOT NULL REFERENCES public.stores(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('owner', 'manager', 'leader', 'barber')),
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, store_id)
+);
+
+-- Habilitar RLS na tabela
+ALTER TABLE public.user_store_memberships ENABLE ROW LEVEL SECURITY;
+
+-- Remover políticas antigas se existirem
+DROP POLICY IF EXISTS memberships_select ON public.user_store_memberships;
+DROP POLICY IF EXISTS memberships_insert ON public.user_store_memberships;
+DROP POLICY IF EXISTS memberships_update ON public.user_store_memberships;
+DROP POLICY IF EXISTS memberships_delete ON public.user_store_memberships;
+
+-- Criar políticas robustas de acesso sem dependência de funções externas
+CREATE POLICY memberships_select ON public.user_store_memberships 
+FOR SELECT USING (
+  user_id = auth.uid() 
+  OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+
+CREATE POLICY memberships_insert ON public.user_store_memberships 
+FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+
+CREATE POLICY memberships_update ON public.user_store_memberships 
+FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+
+CREATE POLICY memberships_delete ON public.user_store_memberships 
+FOR DELETE USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+);
+
+-- 2. Remover as políticas antigas de agendamento se existirem e criar a nova pública
 DROP POLICY IF EXISTS "Users can view own appointments" ON public.appointments;
 DROP POLICY IF EXISTS "Anyone can view appointments to see occupied slots" ON public.appointments;
 
--- Criar a nova política que permite a qualquer usuário autenticado (ou anônimo) visualizar
--- os agendamentos cadastrados (necessário para o calendário poder checar quais slots estão ocupados)
 CREATE POLICY "Anyone can view appointments to see occupied slots"
 ON public.appointments FOR SELECT
 USING (true);
