@@ -349,6 +349,15 @@ class _BookingScreenState extends State<BookingScreen> {
 
   void _showSuccessDialog(Store store) {
     final dateStr = DateFormat('dd/MM/yyyy').format(_selectedDate!);
+    final isBarber = _appState.userRole.value == UserRole.barber;
+    final targetClientName = isBarber
+        ? (_isWalkIn ? _clientNameController.text.trim() : _selectedClient?['full_name'] ?? 'Cliente')
+        : 'Você';
+    
+    final descriptionText = isBarber
+        ? 'O agendamento do cliente $targetClientName com o profissional ${_selectedBarber!.name.split(' ')[0]} foi marcado com sucesso para o dia $dateStr às $_selectedTime na unidade ${store.name.replaceAll("Alce\'s Barbearia - ", "")}.'
+        : 'Seu horário com ${_selectedBarber!.name.split(' ')[0]} foi marcado para o dia $dateStr às $_selectedTime na unidade ${store.name.replaceAll("Alce\'s Barbearia - ", "")}.\n\n🎉 Você ganhou +50 XP e 10 AlceCoins!';
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -366,17 +375,18 @@ class _BookingScreenState extends State<BookingScreen> {
                 child: Icon(Icons.check, color: Color(0xFF52B788), size: 36),
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 'Agendamento Confirmado!',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
-                'Seu horário com ${_selectedBarber!.name.split(' ')[0]} foi marcado para o dia $dateStr às $_selectedTime na unidade ${store.name.replaceAll("Alce\'s Barbearia - ", "")}.\n\n🎉 Você ganhou +50 XP e 10 AlceCoins!',
+                descriptionText,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: AppTheme.textMuted, fontSize: 13),
               ),
