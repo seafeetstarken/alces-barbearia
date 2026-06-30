@@ -402,7 +402,7 @@ class _BookingScreenState extends State<BookingScreen> {
               : null,
           date: _selectedDate!,
           time: currentSlotTime,
-          status: paymentMethod != null ? 'Aguardando Pagamento' : 'Agendado',
+          status: 'Agendado',
         );
         final generatedId = await _appState.addAppointment(newAppt);
         insertedIds.add(generatedId);
