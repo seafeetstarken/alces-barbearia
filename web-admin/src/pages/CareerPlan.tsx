@@ -13,6 +13,10 @@ import {
     CircleDollarSign,
 } from "lucide-react";
 
+import { useParams } from "react-router-dom";
+import { useStore } from "@/hooks/useStore";
+import { useBarbers } from "@/hooks/useBarbers";
+
 // Career levels data (will come from useCareerLevels hook when connected)
 const careerLevels = [
     {
@@ -66,6 +70,10 @@ const careerLevels = [
 ];
 
 const CareerPlan = () => {
+    const { storeId } = useParams();
+    const { store } = useStore(storeId);
+    const { activeBarbers } = useBarbers(store?.id);
+
     return (
         <DashboardLayout
             title="Plano de Carreira"
@@ -100,7 +108,7 @@ const CareerPlan = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Barbers Ativos</p>
-                                <p className="text-2xl font-bold">4</p>
+                                <p className="text-2xl font-bold">{activeBarbers.length}</p>
                             </div>
                             <Users className="w-8 h-8 text-blue-500" />
                         </div>
@@ -111,7 +119,7 @@ const CareerPlan = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Em Progressão</p>
-                                <p className="text-2xl font-bold">2</p>
+                                <p className="text-2xl font-bold">0</p>
                             </div>
                             <Target className="w-8 h-8 text-purple-500" />
                         </div>
