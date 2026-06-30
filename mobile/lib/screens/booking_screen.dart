@@ -58,6 +58,7 @@ class _BookingScreenState extends State<BookingScreen> {
       _selectedBarber = _appState.linkedBarber.value;
       _loadClients();
       _searchController.addListener(_filterClients);
+      _clientNameController.addListener(() => setState(() {}));
     }
   }
 
@@ -127,6 +128,13 @@ class _BookingScreenState extends State<BookingScreen> {
   int get _slotsNeeded {
     int totalMinutes = _selectedServices.fold(0, (sum, item) => sum + item.duration);
     return (totalMinutes / 30).ceil();
+  }
+
+  String? _getActivePlan() {
+    if (_appState.userRole.value == UserRole.barber) {
+      return _isWalkIn ? null : _selectedClient?['active_plan'] as String?;
+    }
+    return _appState.activePlan.value;
   }
 
   // Check if a starting time slot and subsequent needed slots are available
@@ -207,9 +215,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
     double totalOriginal = 0;
     double totalDiscount = 0;
+    final plan = _getActivePlan();
     for (var service in _selectedServices) {
       totalOriginal += service.price;
-      totalDiscount += _appState.getDiscountForService(service);
+      totalDiscount += _appState.getDiscountForService(service, planOverride: plan);
     }
     double finalPrice = totalOriginal - totalDiscount;
 
@@ -511,7 +520,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _buildStepIndicator() {
     final isBarber = _appState.userRole.value == UserRole.barber;
     final stepNames = isBarber 
-        ? ['Serviço', 'Barbeiro', 'Data/Hora', 'Cliente', 'Resumo'] 
+        ? ['Cliente', 'Serviço', 'Barbeiro', 'Data/Hora', 'Resumo'] 
         : ['Serviço', 'Barbeiro', 'Data/Hora', 'Resumo'];
     final totalSteps = stepNames.length;
     final generateLength = totalSteps * 2 - 1;
@@ -731,115 +740,102 @@ class _BookingScreenState extends State<BookingScreen> {
     if (n.contains('selagem')) return Icons.waves;
     if (n.contains('pigmentação') || n.contains('pigmentacao')) return Icons.format_paint_outlined;
     if (n.contains('pezinho')) return Icons.straighten;
-    return Icons.spa_outlined;
+    return Icons.spa;
   }
 
   Widget _buildServiceSelection(List<ServiceItem> storeServices) {
-    return ValueListenableBuilder<String?>(
-      valueListenable: _appState.activePlan,
-      builder: (context, activePlan, _) {
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: storeServices.length,
-          itemBuilder: (context, index) {
-            final service = storeServices[index];
-            final isSelected = _selectedServices.any((s) => s.id == service.id);
-            final discount = _appState.getDiscountForService(service);
-            final finalPrice = service.price - discount;
-            final isFreeByClub = discount == service.price && service.price > 0;
+    final clientPlan = _getActivePlan();
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: storeServices.length,
+      itemBuilder: (context, index) {
+        final service = storeServices[index];
+        final isSelected = _selectedServices.any((s) => s.id == service.id);
+        final discount = _appState.getDiscountForService(service, planOverride: clientPlan);
+        final finalPrice = service.price - discount;
+        final isFreeByClub = discount == service.price && service.price > 0;
 
-            return AlcesCard(
-              padding: const EdgeInsets.all(12),
-              onTap: () {
-                setState(() {
-                  if (isSelected) {
-                    _selectedServices.removeWhere((s) => s.id == service.id);
-                  } else {
-                    _selectedServices.add(service);
-                  }
-                });
-              },
-              border: Border.all(
-                color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
-                width: 1.5,
-              ),
-              child: Column(
+        return AlcesCard(
+          padding: const EdgeInsets.all(12),
+          onTap: () {
+            setState(() {
+              if (isSelected) {
+                _selectedServices.removeWhere((s) => s.id == service.id);
+              } else {
+                _selectedServices.add(service);
+              }
+              _selectedTime = null; // Clear selected time on service change
+            });
+          },
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryGold : Colors.white.withOpacity(0.06),
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(
-                            isSelected ? Icons.check_circle : Icons.circle_outlined,
-                            color: isSelected ? AppTheme.primaryGold : Colors.white30,
-                            size: 20,
-                          ),
-                          if (isFreeByClub)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF52B788).withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
-                              ),
-                              child: const Text('CLUBE', style: TextStyle(color: Color(0xFF52B788), fontSize: 9, fontWeight: FontWeight.bold)),
-                            )
-                          else
-                            Icon(
-                              _getServiceIcon(service.name),
-                              color: isSelected ? AppTheme.primaryGold : Colors.white54,
-                              size: 20,
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        service.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.2,
+                      CircleAvatar(
+                        backgroundColor: isSelected ? AppTheme.primaryGold.withOpacity(0.12) : Colors.white.withOpacity(0.04),
+                        radius: 16,
+                        child: Icon(
+                          _getServiceIcon(service.name),
+                          color: isSelected ? AppTheme.primaryGold : Colors.white54,
+                          size: 16,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
+                      if (isSelected)
+                        const Icon(Icons.check_circle, color: AppTheme.primaryGold, size: 20),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.access_time, size: 12, color: AppTheme.textMuted),
-                          const SizedBox(width: 4),
-                          Text('${service.duration} min', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      if (isFreeByClub)
-                        const Text('GRÁTIS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF52B788)))
-                      else
-                        Text('R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
-                        ),
-                    ],
+                  const SizedBox(height: 12),
+                  Text(
+                    service.name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-            );
-          },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, size: 12, color: AppTheme.textMuted),
+                      const SizedBox(width: 4),
+                      Text('${service.duration} min', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (isFreeByClub)
+                    const Text('GRÁTIS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF52B788)))
+                  else
+                    Text('R\$ ${finalPrice.toStringAsFixed(2).replaceAll('.', ',')}',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.primaryGold),
+                    ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -1084,9 +1080,9 @@ class _BookingScreenState extends State<BookingScreen> {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 2.0,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 14,
+              childAspectRatio: 1.4,
             ),
             itemCount: _timeSlots.length,
             itemBuilder: (context, index) {
@@ -1145,15 +1141,16 @@ class _BookingScreenState extends State<BookingScreen> {
     double totalDiscount = 0;
     double finalPrice = 0;
 
+    final clientPlan = _getActivePlan();
     for (var service in _selectedServices) {
       totalOriginal += service.price;
-      totalDiscount += _appState.getDiscountForService(service);
+      totalDiscount += _appState.getDiscountForService(service, planOverride: clientPlan);
     }
     finalPrice = totalOriginal - totalDiscount;
 
     final serviceNames = _selectedServices.map((s) => s.name).join(' + ');
 
-    final hasActivePlan = _appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty;
+    final hasActivePlan = clientPlan != null && clientPlan.isNotEmpty;
     
     SubscriptionPlan? recommendedPlan;
     double priceDiff = 0;
@@ -1196,6 +1193,32 @@ class _BookingScreenState extends State<BookingScreen> {
                         _isWalkIn ? '${_clientNameController.text.trim()} (Walk-in)' : (_selectedClient?['full_name'] ?? ''),
                         style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
+                      if (clientPlan != null && clientPlan.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF52B788).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFF52B788).withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.verified, color: Color(0xFF52B788), size: 14),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Assinante: $clientPlan',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF52B788),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1393,6 +1416,7 @@ class _BookingScreenState extends State<BookingScreen> {
           // Filter barbers and services for active store
           final storeBarbers = _appState.barbers.value.where((b) => b.storeId == activeStore.id && b.isActive).toList();
           final storeServices = _appState.services.value.where((s) => s.storeId == activeStore.id || s.storeId == 'global').toList();
+          final isBarber = _appState.userRole.value == UserRole.barber;
 
           return Column(
             children: [
@@ -1408,29 +1432,48 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (_currentStep == 0) ...[
-                        const Text(
-                          'Escolha o Serviço',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildServiceSelection(storeServices),
-                      ] else if (_currentStep == 1) ...[
-                        const Text(
-                          'Escolha o Profissional',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildBarberSelection(storeBarbers),
-                      ] else if (_currentStep == 2) ...[
-                        _buildDateTimeSelection(),
-                      ] else if (_currentStep == 3) ...[
-                        if (_appState.userRole.value == UserRole.barber)
-                          _buildClientSelection()
-                        else
+                      if (_appState.userRole.value == UserRole.barber) ...[
+                        if (_currentStep == 0) ...[
+                          _buildClientSelection(),
+                        ] else if (_currentStep == 1) ...[
+                          const Text(
+                            'Escolha o Serviço',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildServiceSelection(storeServices),
+                        ] else if (_currentStep == 2) ...[
+                          const Text(
+                            'Escolha o Profissional',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildBarberSelection(storeBarbers),
+                        ] else if (_currentStep == 3) ...[
+                          _buildDateTimeSelection(),
+                        ] else if (_currentStep == 4) ...[
                           _buildSummarySection(activeStore),
-                      ] else if (_currentStep == 4) ...[
-                        _buildSummarySection(activeStore),
+                        ],
+                      ] else ...[
+                        if (_currentStep == 0) ...[
+                          const Text(
+                            'Escolha o Serviço',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildServiceSelection(storeServices),
+                        ] else if (_currentStep == 1) ...[
+                          const Text(
+                            'Escolha o Profissional',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildBarberSelection(storeBarbers),
+                        ] else if (_currentStep == 2) ...[
+                          _buildDateTimeSelection(),
+                        ] else if (_currentStep == 3) ...[
+                          _buildSummarySection(activeStore),
+                        ],
                       ],
                     ],
                   ),
@@ -1447,54 +1490,77 @@ class _BookingScreenState extends State<BookingScreen> {
                   child: SafeArea(
                     child: Row(
                       children: [
-                        if (_currentStep == 0) ...[
-                          Expanded(
-                            child: AlcesButton(
-                              text: 'Continuar',
-                              isPrimary: true,
-                              onPressed: _selectedServices.isNotEmpty ? _nextStep : null,
-                            ),
-                          ),
-                        ] else if (_currentStep == 1) ...[
-                          Expanded(
-                            child: AlcesButton(
-                              text: 'Continuar',
-                              isPrimary: true,
-                              onPressed: _selectedBarber != null ? _nextStep : null,
-                            ),
-                          ),
-                        ] else if (_currentStep == 2) ...[
-                          Expanded(
-                            child: AlcesButton(
-                              text: 'Continuar',
-                              isPrimary: true,
-                              onPressed: _selectedTime != null ? _nextStep : null,
-                            ),
-                          ),
-                        ] else if (_currentStep == 3) ...[
-                          if (_appState.userRole.value == UserRole.barber)
+                        if (isBarber) ...[
+                          if (_currentStep == 0) ...[
                             Expanded(
                               child: AlcesButton(
                                 text: 'Continuar',
                                 isPrimary: true,
-                                onPressed: () {
-                                  if (_isWalkIn && _clientNameController.text.trim().isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Por favor, informe o nome do cliente.')),
-                                    );
-                                    return;
-                                  }
-                                  if (!_isWalkIn && _selectedClient == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Por favor, selecione um cliente.')),
-                                    );
-                                    return;
-                                  }
-                                  _nextStep();
-                                },
+                                onPressed: (_isWalkIn && _clientNameController.text.trim().isNotEmpty) ||
+                                        (!_isWalkIn && _selectedClient != null)
+                                    ? _nextStep
+                                    : null,
                               ),
-                            )
-                          else
+                            ),
+                          ] else if (_currentStep == 1) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedServices.isNotEmpty ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 2) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedBarber != null ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 3) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedTime != null ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 4) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Confirmar Agendamento',
+                                isPrimary: true,
+                                onPressed: () => _confirmBooking(activeStore),
+                              ),
+                            ),
+                          ]
+                        ] else ...[
+                          if (_currentStep == 0) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedServices.isNotEmpty ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 1) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedBarber != null ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 2) ...[
+                            Expanded(
+                              child: AlcesButton(
+                                text: 'Continuar',
+                                isPrimary: true,
+                                onPressed: _selectedTime != null ? _nextStep : null,
+                              ),
+                            ),
+                          ] else if (_currentStep == 3) ...[
                             Expanded(
                               child: AlcesButton(
                                 text: (_appState.activePlan.value != null && _appState.activePlan.value!.isNotEmpty) 
@@ -1504,14 +1570,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 onPressed: () => _confirmBooking(activeStore),
                               ),
                             ),
-                        ] else if (_currentStep == 4) ...[
-                          Expanded(
-                            child: AlcesButton(
-                              text: 'Confirmar Agendamento',
-                              isPrimary: true,
-                              onPressed: () => _confirmBooking(activeStore),
-                            ),
-                          ),
+                          ]
                         ]
                       ],
                     ),

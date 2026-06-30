@@ -254,15 +254,14 @@ class AppState {
     }
   }
 
-  // Lógica de Desconto de Clube
-  double getDiscountForService(ServiceItem service) {
-    final plan = activePlan.value;
+  double getDiscountForService(ServiceItem service, {String? planOverride}) {
+    final plan = planOverride ?? activePlan.value;
     if (plan == null || plan.isEmpty) return 0.0;
-
+ 
     final lowerName = service.name.toLowerCase();
-
+ 
     final lowerPlan = plan.toLowerCase();
-
+ 
     if (lowerPlan.contains('cabelo e barba ilimitado')) {
       if (lowerName.contains('corte') || lowerName.contains('barba')) return service.price;
     } else if (lowerPlan.contains('corte ilimitado')) {
@@ -270,7 +269,7 @@ class AppState {
     } else if (lowerPlan.contains('barba ilimitado')) {
       if (lowerName.contains('barba')) return service.price;
     }
-
+ 
     return 0.0; // No discount
   }
 
@@ -440,7 +439,7 @@ class AppState {
   Future<List<Map<String, dynamic>>> fetchAllUsers() async {
     final response = await supabase
         .from('profiles')
-        .select('id, full_name, phone')
+        .select('id, full_name, phone, active_plan')
         .order('full_name', ascending: true);
     return List<Map<String, dynamic>>.from(response);
   }
