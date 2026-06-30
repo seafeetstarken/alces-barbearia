@@ -225,6 +225,7 @@ class _BookingScreenState extends State<BookingScreen> {
   void _showPaymentBottomSheet(Store store, double finalPrice) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: AppTheme.cardDark,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
