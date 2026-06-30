@@ -6,6 +6,7 @@ import '../data/app_state.dart';
 import '../models/appointment.dart';
 import '../models/store.dart';
 import '../models/user_role.dart';
+import '../models/barber.dart';
 import '../theme/app_theme.dart';
 import '../widgets/alces_ui.dart';
 import 'gamification_info_screen.dart';
