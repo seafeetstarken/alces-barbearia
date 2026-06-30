@@ -246,9 +246,6 @@ const Inventory = () => {
           </CardContent>
         </Card>
       </div>
-          </CardContent>
-        </Card>
-      </div>
     </DashboardLayout>
   );
 };
